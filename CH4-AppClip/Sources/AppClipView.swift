@@ -6,7 +6,7 @@ struct AppClipView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("CH-4 App Clip")
+            Text("CH-4 App Clip Made by The Team")
                 .font(.title)
             Text("This is the App Clip version of CH-4")
                 .font(.caption)
