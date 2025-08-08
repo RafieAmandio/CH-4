@@ -21,14 +21,43 @@ let project = Project(
             dependencies: []
         ),
         .target(
-            name: "CH-4Tests",
+            name: "CH4-AppClip",
             destinations: .iOS,
-            product: .unitTests,
-            bundleId: "dev.tuist.CH-4Tests",
-            infoPlist: .default,
-            sources: ["CH-4/Tests/**"],
-            resources: [],
-            dependencies: [.target(name: "CH-4")]
+            product: .appClip,
+            bundleId: "dev.tuist.CH-4.Clip",
+            infoPlist: .extendingDefault(
+                with: [
+                    "NSAppClip": [
+                                      "NSAppClipRequestEphemeralUserNotification": false,
+                                      "NSAppClipRequestLocationConfirmation": false
+                                  ],
+                    "UILaunchScreen": [
+                        "UIColorName": "",
+                        "UIImageName": "",
+                    ],
+                ]
+            ),
+            sources: ["CH4-AppClip/Sources/**"],
+            resources: ["CH4-AppClip/Resources/**"],
+            entitlements: .file(path: "CH4-AppClip/CH4-AppClip.entitlements"),
+            dependencies: [],
+            settings: .settings(
+                base: [:],
+                configurations: [
+                    .debug(name: "Debug"),
+                    .release(name: "Release")
+                ]
+            )
         ),
+//        .target(
+//            name: "CH-4Tests",
+//            destinations: .iOS,
+//            product: .unitTests,
+//            bundleId: "dev.tuist.CH-4Tests",
+//            infoPlist: .default,
+//            sources: ["CH-4/Tests/**"],
+//            resources: [],
+//            dependencies: [.target(name: "CH-4")]
+//        ),
     ]
 )
