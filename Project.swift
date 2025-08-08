@@ -42,7 +42,9 @@ let project = Project(
             entitlements: .file(path: "CH4-AppClip/CH4-AppClip.entitlements"),
             dependencies: [],
             settings: .settings(
-                base: [:],
+                base: [
+                    "CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION": "YES"
+                ],
                 configurations: [
                     .debug(name: "Debug"),
                     .release(name: "Release")
