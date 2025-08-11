@@ -1,5 +1,4 @@
 import SwiftUI
-import FoundationExtras
 
 @main
 struct AppClipApp: App {

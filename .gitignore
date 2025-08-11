@@ -68,3 +68,6 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+### Configuration files with sensitive data ###
+CH-4/Sources/Config/AppConfig.swift
