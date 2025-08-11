@@ -7,6 +7,7 @@
 
 import Foundation
 
+//rename this to AppConfig
 public enum AppConfig {
     // MARK: - Supabase Configuration
     static let supabaseURL = "YOUR_SUPABASE_URL"
