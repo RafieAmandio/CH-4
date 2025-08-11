@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AppConfigTemplate {
+public enum AppConfig {
     // MARK: - Supabase Configuration
     static let supabaseURL = "YOUR_SUPABASE_URL"
     static let supabaseAnonKey = "YOUR_SUPABASE_ANON_KEY"
