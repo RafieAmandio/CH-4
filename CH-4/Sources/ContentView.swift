@@ -1,11 +1,101 @@
 import SwiftUI
+import UIComponentsKit
+import UIKit
 
 struct ContentView: View {
-    @Namespace private var animation
-    @State private var path: [String] = []
-
     var body: some View {
-        SignInView()
+        NavigationView {
+            VStack(spacing: 20) {
+                // Debug section to show available fonts
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Debug: Available Fonts")
+                        .font(.headline)
+                        .foregroundColor(.blue)
+                    
+                    Button("Register Custom Fonts") {
+//                        AppFont.ensureFontsRegistered()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.bottom, 8)
+                    
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 4) {
+                            ForEach(UIFont.familyNames.sorted(), id: \.self) { family in
+                                Text("Family: \(family)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                ForEach(UIFont.fontNames(forFamilyName: family), id: \.self) { fontName in
+                                    Text("  - \(fontName)")
+                                        .font(.caption2)
+                                        .foregroundColor(.green)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 200)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                
+                Divider()
+                
+                // Test custom fonts
+                VStack(spacing: 16) {
+                    Text("Custom Font Test")
+                        .font(AppFont.bodyMedium)
+                    
+                    Text("Urbanist-SemiBold (28pt)")
+                        .font(AppFont.headingLarge)
+                        .foregroundColor(.primary)
+                    
+                    Text("Urbanist-SemiBold (22pt)")
+                        .font(AppFont.headingMedium)
+                        .foregroundColor(.primary)
+                    
+                    Text("Urbanist-Regular (16pt)")
+                        .font(AppFont.bodyMedium)
+                        .foregroundColor(.primary)
+                    
+                    Text("Urbanist-Regular (14pt)")
+                        .font(AppFont.bodySmall)
+                        .foregroundColor(.primary)
+                    
+                    // Check if Urbanist fonts are available
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Font Availability Check:")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                        
+                        Text("Urbanist-SemiBold: \(UIFont.familyNames.contains("Urbanist") ? "✅ Available" : "❌ Not Available")")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Urbanist-Regular: \(UIFont.familyNames.contains("Urbanist") ? "✅ Available" : "❌ Not Available")")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                
+                Spacer()
+                
+                NavigationLink(destination: SignInView()) {
+                    Text("Go to Sign In")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+            }
+            .padding()
+            .navigationTitle("CH-4")
+        }
     }
 }
 

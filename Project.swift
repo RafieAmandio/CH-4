@@ -42,6 +42,7 @@ let project = Project(
           product: .staticFramework,
           bundleId: "dev.tuist.CH4.UIComponentsKit",
           deploymentTargets: iOSDeployment,
+          infoPlist: .file(path: "Modules/UIComponentsKit/Info.plist"),
           sources: ["Modules/UIComponentsKit/Sources/**"],
           resources: ["Modules/UIComponentsKit/Resources/**"], // images, strings, etc.
           dependencies: [
@@ -60,9 +61,15 @@ let project = Project(
                     "UIColorName": "",
                     "UIImageName": "",
                 ],
+                "UIAppFonts": [
+                    "Urbanist-Thin.ttf",
+                    "Urbanist-Regular.ttf",
+                    "Urbanist-Medium.ttf",
+                    "Urbanist-SemiBold.ttf"
+                ]
             ]),
             sources: ["CH-4/Sources/**"],
-            resources: ["CH-4/Resources/**"],
+            resources: ["CH-4/Resources/**", "Modules/UIComponentsKit/Resources/Fonts/**"],
             entitlements: .file(path: "CH-4/CH-4.entitlements"),
             // Adding the App Clip as a dependency here makes Xcode embed it in the host app
             dependencies: [
@@ -88,9 +95,15 @@ let project = Project(
                     "UIColorName": "",
                     "UIImageName": "",
                 ],
+                 "UIAppFonts": [
+                    "Urbanist-Thin.ttf",
+                    "Urbanist-Regular.ttf",
+                    "Urbanist-Medium.ttf",
+                    "Urbanist-SemiBold.ttf"
+                ]
             ]),
             sources: ["CH4-AppClip/Sources/**"],
-            resources: ["CH4-AppClip/Resources/**"],
+            resources: ["CH4-AppClip/Resources/**", "Modules/UIComponentsKit/Resources/Fonts/**"],
             entitlements: .file(path: "CH4-AppClip/CH4-AppClip.entitlements"),
             dependencies: [
                  .target(name: "NetworkingKit"),
