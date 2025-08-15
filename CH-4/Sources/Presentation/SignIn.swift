@@ -9,6 +9,7 @@ import SwiftUI
 import AuthenticationServices
 import Supabase
 import NetworkingKit
+import UIComponentsKit
 
 struct SignInView: View {
     @State private var isLoading = false
@@ -41,8 +42,10 @@ struct SignInView: View {
             } else {
                 VStack(spacing: 16) {
                     Text("Welcome to CH-4")
-                        .font(.largeTitle)
+                        .font(AppFont.headingLarge)
+
                         .fontWeight(.bold)
+                    
                     
                     Text("Sign in with your Apple ID to continue")
                         .font(.subheadline)
@@ -91,11 +94,18 @@ struct SignInView: View {
             }
             
             // Sign in to Supabase using the provider
-            try await supabaseProvider.client.auth.signInWithIdToken(
+            let supabaseResponse = try await supabaseProvider.client.auth.signInWithIdToken(
                 credentials: .init(
                     provider: .apple,
                     idToken: idTokenString
                 )
+            )
+            
+            // After successful Supabase sign-in, notify your backend
+            await notifyBackendOfSignIn(
+                userId: supabaseResponse.user.id,
+                email: credential.email,
+                fullName: credential.fullName
             )
             
             await MainActor.run {
@@ -125,6 +135,42 @@ struct SignInView: View {
         } catch {
             print("❌ Sign out failed: \(error)")
         }
+    }
+}
+
+// Add this new function to notify your backend
+private func notifyBackendOfSignIn(userId: UUID, email: String?, fullName: PersonNameComponents?) async {
+    guard let backendURL = URL(string: AppConfig.backendBaseURL) else {
+        print("❌ Invalid backend URL")
+        return
+    }
+    
+    var request = URLRequest(url: backendURL.appendingPathComponent("/auth/callback"))
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let payload: [String: Any] = [
+        "supabase_user_id": userId.uuidString,
+        "email": email ?? "",
+        "full_name": [
+            "given_name": fullName?.givenName ?? "",
+            "family_name": fullName?.familyName ?? ""
+        ],
+        "sign_in_timestamp": ISO8601DateFormatter().string(from: Date())
+    ]
+    
+    do {
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse,
+           httpResponse.statusCode == 200 {
+            print("✅ Backend notified of successful sign-in")
+        } else {
+            print("⚠️ Backend notification failed")
+        }
+    } catch {
+        print("❌ Failed to notify backend: \(error)")
     }
 }
 
