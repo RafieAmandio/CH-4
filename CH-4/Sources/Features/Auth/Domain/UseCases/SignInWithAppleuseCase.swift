@@ -34,9 +34,7 @@ public final class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
         // Sign in with Apple through the repository
         let user = try await authRepository.signInWithApple(idToken: idToken, nonce: nonce)
         
-        // Save user locally
         try authRepository.save(user)
-    
         
         return user
     }

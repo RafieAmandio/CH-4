@@ -13,17 +13,16 @@ import AuthenticationServices
 public final class AuthViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading = false
-    @Published var isSignedIn = false
-    @Published var currentUser: User?
     @Published var showError = false
     @Published var errorMessage = ""
+    @Published var authenticatedState: AuthenticationState = .unauthenticated
     
     // MARK: - Dependencies
     private let signInWithAppleUseCase: SignInWithAppleUseCaseProtocol
     private let signOutUseCase: SignOutUseCaseProtocol
     private let authRepository: AuthRepositoryProtocol
-
-
+    
+    
     // MARK: - Initialization
     public init(
         signInWithAppleUseCase: SignInWithAppleUseCaseProtocol,
@@ -48,29 +47,23 @@ public final class AuthViewModel: ObservableObject {
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
                 throw SignInError.invalidCredential
             }
-          
-        
+            
+            
             guard let idToken = credential.identityToken,
                   let idTokenString = String(data: idToken, encoding: .utf8) else {
                 throw SignInError.invalidToken
             }
             
-            guard let authorizationCode = credential.authorizationCode,
-                  let authorizationCodeString = String(data: authorizationCode, encoding: .utf8) else {
-                throw SignInError.invalidToken
-            }
-        
-            // Execute sign in use case
+            
             let user = try await signInWithAppleUseCase.execute(
                 idToken: idTokenString,
                 email: credential.email,
                 fullName: credential.fullName,
                 nonce: nil
             )
+
+            authenticatedState = .authenticated(user)
             
-        
-            currentUser = user
-            isSignedIn = true
             isLoading = false
             
             print("✅ Successfully signed in with Apple ID: \(credential.user)")
@@ -83,31 +76,15 @@ public final class AuthViewModel: ObservableObject {
         }
     }
     
-    public func signOut() async {
-        isLoading = true
-        
-        do {
-            try await signOutUseCase.execute()
-            
-            // Update state
-            currentUser = nil
-            isSignedIn = false
-            isLoading = false
-            
-            print("✅ Successfully signed out")
-            
-        } catch {
-            isLoading = false
-            errorMessage = error.localizedDescription
-            showError = true
-            print("❌ Sign out failed: \(error)")
-        }
-    }
     
     // MARK: - Private Methods
     private func checkCurrentUser() {
-        currentUser = authRepository.getCurrentUser()
-        isSignedIn = currentUser != nil
+        if let user = authRepository.getCurrentUser() {
+            authenticatedState = .authenticated(user)
+        } else {
+            authenticatedState = .unauthenticated
+        }
+        
     }
 }
 
@@ -124,4 +101,10 @@ public enum SignInError: LocalizedError {
             return "Invalid identity token received"
         }
     }
+}
+
+enum AuthenticationState {
+    case loading
+    case authenticated(User)
+    case unauthenticated
 }

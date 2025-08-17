@@ -7,12 +7,12 @@
 
 import Foundation
 
-    public final class AuthRepository: AuthRepositoryProtocol {
+public final class AuthRepository: AuthRepositoryProtocol {
     private let supabaseAuthService: SupabaseAuthServiceProtocol
-
+    
     private let userDefaults = UserDefaults.standard
     
-    private let userKey = "current_user"
+    private let userKey = "user"
     
     public init(
         supabaseAuthService: SupabaseAuthServiceProtocol

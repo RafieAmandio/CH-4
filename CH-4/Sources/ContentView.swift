@@ -4,10 +4,19 @@ import UIKit
 import Foundation
 
 struct ContentView: View {
-    let vm = AuthDIContainer.shared.makeAuthViewModel()
-    var body: some View {
-        SignInView(viewModel: vm)
+    @EnvironmentObject var appState:AppStateManager
+    
+    var body: some View
+    {
+        Group {
+            if appState.isAuthenticated {
+                HomeView()
+            } else {
+                AuthViewContainer()
+            }
+        }
     }
+    
 }
 
 private struct MiniPlayerCard: View {
@@ -17,14 +26,14 @@ private struct MiniPlayerCard: View {
                 .fill(.gray.opacity(0.2))
                 .frame(width: 56, height: 56)
                 .overlay(Image(systemName: "music.note").font(.title2))
-
+            
             VStack(alignment: .leading, spacing: 2) {
                 Text("Lo-Fi Beats").font(.headline)
                 Text("Artist Name").foregroundStyle(.secondary)
             }
-
+            
             Spacer()
-
+            
             Image(systemName: "play.fill")
                 .font(.title3)
         }
@@ -41,13 +50,13 @@ private struct PlayerDetail: View {
                 .fill(.gray.opacity(0.15))
                 .frame(height: 260)
                 .overlay(Image(systemName: "music.quarternote.3").font(.largeTitle))
-
+            
             Text("Lo-Fi Beats")
                 .font(.largeTitle.weight(.semibold))
-
+            
             Text("Artist Name • Album")
                 .foregroundStyle(.secondary)
-
+            
             Spacer()
         }
         .padding()
@@ -59,5 +68,7 @@ private struct PlayerDetail: View {
 
 
 #Preview {
+    
     ContentView()
+    
 }
