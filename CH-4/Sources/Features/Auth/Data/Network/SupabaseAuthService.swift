@@ -38,7 +38,6 @@ public final class SupabaseAuthService: SupabaseAuthServiceProtocol {
         KeychainManager.shared.save(token: response.accessToken, for: "token")
         
         return User(
-            userId: user.id,
             email: user.email ?? ""
         )
     }

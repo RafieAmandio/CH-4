@@ -32,8 +32,6 @@ public final class AuthViewModel: ObservableObject {
         self.signInWithAppleUseCase = signInWithAppleUseCase
         self.signOutUseCase = signOutUseCase
         self.authRepository = authRepository
-        
-        checkCurrentUser()
     }
     
     // MARK: - Public Methods
@@ -48,19 +46,7 @@ public final class AuthViewModel: ObservableObject {
                 throw SignInError.invalidCredential
             }
             
-            
-            guard let idToken = credential.identityToken,
-                  let idTokenString = String(data: idToken, encoding: .utf8) else {
-                throw SignInError.invalidToken
-            }
-            
-            
-            let user = try await signInWithAppleUseCase.execute(
-                idToken: idTokenString,
-                email: credential.email,
-                fullName: credential.fullName,
-                nonce: nil
-            )
+            let user = try await signInWithAppleUseCase.execute(credential: credential, nonce: nil )
 
             authenticatedState = .authenticated(user)
             
@@ -75,33 +61,8 @@ public final class AuthViewModel: ObservableObject {
             print("❌ Sign in failed: \(error)")
         }
     }
-    
-    
-    // MARK: - Private Methods
-    private func checkCurrentUser() {
-        if let user = authRepository.getCurrentUser() {
-            authenticatedState = .authenticated(user)
-        } else {
-            authenticatedState = .unauthenticated
-        }
-        
-    }
 }
 
-// MARK: - Error Types
-public enum SignInError: LocalizedError {
-    case invalidCredential
-    case invalidToken
-    
-    public var errorDescription: String? {
-        switch self {
-        case .invalidCredential:
-            return "Invalid Apple ID credential received"
-        case .invalidToken:
-            return "Invalid identity token received"
-        }
-    }
-}
 
 enum AuthenticationState {
     case loading

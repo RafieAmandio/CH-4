@@ -6,36 +6,55 @@
 //
 
 import Foundation
+import AuthenticationServices
 
 public protocol SignInWithAppleUseCaseProtocol {
-    func execute(
-        idToken: String,
-        email: String?,
-        fullName: PersonNameComponents?,
-        nonce: String?
-    ) async throws -> User
+    func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> User
 }
 
-public final class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
-    private let authRepository: AuthRepositoryProtocol
+public class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
+    private let repository: AuthRepositoryProtocol
     
-    public init(
-        authRepository: AuthRepositoryProtocol
-    ) {
-        self.authRepository = authRepository
+    public init(repository: AuthRepositoryProtocol) {
+        self.repository = repository
     }
     
-    public func execute(
-        idToken: String,
-        email: String?,
-        fullName: PersonNameComponents?,
-        nonce: String?
-    ) async throws -> User {
-        // Sign in with Apple through the repository
-        let user = try await authRepository.signInWithApple(idToken: idToken, nonce: nonce)
+    public func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> User {
+        guard let idToken = credential.identityToken,
+              let idTokenString = String(data: idToken, encoding: .utf8) else {
+            throw SignInError.invalidToken
+        }
+   
+        let user = try await repository.signInWithApple(
+            idToken: idTokenString,
+            nonce: nil
+        )
         
-        try authRepository.save(user)
+        try repository.save(user)
         
         return user
+        
+    }
+    
+}
+
+
+public enum SignInError: LocalizedError {
+    case invalidCredential
+    case invalidToken
+    case malformedToken
+    case networkError
+    
+    public var errorDescription: String? {
+        switch self {
+        case .invalidCredential:
+            return "Invalid Apple ID credential received"
+        case .invalidToken:
+            return "Invalid identity token received"
+        case .malformedToken:
+            return "Token format is invalid"
+        case .networkError:
+            return "Network connection failed"
+        }
     }
 }

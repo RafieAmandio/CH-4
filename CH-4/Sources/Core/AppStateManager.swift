@@ -47,13 +47,16 @@ class AppStateManager: ObservableObject {
         isAuthenticated = false
         user = nil
         currentRole = .attendee
-        
+
         try? authRepository.clear()
     }
     
     private func loadPersistedState() {
-        
         let user = authRepository.getCurrentUser()
+        print(user,"user")
+        let role = UserRole(rawValue: UserDefaults.standard.string(forKey: Keys.currentRole) ?? "attendee") ?? .attendee
+        
+        self.currentRole = role
        
         if (user != nil) {
             setAuthenticated(true, user: user)

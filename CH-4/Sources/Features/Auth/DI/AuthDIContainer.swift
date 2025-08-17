@@ -32,7 +32,7 @@ public final class AuthDIContainer {
     // MARK: - Use Cases
     public lazy var signInWithAppleUseCase: SignInWithAppleUseCaseProtocol = {
         SignInWithAppleUseCase(
-            authRepository: authRepository
+            repository: authRepository
         )
     }()
     
