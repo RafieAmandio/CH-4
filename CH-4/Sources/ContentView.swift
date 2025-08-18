@@ -62,7 +62,6 @@ private struct PlayerDetail: View {
         .padding()
         .navigationTitle("Now Playing")
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground))
     }
 }
 

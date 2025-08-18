@@ -21,6 +21,7 @@ struct SignInView: View {
         VStack(spacing: 20) {
             appleSignInView
         }
+        .padding()
     }
     
     private var appleSignInView: some View {
@@ -40,7 +41,7 @@ struct SignInView: View {
                     await viewModel.handleSignInCompletion(result)
                 }
             }
-            .signInWithAppleButtonStyle(.black)
+            .signInWithAppleButtonStyle(.whiteOutline)
             .frame(height: 50)
             .disabled(viewModel.isLoading)
             
