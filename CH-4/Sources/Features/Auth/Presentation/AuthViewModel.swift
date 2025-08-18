@@ -14,6 +14,9 @@ public final class AuthViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading = false
     @Published var showError = false
+    @Published var step = 0
+    @Published var onLoginTap: (() -> Void)?
+    @Published var onSignUpTap: (() -> Void)?
     @Published var errorMessage = ""
     @Published var authenticatedState: AuthenticationState = .unauthenticated
     

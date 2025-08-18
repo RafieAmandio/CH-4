@@ -67,7 +67,5 @@ private struct PlayerDetail: View {
 
 
 #Preview {
-    
     ContentView()
-    
 }

@@ -10,4 +10,6 @@ import SwiftUI
 public enum AppColors {
     public static let primary = Color(hex: "#fcba03")
 
+    public static let purple = Color( hex: "#B863FF")
 }
+

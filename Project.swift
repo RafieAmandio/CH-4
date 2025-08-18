@@ -57,12 +57,10 @@ let project = Project(
             bundleId: "dev.tuist.CH-4",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
-                "UILaunchScreen": [
-                    "UIColorName": "",
-                    "UIImageName": "",
-                ],
+            "UILaunchStoryboardName": "LaunchScreen",
                 "UIAppFonts": [
                     "Urbanist-Thin.ttf",
+                    "Urbanist-Bold.ttf",
                     "Urbanist-Regular.ttf",
                     "Urbanist-Medium.ttf",
                     "Urbanist-SemiBold.ttf"
