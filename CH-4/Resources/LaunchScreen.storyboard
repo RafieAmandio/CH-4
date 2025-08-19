@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB"
+          version="3.0" toolsVersion="22151" targetRuntime="iOS.CocoaTouch"
+          propertyAccessControl="none" useAutolayout="YES" launchScreen="YES"
+          useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES"
+          initialViewController="VC">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+    </dependencies>
+    <scenes>
+        <!-- Launch Screen -->
+        <scene sceneID="Scene">
+            <objects>
+                <viewController id="VC" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="root">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <subviews>
+                            <!-- Full-bleed background -->
+                            <imageView id="bg" contentMode="scaleAspectFill"
+                                       translatesAutoresizingMaskIntoConstraints="NO"
+                                       image="splash_background"/>
+                            <!-- Center logo -->
+                            <imageView id="logo" contentMode="center"
+                                       translatesAutoresizingMaskIntoConstraints="NO"
+                                       image="findect_logo"/>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <!-- Pin background -->
+                            <constraint firstItem="bg" firstAttribute="top" secondItem="root" secondAttribute="top" id="bg-top"/>
+                            <constraint firstItem="bg" firstAttribute="leading" secondItem="root" secondAttribute="leading" id="bg-leading"/>
+                            <constraint firstItem="bg" firstAttribute="trailing" secondItem="root" secondAttribute="trailing" id="bg-trailing"/>
+                            <constraint firstItem="bg" firstAttribute="bottom" secondItem="root" secondAttribute="bottom" id="bg-bottom"/>
+                            <!-- Center logo -->
+                            <constraint firstItem="logo" firstAttribute="centerX" secondItem="root" secondAttribute="centerX" id="logo-x"/>
+                            <constraint firstItem="logo" firstAttribute="centerY" secondItem="root" secondAttribute="centerY" id="logo-y"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="safe"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FR" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="findect_logo" width="1024" height="1024"/>
+        <image name="splash_background" width="1290" height="2796"/>
+    </resources>
+</document>
