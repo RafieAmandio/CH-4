@@ -5,16 +5,21 @@ import Foundation
 
 struct ContentView: View {
     @EnvironmentObject var appState:AppStateManager
-    
-    var body: some View
-    {
+    var body: some View {
         Group {
-            if appState.isAuthenticated {
-                HomeView()
+            if appState.isAuthenticated || AppConfig.isDebug {
+                switch appState.currentRole {
+                case .attendee:
+                    HomeAttendee()
+                case .creator:
+                    HomeCreatorView()
+                }
+                
             } else {
                 AuthViewContainer()
             }
         }
+
     }
     
 }
@@ -65,7 +70,25 @@ private struct PlayerDetail: View {
     }
 }
 
-
 #Preview {
+    MiniPlayerCard()
+}
+
+
+#Preview("Authenticated") {
     ContentView()
+        .environmentObject({
+            let mock = AppStateManager()
+            mock.isAuthenticated = true
+            return mock
+        }())
+}
+
+#Preview("Unauthenticated") {
+    ContentView()
+        .environmentObject({
+            let mock = AppStateManager()
+            mock.isAuthenticated = false
+            return mock
+        }())
 }

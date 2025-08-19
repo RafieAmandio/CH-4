@@ -5,6 +5,7 @@ import UIComponentsKit
 @main
 struct CH4App: App {
     @StateObject private var appState = AppStateManager()
+
     
     var body: some Scene {
         WindowGroup {
