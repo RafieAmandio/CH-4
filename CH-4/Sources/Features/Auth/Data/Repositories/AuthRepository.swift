@@ -9,6 +9,7 @@ import Foundation
 
 public final class AuthRepository: AuthRepositoryProtocol {
     private let supabaseAuthService: SupabaseAuthServiceProtocol
+    private let authAPIService: AuthAPIServiceProtocol
     
     private let userDefaults = UserDefaults.standard
     
@@ -18,30 +19,37 @@ public final class AuthRepository: AuthRepositoryProtocol {
         supabaseAuthService: SupabaseAuthServiceProtocol
     ) {
         self.supabaseAuthService = supabaseAuthService
+        self.authAPIService = AuthAPIService()
     }
     
     // MARK: - AuthRepositoryProtocol Implementation
     
-    public func signInWithApple(idToken: String, nonce: String?) async throws -> User {
+    public func signInWithApple(idToken: String, nonce: String?) async throws -> String {
         // Sign in with Supabase
-        let user = try await supabaseAuthService.signInWithApple(idToken: idToken, nonce: nonce)
+        let accessToken = try await supabaseAuthService.signInWithApple(idToken: idToken, nonce: nonce)
         
-        return user
+        return accessToken
+    }
+    
+    public func verifyAndGenerateToken() async throws -> LoginResponse {
+        let response = try await authAPIService.generateToken()
+        
+        return response
     }
     
     public func signOut() async throws {
         try await supabaseAuthService.signOut()
     }
     
-    public func getCurrentUser() -> User? {
+    public func getCurrentUser() -> UserData? {
         guard let data = userDefaults.data(forKey: userKey),
-              let user = try? JSONDecoder().decode(User.self, from: data) else {
+              let user = try? JSONDecoder().decode(UserData.self, from: data) else {
             return nil
         }
         return user
     }
     
-    public func save(_ user: User) throws {
+    public func save(_ user: UserData) throws {
         let data = try JSONEncoder().encode(user)
         userDefaults.set(data, forKey: userKey)
     }

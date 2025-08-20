@@ -1,6 +1,5 @@
 // EventData/Sources/Network/EventAPIService.swift
 import Foundation
-import UIKit
 
 public protocol EventAPIServiceProtocol {
     func createEvent(payload: EventCreationPayload) async throws

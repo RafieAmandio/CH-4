@@ -10,7 +10,7 @@ import Supabase
 import NetworkingKit
 
 public protocol SupabaseAuthServiceProtocol {
-    func signInWithApple(idToken: String, nonce: String?) async throws -> User
+    func signInWithApple(idToken: String, nonce: String?) async throws -> String
     func signOut() async throws
 }
 
@@ -26,20 +26,15 @@ public final class SupabaseAuthService: SupabaseAuthServiceProtocol {
     
     // MARK: - SupabaseAuthServiceProtocol Implementation
     
-    public func signInWithApple(idToken: String, nonce: String?) async throws -> User {
+    public func signInWithApple(idToken: String, nonce: String?) async throws -> String {
         let response = try await supabaseProvider.client.auth.signInWithIdToken(
             credentials: .init(
                 provider: .apple,
                 idToken: idToken
             )
         )
-        let user = response.user
-        
-        KeychainManager.shared.save(token: response.accessToken, for: "token")
-        
-        return User(
-            email: user.email ?? ""
-        )
+    
+        return response.accessToken
     }
     
     public func signOut() async throws {
