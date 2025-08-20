@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol AuthRepositoryProtocol {
-    func signInWithApple(idToken: String, nonce: String?) async throws -> User
+    func signInWithApple(idToken: String, nonce: String?) async throws -> String
     func signOut() async throws
     func getCurrentUser() -> User?
     func save(_ user: User) throws

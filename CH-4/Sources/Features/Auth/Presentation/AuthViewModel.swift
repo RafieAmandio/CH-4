@@ -15,8 +15,6 @@ public final class AuthViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var showError = false
     @Published var step = 0
-    @Published var onLoginTap: (() -> Void)?
-    @Published var onSignUpTap: (() -> Void)?
     @Published var errorMessage = ""
     @Published var authenticatedState: AuthenticationState = .unauthenticated
     
@@ -41,22 +39,21 @@ public final class AuthViewModel: ObservableObject {
     public func handleSignInCompletion(_ result: Result<ASAuthorization, Error>) async {
         isLoading = true
         showError = false
-        
         do {
             let authorization = try result.get()
-            
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
                 throw SignInError.invalidCredential
             }
             
-            let user = try await signInWithAppleUseCase.execute(credential: credential, nonce: nil )
+            let accessToken: String = try await signInWithAppleUseCase.execute(credential: credential, nonce: nil )
+            
+            
+            
 
-            authenticatedState = .authenticated(user)
+//            authenticatedState = .authenticated(user)
+//    
+//            isLoading = false
             
-    
-            isLoading = false
-            
-            print("✅ Successfully signed in with Apple ID: \(credential.user)")
             
         } catch {
             isLoading = false

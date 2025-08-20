@@ -9,7 +9,7 @@ import Foundation
 import AuthenticationServices
 
 public protocol SignInWithAppleUseCaseProtocol {
-    func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> User
+    func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> String
 }
 
 public class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
@@ -19,20 +19,24 @@ public class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
         self.repository = repository
     }
     
-    public func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> User {
+    public func execute(credential: ASAuthorizationAppleIDCredential, nonce: String?) async throws -> String {
         guard let idToken = credential.identityToken,
               let idTokenString = String(data: idToken, encoding: .utf8) else {
             throw SignInError.invalidToken
         }
+        
+        guard let token = credential.authorizationCode,
+              let tokenString = String(data: token, encoding: .utf8) else {
+            throw SignInError.invalidToken
+        }
+    
    
-        let user = try await repository.signInWithApple(
+        let accessToken = try await repository.signInWithApple(
             idToken: idTokenString,
             nonce: nil
         )
         
-        try repository.save(user)
         
-        return user
         
     }
     

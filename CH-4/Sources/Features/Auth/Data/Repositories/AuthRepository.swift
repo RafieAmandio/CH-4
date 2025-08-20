@@ -22,11 +22,11 @@ public final class AuthRepository: AuthRepositoryProtocol {
     
     // MARK: - AuthRepositoryProtocol Implementation
     
-    public func signInWithApple(idToken: String, nonce: String?) async throws -> User {
+    public func signInWithApple(idToken: String, nonce: String?) async throws -> String {
         // Sign in with Supabase
-        let user = try await supabaseAuthService.signInWithApple(idToken: idToken, nonce: nonce)
+        let accessToken = try await supabaseAuthService.signInWithApple(idToken: idToken, nonce: nonce)
         
-        return user
+        return accessToken
     }
     
     public func signOut() async throws {

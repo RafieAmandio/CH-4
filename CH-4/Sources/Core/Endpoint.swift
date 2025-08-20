@@ -32,6 +32,10 @@ public struct APIEndpoint {
 
 
 extension APIEndpoint {
+    static func login()  -> APIEndpoint {
+        APIEndpoint(path:"/login", method: .POST)
+    }
+
     static func createEvent(_ event: EventCreationPayload) -> APIEndpoint {
         APIEndpoint(path: "/events", method: .POST, body: event.toDictionary())
     }
