@@ -53,6 +53,7 @@ public final class AuthViewModel: ObservableObject {
 
             authenticatedState = .authenticated(user)
             
+    
             isLoading = false
             
             print("✅ Successfully signed in with Apple ID: \(credential.user)")

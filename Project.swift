@@ -10,7 +10,6 @@ let packages: [Package] = [
 ]
 
 
-
 let project = Project(
     name: "CH-4",
     packages: packages,
@@ -57,7 +56,12 @@ let project = Project(
             bundleId: "dev.tuist.CH-4",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
-            "UILaunchStoryboardName": "LaunchScreen",
+                "UILaunchStoryboardName": "LaunchScreen",
+                "NSLocationWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
+                "NSLocationTemporaryUsageDescriptionDictionary": .dictionary([
+                    "NearbyMap": .string("We need precise location briefly to show accurate nearby results.")
+                ]),
                 "UIAppFonts": [
                     "Urbanist-Thin.ttf",
                     "Urbanist-Bold.ttf",
