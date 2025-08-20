@@ -3,6 +3,8 @@ import SwiftUI
 struct HomeCreatorView: View {
     @StateObject private var viewModel = HomeCreatorViewModel(showingProfile: false, showingCreate: false)
     
+    @EnvironmentObject var appState:AppStateManager
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -10,6 +12,12 @@ struct HomeCreatorView: View {
                     .font(.title)
                     .padding()
                 
+                Button {
+                    appState.logout()
+                } label: {
+                    Text("logout")
+                }
+
                 Spacer()
             }
             .navigationTitle("Findect")
