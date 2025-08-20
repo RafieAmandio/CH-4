@@ -11,7 +11,7 @@ import Foundation
 class AppStateManager: ObservableObject {
     @Published var isAuthenticated = false
     @Published var currentRole: UserRole = .attendee
-    @Published var user: User?
+    @Published var user: UserData?
     
     private var authRepository = AuthRepository(supabaseAuthService: SupabaseAuthService())
     
@@ -35,7 +35,7 @@ class AppStateManager: ObservableObject {
         UserDefaults.standard.set(role.rawValue, forKey: Keys.currentRole)
     }
     
-    func setAuthenticated(_ authenticated: Bool, user: User? = nil) {
+    func setAuthenticated(_ authenticated: Bool, user: UserData? = nil) {
         isAuthenticated = authenticated
         
         guard let foundedUser = user else { return }

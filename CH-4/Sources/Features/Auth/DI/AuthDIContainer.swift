@@ -40,12 +40,17 @@ public final class AuthDIContainer {
         SignOutUseCase(authRepository: authRepository)
     }()
     
+    public lazy var verifyAndGenerateTokenUseCase: VerifyAndGenerateTokenUseCaseProtocol = {
+        VerifyAndGenerateTokenUseCase(repository: authRepository)
+    }()
+    
     // MARK: - View Models
     @MainActor public func makeAuthViewModel() -> AuthViewModel {
         AuthViewModel(
             signInWithAppleUseCase: signInWithAppleUseCase,
             signOutUseCase: signOutUseCase,
-            authRepository: authRepository
+            authRepository: authRepository,
+            verifyAndGenerateTokenUseCase: verifyAndGenerateTokenUseCase
         )
     }
 }

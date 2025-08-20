@@ -36,7 +36,9 @@ public class SignInWithAppleUseCase: SignInWithAppleUseCaseProtocol {
             nonce: nil
         )
         
+        KeychainManager.shared.save(token: accessToken, for: "access_token")
         
+        return accessToken
         
     }
     
