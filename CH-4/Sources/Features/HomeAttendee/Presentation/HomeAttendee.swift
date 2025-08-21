@@ -12,13 +12,8 @@ struct HomeAttendee: View {
     @EnvironmentObject var appState: AppStateManager
 
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(AppColors.offBlack)
-                .ignoresSafeArea()
+        ApplyBackground {
             VStack (spacing:20) {
-                
-                
                 Text("No event right now.Start networking by scanning your QR.")
                     .multilineTextAlignment(.center)
                     .font(AppFont.bodySmallBold)
@@ -30,8 +25,7 @@ struct HomeAttendee: View {
                 }
                 
                 Button {
-                    appState.switchRole(
-                        to: .creator)
+                    appState.switchToCreator()
                 } label: {
                     Text("Switch Role")
                 }

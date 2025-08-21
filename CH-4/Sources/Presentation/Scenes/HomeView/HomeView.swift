@@ -5,10 +5,9 @@
 //  Created by Rafie Amandio F on 31/07/25.
 //
 
-
 import SwiftUI
 
-struct HomeView:  View {
+struct HomeView: View {
     @StateObject var viewModel = AuthDIContainer.shared.makeAuthViewModel()
     @EnvironmentObject var appState: AppStateManager
     var token = KeychainManager.shared.get(key: "token")
@@ -16,7 +15,7 @@ struct HomeView:  View {
     var body: some View {
         VStack {
             Text(appState.user?.email ?? "No user logged in")
-            
+
             Group {
                 switch appState.currentRole {
                 case .attendee:
@@ -30,9 +29,9 @@ struct HomeView:  View {
             } label: {
                 Text("Logout")
             }
-            
+
             Button {
-                appState.switchRole(to: appState.currentRole == .attendee ? .creator : .attendee)
+                appState.screen = .homeCreator
             } label: {
                 Text("Switch Role")
             }

@@ -14,11 +14,7 @@ struct SignInView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                Rectangle()
-                    .fill(AppColors.offBlack)
-                    .edgesIgnoringSafeArea(.all)
-
+            ApplyBackground {
                 VStack(spacing: 10) {
                     // Top section with title and image
                     VStack(alignment: .leading, spacing: 50) {

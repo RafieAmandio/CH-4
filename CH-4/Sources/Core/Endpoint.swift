@@ -13,7 +13,7 @@ public struct APIEndpoint {
     let queryParameters: [String: Any]
     let headers: [String: String]
     let body: [String: Any]?
-    
+
     init(
         path: String,
         method: HTTPMethod = .GET,
@@ -29,14 +29,16 @@ public struct APIEndpoint {
     }
 }
 
-
-
 extension APIEndpoint {
-    static func login()  -> APIEndpoint {
-        APIEndpoint(path:"/auth/callback", method: .POST)
+    static func login() -> APIEndpoint {
+        APIEndpoint(path: "/auth/callback", method: .POST)
     }
-
+    
     static func createEvent(_ event: EventCreationPayload) -> APIEndpoint {
         APIEndpoint(path: "/events", method: .POST, body: event.toDictionary())
+    }
+    
+    static func updateProfile(_ profile: UpdateProfilePayload) -> APIEndpoint {
+        APIEndpoint(path: "/events", method: .POST, body: profile.toDictionary())
     }
 }

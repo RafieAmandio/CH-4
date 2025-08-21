@@ -22,8 +22,7 @@ struct HomeCreatorView: View {
                     }
                     
                     CustomButton(title: "Switch to Attendees", style: .secondary) {
-                        appState.switchRole(
-                            to: .attendee)
+                        appState.switchToAttendee()
                     }
 
                     Spacer()

@@ -9,6 +9,7 @@ import SwiftUI
 
 public enum AppColors {
     public static let primary = Color(hex: "#76BFD5")
+    public static let pickerBackground = Color(hex: "#57C2E6")
     
     public static let offBlack = Color(hex: "#191A1F")
     

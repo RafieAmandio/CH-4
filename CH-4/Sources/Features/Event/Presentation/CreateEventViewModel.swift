@@ -150,7 +150,7 @@ public final class CreateEventViewModel: ObservableObject {
         }
     }
     
-    func createEvent() async throws -> CreateEventResult {
+    func createEvent() async throws -> CreateOrUpdateResult {
         isLoading = true
         defer { isLoading = false }
         

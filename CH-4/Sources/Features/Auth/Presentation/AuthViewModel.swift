@@ -58,9 +58,12 @@ public final class AuthViewModel: ObservableObject {
 
             let user = try await verifyAndGenerateTokenUseCase.execute()
 
+
             authenticatedState = .authenticated(user)
 
             isLoading = false
+            
+
 
         } catch {
             isLoading = false
@@ -68,6 +71,7 @@ public final class AuthViewModel: ObservableObject {
             showError = true
             print("❌ Sign in failed: \(error)")
         }
+       
     }
 }
 
