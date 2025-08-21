@@ -21,7 +21,7 @@ struct SignInView: View {
 
                 VStack(spacing: 10) {
                     // Top section with title and image
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 50) {
                         Text("Findect.")
                             .font(AppFont.headingLarge)
                             .foregroundStyle(.white)
@@ -31,6 +31,7 @@ struct SignInView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(minHeight:300, maxHeight: 300)
+                            .offset(x:18)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, safeAreaTop(for: geometry))

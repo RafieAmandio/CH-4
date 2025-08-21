@@ -51,7 +51,7 @@ struct CustomButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(AppFont.bodySmall)
+                .font(AppFont.headingSmall)
                 .foregroundColor(style.textColor)
                 .multilineTextAlignment(.center)
                 .frame(
