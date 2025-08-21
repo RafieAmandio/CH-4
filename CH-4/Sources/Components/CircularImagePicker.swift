@@ -78,12 +78,18 @@ struct CircularImagePickerWithBinding: View {
     @State private var isShowingImagePicker = false
     @State private var photoPickerItem: PhotosPickerItem?
     
+    let onImageSelected: ((UIImage?) async -> Void)?
     let size: CGFloat
     let borderColor: Color
     let borderWidth: CGFloat
     let placeholderIcon: String
     let placeholderIconSize: CGFloat
     let backgroundColor: Color
+    
+    private func handleImageSelection(_ image: UIImage?) async  {
+         selectedImage = image
+         await onImageSelected?(image)
+     }
     
     init(
         selectedImage: Binding<UIImage?>,
@@ -92,7 +98,8 @@ struct CircularImagePickerWithBinding: View {
         borderWidth: CGFloat = 4,
         placeholderIcon: String = "person.circle.fill",
         placeholderIconSize: CGFloat = 80,
-        backgroundColor: Color = Color.gray.opacity(0.2)
+        backgroundColor: Color = Color.gray.opacity(0.2),
+        onImageSelected: ((UIImage?) async -> Void)? = nil
     ) {
         self._selectedImage = selectedImage
         self.size = size
@@ -101,6 +108,7 @@ struct CircularImagePickerWithBinding: View {
         self.placeholderIcon = placeholderIcon
         self.placeholderIconSize = placeholderIconSize
         self.backgroundColor = backgroundColor
+        self.onImageSelected = onImageSelected
     }
     
     var body: some View {
@@ -165,6 +173,7 @@ struct CircularImagePickerWithBinding: View {
                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
                     selectedImage = uiImage
+                    await handleImageSelection(uiImage)
                 }
             }
         }
