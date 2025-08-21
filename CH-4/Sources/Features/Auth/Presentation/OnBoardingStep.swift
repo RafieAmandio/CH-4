@@ -45,8 +45,7 @@ extension OnboardingStep {
 // MARK: - OnboardingStepView
 struct OnboardingStepView: View {
     let step: OnboardingStep
-    let onSignUp: () -> Void
-    let onSignIn: () -> Void
+ 
     
     var body: some View {
         VStack(spacing: 0) {
@@ -141,14 +140,4 @@ struct ActionButtonsView: View {
             .font(.subheadline)
         }
     }
-}
-
-#Preview {
-    let step = OnboardingStep.sampleSteps[0]
-    OnboardingStepView(step: step) {
-        
-    } onSignIn: {
-        
-    }
-
 }
