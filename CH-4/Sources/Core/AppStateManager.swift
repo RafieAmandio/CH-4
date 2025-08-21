@@ -75,9 +75,7 @@ class AppStateManager: ObservableObject {
     }
     
     func goToUpdateProfile() {
-        if let u = user {
             screen = .updateProfile
-        }
     }
     
     func switchToAttendee() {
