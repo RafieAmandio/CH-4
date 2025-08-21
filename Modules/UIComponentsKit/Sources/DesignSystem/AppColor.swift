@@ -8,10 +8,11 @@
 import SwiftUI
 
 public enum AppColors {
-    public static let primary = Color(hex: "#fcba03")
-
-    public static let purple = Color( hex: "#B863FF")
+    public static let primary = Color(hex: "#76BFD5")
     
     public static let offBlack = Color(hex: "#191A1F")
+    
+    public static let gray = Color(hex: "#8C8C8F")
+
 }
 

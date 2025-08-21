@@ -1,10 +1,3 @@
-//
-//  SignIn.swift
-//  CH-4
-//
-//  Created by Dwiki on 11/08/25.
-//
-
 import AuthenticationServices
 import SwiftUI
 import UIComponentsKit
@@ -20,61 +13,134 @@ struct SignInView: View {
     }
 
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(AppColors.offBlack)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                Text("Findect.")
-                    .font(AppFont.headingLarge)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Image("hero")
-                    
-                  
-                Spacer()
-                Text("Attend, Discover, Network")
-                    .font(AppFont.headingLargest)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding()
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .fill(AppColors.offBlack)
+                    .edgesIgnoringSafeArea(.all)
 
+                VStack(spacing: 10) {
+                    // Top section with title and image
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Findect.")
+                            .font(AppFont.headingLarge)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Image("hero")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(minHeight:300, maxHeight: 300)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, safeAreaTop(for: geometry))
+                    
+                    Spacer()
+                        .frame(height: 40)
+
+                    // Bottom content section
+                    VStack(alignment: .leading, spacing:20) {
+                        Text(titleText(for: geometry))
+                            .font(titleFont(for: geometry))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.leading)
+                            .frame(minHeight:4)
+
+                        Text("Streamline your networking process at events with Findect.")
+                            .font(bodyFont(for: geometry))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.leading)
+                            .frame(minHeight:4)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+
+                    // Spacer before button
+                    Spacer()
+                        .frame(minHeight: 20, maxHeight: adaptiveBottomSpacing(for: geometry))
+
+                    // Apple Sign In button
+                    appleSignInView
+                        .padding(.horizontal, 20)
+               
+                }
+            }
         }
     }
 
     private var appleSignInView: some View {
-        ZStack {
-            UnevenRoundedRectangle(topLeadingRadius: 50, topTrailingRadius: 50)
-                .fill(Color.white)
-                .frame(maxWidth: .infinity, maxHeight: 216)
-
-            VStack(spacing: 16) {
-                SignInWithAppleButton { request in
-                    request.requestedScopes = [.email, .fullName]
-                } onCompletion: { result in
-                    Task {
-                        await viewModel.handleSignInCompletion(result)
-                    }
-                }
-                .signInWithAppleButtonStyle(.black)
-                .frame(height: 50)
-                .clipShape(
-                    RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
-                )
-                .disabled(viewModel.isLoading)
-                HStack {
-                    Text("Already have an account ?")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Button("Sign In") {
-                        print("Sign in")
-                    }
-                }
+        SignInWithAppleButton { request in
+            request.requestedScopes = [.email, .fullName]
+        } onCompletion: { result in
+            Task {
+                await viewModel.handleSignInCompletion(result)
             }
-            .padding(.horizontal, 30)
+        }
+        .signInWithAppleButtonStyle(.whiteOutline)
+        .frame(height: 48)
+        .clipShape(
+            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
+        )
+        .disabled(viewModel.isLoading)
+    }
+    
+    // MARK: - Responsive Helper Functions
+    
+    private func isSmallDevice(_ geometry: GeometryProxy) -> Bool {
+        geometry.size.height <= 667 // iPhone SE and smaller
+    }
+    
+    private func isMediumDevice(_ geometry: GeometryProxy) -> Bool {
+        geometry.size.height > 667 && geometry.size.height <= 812 // iPhone 12 mini, X, etc.
+    }
+    
+    private func maxImageHeight(for geometry: GeometryProxy) -> CGFloat {
+        let screenHeight = geometry.size.height
+        return screenHeight * 0.35
+    }
+    
+    private func adaptiveSpacing(for geometry: GeometryProxy) -> CGFloat {
+        isSmallDevice(geometry) ? 15 : 30
+    }
+    
+    private func adaptiveTextSpacing(for geometry: GeometryProxy) -> CGFloat {
+        isSmallDevice(geometry) ? 12 : 20
+    }
+    
+    private func adaptiveBottomSpacing(for geometry: GeometryProxy) -> CGFloat {
+        isSmallDevice(geometry) ? 30 : 60
+    }
+    
+    private func safeAreaTop(for geometry: GeometryProxy) -> CGFloat {
+        isSmallDevice(geometry) ? 10 : 20
+    }
+    
+    private func safeAreaBottom(for geometry: GeometryProxy) -> CGFloat {
+        isSmallDevice(geometry) ? 20 : 30
+    }
+    
+    private func titleText(for geometry: GeometryProxy) -> String {
+        if isSmallDevice(geometry) {
+            return "Attend, Discover,\nNetwork!"
+        } else {
+            return "Attend, Discover, Network!"
+        }
+    }
+    
+    private func titleFont(for geometry: GeometryProxy) -> Font {
+        if isSmallDevice(geometry) {
+            // Use a slightly smaller font on small devices if needed
+            return AppFont.headingLarge // or create a custom smaller version
+        } else {
+            return AppFont.headingLargest
+        }
+    }
+    
+    private func bodyFont(for geometry: GeometryProxy) -> Font {
+        if isSmallDevice(geometry) {
+            return AppFont.bodySmall // Use smaller body text on small devices
+        } else {
+            return AppFont.bodyMedium
         }
     }
 }

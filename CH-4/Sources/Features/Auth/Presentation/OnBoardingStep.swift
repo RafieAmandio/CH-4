@@ -99,7 +99,7 @@ struct PageIndicatorView: View {
         HStack(spacing: 25) {
             ForEach(0..<totalCount, id: \.self) { index in
                 Circle()
-                    .fill(index == currentIndex ? AppColors.purple : Color.white)
+                    .fill(index == currentIndex ? AppColors.primary : Color.white)
                     .frame(width: 8, height: 8)
                     .animation(.easeInOut(duration: 0.3), value: currentIndex)
             }
