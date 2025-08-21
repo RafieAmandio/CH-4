@@ -6,17 +6,35 @@
 //
 
 import SwiftUI
+import UIComponentsKit
 
 struct HomeAttendee: View {
     @EnvironmentObject var appState: AppStateManager
-    
+
     var body: some View {
-        VStack {
-            Text("Home Attendee")
-            Button {
-                appState.switchRole(to: appState.currentRole == .attendee ? .creator : .attendee)
-            } label: {
-                Text("Switch Role")
+        ZStack {
+            Rectangle()
+                .fill(AppColors.offBlack)
+                .ignoresSafeArea()
+            VStack (spacing:20) {
+                
+                
+                Text("No event right now.Start networking by scanning your QR.")
+                    .multilineTextAlignment(.center)
+                    .font(AppFont.bodySmallBold)
+                    .frame(maxWidth: 296)
+                    .foregroundStyle(AppColors.gray)
+                
+                CustomButton(title: "Scan", style: .primary, width: 116) {
+                    print("text")
+                }
+                
+                Button {
+                    appState.switchRole(
+                        to: .creator)
+                } label: {
+                    Text("Switch Role")
+                }
             }
         }
 

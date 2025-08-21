@@ -26,7 +26,6 @@ public final class AuthAPIService: AuthAPIServiceProtocol {
             throw APIError.invalidURL
         }
         
-        print(loginResponse,"LOGINRESPOSE")
         return loginResponse
         
     }

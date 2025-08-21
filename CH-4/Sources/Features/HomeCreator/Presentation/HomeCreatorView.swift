@@ -1,4 +1,5 @@
 import SwiftUI
+import UIComponentsKit
 
 struct HomeCreatorView: View {
     @StateObject private var viewModel = HomeCreatorViewModel(showingProfile: false, showingCreate: false)
@@ -7,32 +8,41 @@ struct HomeCreatorView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Main Content")
-                    .font(.title)
-                    .padding()
-                
-                Button {
-                    appState.logout()
-                } label: {
-                    Text("logout")
-                }
-
-                Spacer()
-            }
-            .navigationTitle("Findect")
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        viewModel.showingCreate.toggle()
-                    }) {
-                        Image(systemName: "plus")
+            ZStack {
+                Rectangle()
+                    .fill(AppColors.offBlack)
+                    .ignoresSafeArea()
+                VStack {
+                    Text("Main Content")
+                        .font(.title)
+                        .padding()
+                    
+                    CustomButton(title: "Logout", style: .primary) {
+                        appState.logout()
                     }
                     
-                    Button(action: {
-                        viewModel.showingProfile.toggle()
-                    }) {
-                        Image(systemName: "person.circle")
+                    CustomButton(title: "Switch to Attendees", style: .secondary) {
+                        appState.switchRole(
+                            to: .attendee)
+                    }
+
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle("Findect")
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            viewModel.showingCreate.toggle()
+                        }) {
+                            Image(systemName: "plus")
+                        }
+                        
+                        Button(action: {
+                            viewModel.showingProfile.toggle()
+                        }) {
+                            Image(systemName: "person.circle")
+                        }
                     }
                 }
             }

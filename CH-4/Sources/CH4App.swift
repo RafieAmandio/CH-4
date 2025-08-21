@@ -5,16 +5,15 @@ import UIComponentsKit
 @main
 struct CH4App: App {
     @StateObject private var appState = AppStateManager()
-
     
     var body: some Scene {
         WindowGroup {
             ZStack {
                 Rectangle()
-                    .fill(LinearGradient.customGradient)
+                    .fill(AppColors.offBlack)
                     .ignoresSafeArea()
                 ContentView()
-                    .preferredColorScheme(.light)
+                    .preferredColorScheme(.dark)
                     .environmentObject(appState)
             }
         }
@@ -26,10 +25,10 @@ struct CH4App: App {
     @StateObject  var appState = AppStateManager()
     ZStack {
         Rectangle()
-            .fill(LinearGradient.customGradient)
+            .fill(AppColors.offBlack)
             .ignoresSafeArea()
         ContentView()
-            .preferredColorScheme(.light)
+            .preferredColorScheme(.dark)
             .environmentObject(appState)
     }
 }

@@ -45,8 +45,7 @@ extension OnboardingStep {
 // MARK: - OnboardingStepView
 struct OnboardingStepView: View {
     let step: OnboardingStep
-    let onSignUp: () -> Void
-    let onSignIn: () -> Void
+ 
     
     var body: some View {
         VStack(spacing: 0) {
@@ -100,7 +99,7 @@ struct PageIndicatorView: View {
         HStack(spacing: 25) {
             ForEach(0..<totalCount, id: \.self) { index in
                 Circle()
-                    .fill(index == currentIndex ? AppColors.purple : Color.white)
+                    .fill(index == currentIndex ? AppColors.primary : Color.white)
                     .frame(width: 8, height: 8)
                     .animation(.easeInOut(duration: 0.3), value: currentIndex)
             }
@@ -141,14 +140,4 @@ struct ActionButtonsView: View {
             .font(.subheadline)
         }
     }
-}
-
-#Preview {
-    let step = OnboardingStep.sampleSteps[0]
-    OnboardingStepView(step: step) {
-        
-    } onSignIn: {
-        
-    }
-
 }
