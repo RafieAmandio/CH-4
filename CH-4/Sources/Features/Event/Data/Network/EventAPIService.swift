@@ -3,7 +3,7 @@ import Foundation
 
 public protocol EventAPIServiceProtocol {
     func createEvent(payload: EventCreationPayload) async throws
-        -> CreateEventResult
+    -> CreateOrUpdateResult
 }
 
 public final class EventAPIService: EventAPIServiceProtocol {
@@ -14,7 +14,7 @@ public final class EventAPIService: EventAPIServiceProtocol {
     }
 
     public func createEvent(payload: EventCreationPayload) async throws
-        -> CreateEventResult
+        -> CreateOrUpdateResult
     {
         let apiResponse: APIResponse<EventData> =
             try await apiClient.requestWithAPIResponse(
@@ -22,6 +22,6 @@ public final class EventAPIService: EventAPIServiceProtocol {
                 responseType: EventData.self
             )
 
-        return CreateEventResult(success: apiResponse.success, message: apiResponse.message, errors: apiResponse.errors)
+        return CreateOrUpdateResult(success: apiResponse.success, message: apiResponse.message, errors: apiResponse.errors)
     }
 }

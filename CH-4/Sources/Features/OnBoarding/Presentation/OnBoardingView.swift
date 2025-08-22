@@ -9,6 +9,8 @@ import SwiftUI
 import UIComponentsKit
 
 struct OnBoardingView: View {
+    @EnvironmentObject private var appState:AppStateManager
+    @State private var goNext = false
     private var items: [ListItem] = [
         ListItem(
             title: "Meet people with your interest",
@@ -28,36 +30,31 @@ struct OnBoardingView: View {
     ]
 
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(AppColors.offBlack)
-                .ignoresSafeArea()
 
-            VStack (spacing: 50){
+        ApplyBackground {
+            VStack(spacing: 50) {
                 Spacer()
-                    .frame(height:5)
+                    .frame(height: 5)
                 Text("Unlock Networking potential with Findect.")
                     .font(AppFont.headingLarge)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-          
-                
-                VStack (spacing: 24) {
+
+                VStack(spacing: 24) {
                     ForEach(items) { item in
                         ListItemView(item: item)
                     }
                 }
                 Spacer()
-                
                 CustomButton(title: "Continue", style: .primary) {
-                    print("continue")
+                    appState.goToUpdateProfile()
                 }
-             
-        
+
             }
-            .padding(.horizontal,20)
+            .padding(.horizontal, 20)
         }
+
     }
 }
 
@@ -72,7 +69,7 @@ struct ListItemView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(item.title)
-                    .font(AppFont.bodyMedium)
+                    .font(AppFont.bodySmallBold)
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)

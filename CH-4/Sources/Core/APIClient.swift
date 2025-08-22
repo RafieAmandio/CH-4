@@ -81,11 +81,13 @@ public class APIClient: APIClientProtocol {
         do {
             let (data, response) = try await session.data(for: request)
             
-            // Print raw data for debugging
             if let jsonString = String(data: data, encoding: .utf8) {
-                print("Raw API Response:", jsonString)
+                print("🔍 Raw JSON:\n\(jsonString)")
+            } else {
+                print("⚠️ Could not decode data as UTF-8 string")
             }
-            
+
+         
             if let httpResponse = response as? HTTPURLResponse {
                 try handleHTTPResponse(httpResponse, data: data)
             }

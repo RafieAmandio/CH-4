@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol CreateEventUseCaseProtocol {
-    func execute(event: EventCreationForm) async throws -> CreateEventResult
+    func execute(event: EventCreationForm) async throws -> CreateOrUpdateResult
 }
 
 public final class CreateEventUseCase: CreateEventUseCaseProtocol {
@@ -19,7 +19,7 @@ public final class CreateEventUseCase: CreateEventUseCaseProtocol {
         self.eventRepository = eventRepository
     }
 
-    public func execute(event: EventCreationForm) async throws -> CreateEventResult {
+    public func execute(event: EventCreationForm) async throws -> CreateOrUpdateResult {
         let dtoPayload = EventCreationPayload(
             name: event.name,
             description: event.description,

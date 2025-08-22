@@ -1,27 +1,33 @@
+import Foundation
 import SwiftUI
 import UIComponentsKit
 import UIKit
-import Foundation
 
 struct ContentView: View {
-    @EnvironmentObject var appState:AppStateManager
+    @EnvironmentObject var appState: AppStateManager
     var body: some View {
-        Group {
-            if appState.isAuthenticated || AppConfig.isDebug {
-                switch appState.currentRole {
-                case .attendee:
-                    HomeAttendee()
-                case .creator:
-                    HomeCreatorView()
-                }
-                
-            } else {
-                AuthViewContainer()
-            }
-        }
+        // Each case is a *root* screen — no back stack
+        switch appState.screen {
+        case .auth:
+            AuthViewContainer()
 
+        case .onboarding:
+            OnBoardingView()
+                .toolbar(.hidden, for: .navigationBar)  // just in case
+                .navigationBarBackButtonHidden(true)
+
+        case .updateProfile:
+            UpdateProfileView()
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationBarBackButtonHidden(true)
+
+        case .homeAttendee:
+            HomeAttendee()
+
+        case .homeCreator:
+            HomeCreatorView()
+        }
     }
-    
 }
 
 private struct MiniPlayerCard: View {
@@ -31,14 +37,14 @@ private struct MiniPlayerCard: View {
                 .fill(.gray.opacity(0.2))
                 .frame(width: 56, height: 56)
                 .overlay(Image(systemName: "music.note").font(.title2))
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text("Lo-Fi Beats").font(.headline)
                 Text("Artist Name").foregroundStyle(.secondary)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "play.fill")
                 .font(.title3)
         }
@@ -54,14 +60,15 @@ private struct PlayerDetail: View {
             RoundedRectangle(cornerRadius: 24)
                 .fill(.gray.opacity(0.15))
                 .frame(height: 260)
-                .overlay(Image(systemName: "music.quarternote.3").font(.largeTitle))
-            
+                .overlay(
+                    Image(systemName: "music.quarternote.3").font(.largeTitle))
+
             Text("Lo-Fi Beats")
                 .font(.largeTitle.weight(.semibold))
-            
+
             Text("Artist Name • Album")
                 .foregroundStyle(.secondary)
-            
+
             Spacer()
         }
         .padding()
@@ -74,21 +81,22 @@ private struct PlayerDetail: View {
     MiniPlayerCard()
 }
 
-
 #Preview("Authenticated") {
     ContentView()
-        .environmentObject({
-            let mock = AppStateManager()
-            mock.isAuthenticated = true
-            return mock
-        }())
+        .environmentObject(
+            {
+                let mock = AppStateManager()
+                mock.isAuthenticated = true
+                return mock
+            }())
 }
 
 #Preview("Unauthenticated") {
     ContentView()
-        .environmentObject({
-            let mock = AppStateManager()
-            mock.isAuthenticated = false
-            return mock
-        }())
+        .environmentObject(
+            {
+                let mock = AppStateManager()
+                mock.isAuthenticated = false
+                return mock
+            }())
 }
