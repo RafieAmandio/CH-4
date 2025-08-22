@@ -13,6 +13,7 @@ public struct EventCreationPayload: Codable {
     var datetime: String
     var location: String
     var latitude: Double
+    
     var longitude: Double
     
     func toDictionary() -> [String: Any] {

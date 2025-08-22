@@ -58,13 +58,13 @@ struct OnboardingStepView: View {
                 // Content
                 VStack(spacing: 8) {
                     Text(step.title)
-                        .font(AppFont.headingLarge)
+                        .font(AppFont.headingLargeBold)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                     
                     Text(step.description)
-                        .font(AppFont.bodySmall)
+                        .font(AppFont.bodySmallRegular)
                         .foregroundColor(.white)
     
                         .multilineTextAlignment(.center)

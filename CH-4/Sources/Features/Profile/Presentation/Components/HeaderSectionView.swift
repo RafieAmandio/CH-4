@@ -12,10 +12,10 @@ struct HeaderSectionView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Tell us about yourself!")
-                .font(AppFont.headingMedium)
+                .font(AppFont.headingLargeSemiBold)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text("Your information becomes visible to others when you’re suggested to them.")
-                .font(AppFont.bodySmall)
+                .font(AppFont.bodySmallRegular)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
         }

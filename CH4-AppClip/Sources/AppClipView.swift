@@ -10,7 +10,7 @@ struct AppClipView: View {
               
                
             Text("CH-4 App Clip Made by The Team")
-                .font(AppFont.headingLarge)
+                .font(AppFont.headingLargeBold)
             Text("This is the App Clip version of CH-4")
                 .font(.caption)
                 .foregroundColor(.secondary)

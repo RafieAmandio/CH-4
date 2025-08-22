@@ -11,8 +11,8 @@ struct ContentView: View {
         case .auth:
             AuthViewContainer()
 
-        case .onboarding:
-            OnBoardingView()
+        case .appValue:
+            AppValueView()
                 .toolbar(.hidden, for: .navigationBar)  // just in case
                 .navigationBarBackButtonHidden(true)
 
@@ -26,6 +26,8 @@ struct ContentView: View {
 
         case .homeCreator:
             HomeCreatorView()
+        case .onboarding:
+            OnboardingContainerView()
         }
     }
 }

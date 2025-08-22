@@ -19,7 +19,7 @@ struct SignInView: View {
                     // Top section with title and image
                     VStack(alignment: .leading, spacing: 50) {
                         Text("Findect.")
-                            .font(AppFont.headingLarge)
+                            .font(AppFont.headingLargeBold)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -127,7 +127,7 @@ struct SignInView: View {
     private func titleFont(for geometry: GeometryProxy) -> Font {
         if isSmallDevice(geometry) {
             // Use a slightly smaller font on small devices if needed
-            return AppFont.headingLarge // or create a custom smaller version
+            return AppFont.headingLargeBold // or create a custom smaller version
         } else {
             return AppFont.headingLargest
         }
@@ -135,9 +135,9 @@ struct SignInView: View {
     
     private func bodyFont(for geometry: GeometryProxy) -> Font {
         if isSmallDevice(geometry) {
-            return AppFont.bodySmall // Use smaller body text on small devices
+            return AppFont.bodySmallRegular // Use smaller body text on small devices
         } else {
-            return AppFont.bodyMedium
+            return AppFont.bodySmallMedium
         }
     }
 }

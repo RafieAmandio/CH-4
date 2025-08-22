@@ -20,7 +20,7 @@ struct CreateEventView: View {
                     totalSteps: 3, currentStep: viewModel.currentStep,
                     spacing: 10)
                 Text("Input Event Details")
-                    .font(AppFont.headingLarge)
+                    .font(AppFont.headingLargeBold)
                 stepContent
 
                 Spacer()

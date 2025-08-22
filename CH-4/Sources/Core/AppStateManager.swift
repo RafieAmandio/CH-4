@@ -19,6 +19,7 @@ class AppStateManager: ObservableObject {
         case updateProfile
         case homeAttendee
         case homeCreator
+        case appValue
     }
     
     @Published var screen: Screen = .auth

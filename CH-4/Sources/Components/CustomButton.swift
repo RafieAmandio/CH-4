@@ -18,7 +18,7 @@ enum CustomButtonStyle {
     var textColor: Color {
         switch self {
         case .primary:
-            return Color.black
+            return Color.white
         case .secondary:
             return Color.white
         }
@@ -51,7 +51,7 @@ struct CustomButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(AppFont.headingSmall)
+                .font(AppFont.bodySmallSemibold)
                 .foregroundColor(style.textColor)
                 .multilineTextAlignment(.center)
                 .frame(
@@ -93,7 +93,7 @@ struct CustomButtonAdvanced: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(AppFont.bodySmall)
+                .font(AppFont.bodySmallRegular)
                 .foregroundColor(style.textColor)
                 .multilineTextAlignment(.center)
                 .frame(

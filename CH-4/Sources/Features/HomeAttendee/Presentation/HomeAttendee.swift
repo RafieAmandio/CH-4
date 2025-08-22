@@ -39,10 +39,10 @@ struct HomeAttendee: View {
                 ToolbarItem(placement: .topBarLeading) {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Current Event")
-                            .font(AppFont.headingMedium)
+                            .font(AppFont.headingLargeSemiBold)
                           
                         Text("No ongoing event")
-                            .font(AppFont.headingSmall)
+                            .font(AppFont.bodySmallSemibold)
                             .foregroundColor(.white)
                     }
                     .offset(y:20)

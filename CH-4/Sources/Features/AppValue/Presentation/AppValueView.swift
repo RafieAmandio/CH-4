@@ -8,7 +8,7 @@
 import SwiftUI
 import UIComponentsKit
 
-struct OnBoardingView: View {
+struct AppValueView: View {
     @EnvironmentObject private var appState:AppStateManager
     @State private var goNext = false
     private var items: [ListItem] = [
@@ -30,13 +30,12 @@ struct OnBoardingView: View {
     ]
 
     var body: some View {
-
         ApplyBackground {
             VStack(spacing: 50) {
                 Spacer()
                     .frame(height: 5)
                 Text("Unlock Networking potential with Findect.")
-                    .font(AppFont.headingLarge)
+                    .font(AppFont.headingLargeBold)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -73,7 +72,7 @@ struct ListItemView: View {
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)
-                    .font(AppFont.bodySmall)
+                    .font(AppFont.bodySmallRegular)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -91,7 +90,7 @@ struct ListItem: Identifiable {
 }
 
 #Preview {
-    OnBoardingView()
+    AppValueView()
 }
 
 #Preview {
