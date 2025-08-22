@@ -58,7 +58,6 @@ public final class AuthViewModel: ObservableObject {
 
             let user = try await verifyAndGenerateTokenUseCase.execute()
 
-
             authenticatedState = .authenticated(user)
 
             isLoading = false

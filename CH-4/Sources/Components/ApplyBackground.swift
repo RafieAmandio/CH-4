@@ -20,7 +20,7 @@ struct ApplyBackground<Content:View>: View {
             Rectangle()
                 .fill(AppColors.offBlack)
                 .ignoresSafeArea()
-            
+
             content
         }
     }

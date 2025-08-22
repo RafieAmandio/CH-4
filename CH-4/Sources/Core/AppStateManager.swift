@@ -58,7 +58,9 @@ class AppStateManager: ObservableObject {
             let newUser =
             UserData(
                 id: u.id, authProvider: u.authProvider, email: u.email,
-                username: u.username, name: u.name,
+                username: u.username,
+                photoUrl: u.photoUrl ?? "",
+                name: u.name,
                 isFirst: false,
                 isActive: u.isActive, deletedAt: u.deletedAt,
                 createdAt: u.createdAt, updatedAt: u.updatedAt

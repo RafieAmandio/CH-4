@@ -17,6 +17,7 @@ public struct UserData: Codable {
     let authProvider: String
     let email: String
     let username: String?
+    let photoUrl: String?
     let name: String
     let isFirst: Bool
     let isActive: Bool
@@ -30,6 +31,7 @@ public struct UserData: Codable {
         case email
         case username
         case name
+        case photoUrl = "photo_url"
         case isFirst
         case isActive = "is_active"
         case deletedAt = "deleted_at"
