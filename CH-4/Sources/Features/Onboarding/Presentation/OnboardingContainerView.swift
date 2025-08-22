@@ -3,12 +3,11 @@ import UIComponentsKit
 
 struct OnboardingContainerView: View {
     @EnvironmentObject var appState: AppStateManager
-    @StateObject private var onboardingViewModel = OnboardingViewModel()
+    @StateObject private var viewModel = OnBoardingDIContainer.shared.makeOnBoardingViewModel()
 
     var body: some View {
         NavigationView {
-        
-                switch onboardingViewModel.currentState {
+                switch viewModel.currentState {
                 case .goalSelection:
                     GoalSelectionView()
                 case .loading:
@@ -19,15 +18,20 @@ struct OnboardingContainerView: View {
                     ErrorView(message: message)
                 }
         }
-        .environmentObject(onboardingViewModel)
+        .environmentObject(viewModel)
 
-        .onReceive(onboardingViewModel.$isCompleted) { completed in
+        .onReceive(viewModel.$isCompleted) { completed in
             if completed {
                 // Notify AppStateManager that onboarding is done
                 appState.completeOnboardingAndGoToUpdateProfile()
             }
         }
-    }  
+        .onAppear {
+            Task {
+                await viewModel.fetchGoals()
+            }
+        }
+    }
 }
 
 

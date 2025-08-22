@@ -45,4 +45,16 @@ extension APIEndpoint {
     static func fetchProfessions() -> APIEndpoint {
         APIEndpoint(path: "/users/professions", method: .GET)
     }
+    
+    static func fetchGoals() -> APIEndpoint {
+        APIEndpoint(path: "/attendee/goals-categories", method: .GET)
+    }
+    
+    static func validateEvent(_ code: String)-> APIEndpoint {
+        APIEndpoint(path: "/attendee/validate-event/\(code)", method: .GET)
+    }
+    
+    static func joinEvent(_ eventId: String) -> APIEndpoint {
+        APIEndpoint(path: "/attendee/register", method: .POST)
+    }
 }

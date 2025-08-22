@@ -9,7 +9,7 @@ struct GoalData: Codable {
     let questions: [Question]
 }
 
-struct GoalsCategory: Codable {
+public struct GoalsCategory: Codable {
     let id: String
     let name: String
 }

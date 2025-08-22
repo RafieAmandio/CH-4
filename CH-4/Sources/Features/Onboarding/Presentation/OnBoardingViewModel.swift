@@ -1,18 +1,38 @@
 import Foundation
 
-class OnboardingViewModel: ObservableObject {
+public final class OnboardingViewModel: ObservableObject {
     @Published var currentState: OnboardingState = .goalSelection
     @Published var selectedGoal: GoalsCategory?
     @Published var questions: [Question] = []
     @Published var currentQuestionIndex = 0
     @Published var answers: [String: Any] = [:]
     @Published var isCompleted = false
+    @Published var goals: [GoalsCategory] = []
+
+    public let fetchGoalsUseCase: FetchGoalsUseCaseProtocol
+
+    public init(
+        fetchGoalsUseCase: FetchGoalsUseCaseProtocol
+    ) {
+        self.fetchGoalsUseCase = fetchGoalsUseCase
+    }
 
     enum OnboardingState {
         case goalSelection
         case loading
         case questionsFlow
         case error(String)
+    }
+    
+    @MainActor
+    public func fetchGoals() async {
+        do {
+            let goals = try await fetchGoalsUseCase.execute()
+            self.goals = goals
+        } catch {
+            print("error fetching goals: \(error)")
+        }
+        
     }
 
     // ... rest of your existing logic
