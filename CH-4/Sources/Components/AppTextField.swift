@@ -1,4 +1,5 @@
 import SwiftUI
+import UIComponentsKit
 
 struct AppTextField: View {
     @Binding var text: String
@@ -22,6 +23,7 @@ struct AppTextField: View {
     var submitLabel: SubmitLabel = .done
     var autocapitalization: TextInputAutocapitalization = .words
     var disableAutocorrection: Bool = false
+    var image: String = "briefcase.fill"
     
     @FocusState private var isFocused: Bool
     @State private var isPasswordVisible: Bool = false
@@ -38,7 +40,7 @@ struct AppTextField: View {
                 .frame(height: height)
             
             HStack(spacing: 12) {
-                if let leadingIcon { leadingIcon.opacity(0.6) }
+                if let leadingIcon { leadingIcon.opacity(0.6).foregroundStyle(AppColors.primary) }
                 
                 ZStack(alignment: .leading) {
                     if text.isEmpty {

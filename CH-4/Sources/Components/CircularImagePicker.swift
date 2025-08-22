@@ -97,7 +97,7 @@ struct CircularImagePickerWithBinding: View {
         borderColor: Color = AppColors.pickerBackground,// Light blue like in image
         borderWidth: CGFloat = 4,
         placeholderIcon: String = "person.circle.fill",
-        placeholderIconSize: CGFloat = 80,
+        placeholderIconSize: CGFloat = 30,
         backgroundColor: Color = Color.gray.opacity(0.2),
         onImageSelected: ((UIImage?) async -> Void)? = nil
     ) {

@@ -9,14 +9,18 @@ import Foundation
 
 public struct UpdateProfilePayload: Codable {
     var name: String
-    var profession: String
-    var linkedinUrl: String
-    
-    func toDictionary() -> [String: Any] {
+    var username: String?
+    var email: String?
+    var professionId: UUID
+    var photoLink: String?
+    var linkedinUsername: String
+
+    var toDictionary: [String: Any] {
         return [
-            "name": name,
-            "profession": profession,
-            "linkedin_url": linkedinUrl
+            "name": self.name,
+            "professionId": professionId.uuidString,
+            "photoLink": photoLink ?? "",
+            "linkedinUsername": linkedinUsername,
         ]
     }
 }

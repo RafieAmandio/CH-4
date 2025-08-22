@@ -38,7 +38,11 @@ extension APIEndpoint {
         APIEndpoint(path: "/events", method: .POST, body: event.toDictionary())
     }
     
-    static func updateProfile(_ profile: UpdateProfilePayload) -> APIEndpoint {
-        APIEndpoint(path: "/events", method: .POST, body: profile.toDictionary())
+    static func completeProfile(_ profile: UpdateProfilePayload) -> APIEndpoint {
+        APIEndpoint(path: "/users/me/complete", method: .POST, body: profile.toDictionary)
+    }
+    
+    static func fetchProfessions() -> APIEndpoint {
+        APIEndpoint(path: "/users/professions", method: .GET)
     }
 }

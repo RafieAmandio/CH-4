@@ -2,8 +2,10 @@
 import Foundation
 
 public protocol ProfileAPIServiceProtocol {
-    func updateProfile(payload: UpdateProfilePayload) async throws
+    func completeProfile(payload: UpdateProfilePayload) async throws
         -> CreateOrUpdateResult
+
+    func fetchProfessions() async throws -> FetchProfessionsResponse
 }
 
 public final class ProfileAPIService: ProfileAPIServiceProtocol {
@@ -13,17 +15,34 @@ public final class ProfileAPIService: ProfileAPIServiceProtocol {
         self.apiClient = apiClient
     }
 
-    public func updateProfile(payload: UpdateProfilePayload) async throws
+    public func completeProfile(payload: UpdateProfilePayload) async throws
         -> CreateOrUpdateResult
     {
-        let apiResponse: APIResponse<UpdatedData> =
+        let apiResponse: APIResponse<UpdateProfileResponseDTO> =
             try await apiClient.requestWithAPIResponse(
-                endpoint: .updateProfile(payload),
-                responseType: UpdatedData.self
+                endpoint: .completeProfile(payload),
+                responseType: UpdateProfileResponseDTO.self
             )
+        
+        print(apiResponse,"apiresponse")
 
         return CreateOrUpdateResult(
             success: apiResponse.success, message: apiResponse.message,
             errors: apiResponse.errors)
+    }
+
+    public func fetchProfessions() async throws -> FetchProfessionsResponse {
+        let apiResponse: APIResponse<[ProfessionListDTO]> =
+            try await apiClient.requestWithAPIResponse(
+                endpoint: .fetchProfessions(),
+                responseType: [ProfessionListDTO].self
+            )
+
+        return FetchProfessionsResponse(
+            success: apiResponse.success,
+            message: apiResponse.message,
+            data: apiResponse.data ?? [],
+            errors: apiResponse.errors
+        )
     }
 }
