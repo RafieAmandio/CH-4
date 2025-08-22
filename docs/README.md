@@ -9,7 +9,7 @@ Welcome to the comprehensive documentation for iOS development patterns and arch
 - **[Design Patterns](architecture/DESIGN_PATTERNS.md)** - iOS architectural and design patterns with Swift examples  
 - **[Project Structure](architecture/PROJECT_STRUCTURE.md)** - Guidelines for organizing iOS projects
 
-### 📋 Development Guidelines
+### 📋 Development Guidelines 
 - **[Coding Standards](guidelines/CODING_STANDARDS.md)** - Swift best practices and conventions
 - **[Testing Strategy](guidelines/TESTING_STRATEGY.md)** - Comprehensive testing approach with examples
 - **[Git Workflow](guidelines/GIT_WORKFLOW.md)** - Branching strategy and commit conventions
