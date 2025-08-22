@@ -2,7 +2,11 @@ import SwiftUI
 
 struct EventJoinSheet: View {
     let eventDetail: EventValidateModel
+    var onTapJoin: (() -> Void)?
+    
     @Environment(\.dismiss) private var dismiss
+    
+    
     
     var body: some View {
         VStack(spacing: 24) {
@@ -70,7 +74,7 @@ struct EventJoinSheet: View {
             VStack(spacing: 12) {
                 // Join button
                 CustomButton(title: "Join Event", style: .primary) {
-                    
+                    onTapJoin?()
                 }
                 // Cancel button
                 CustomButton(title: "Cancel", style: .secondary) {

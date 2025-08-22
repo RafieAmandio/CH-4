@@ -11,7 +11,8 @@ import UIComponentsKit
 
 struct HomeAttendee: View {
     @EnvironmentObject var appState: AppStateManager
-    @StateObject var viewModel =  HomeAttendeeDIContainer.shared.createHomeAttendeeViewModel()
+    @StateObject var viewModel = HomeAttendeeDIContainer.shared
+        .createHomeAttendeeViewModel()
 
     var body: some View {
         NavigationView {
@@ -76,9 +77,11 @@ struct HomeAttendee: View {
         }
         .sheet(isPresented: $viewModel.isShowingEventDetail) {
             if let eventDetail = viewModel.eventDetail {
-                  EventJoinSheet(eventDetail: eventDetail)
-                      .presentationDetents([.fraction(0.65)])
-              }
+                EventJoinSheet(eventDetail: eventDetail) {
+                    appState.screen = .onboarding
+                }
+                    .presentationDetents([.fraction(0.65)])
+            }
         }
 
     }

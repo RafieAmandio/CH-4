@@ -31,6 +31,8 @@ public final class HomeAttendeeViewModel: ObservableObject {
             print("Scanning failed: \(error.localizedDescription)")
         }
     }
+    
+   
 
     @MainActor
     private func validateEvent(with code: String) {
