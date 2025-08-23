@@ -83,7 +83,22 @@ let project = Project(
                 .target(name: "UIComponentsKit"),
                 .package(product: "CodeScanner"),
                 .target(name: "CH4-AppClip") // embed the clip
-              ]
+            ],
+            // ADDED: Manual code signing settings for main app
+            settings: .settings(
+                base: [
+                    "CODE_SIGN_STYLE": "Manual",
+                    "DEVELOPMENT_TEAM": "6YQB49MLC8",
+                ],
+                configurations: [
+                    .debug(name: "Debug", settings: [
+                        "PROVISIONING_PROFILE_SPECIFIER": "Challenge4" // Replace with your actual profile name
+                    ]),
+                    .release(name: "Release", settings: [
+                        "PROVISIONING_PROFILE_SPECIFIER": "CH-4 Clip Distribution" // For App Store builds
+                    ])
+                ]
+            )
         ),
 
         // MARK: - App Clip
@@ -116,13 +131,20 @@ let project = Project(
                  .target(name: "NetworkingKit"),
                  .target(name: "UIComponentsKit") 
                ],
+            // MODIFIED: Updated settings for App Clip manual signing
             settings: .settings(
                 base: [
-                    "CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION": "YES"
+                    "CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION": "YES",
+                    "CODE_SIGN_STYLE": "Manual", // Added manual signing
+                    "DEVELOPMENT_TEAM": "6YQB49MLC8",
                 ],
                 configurations: [
-                    .debug(name: "Debug"),
-                    .release(name: "Release")
+                    .debug(name: "Debug", settings: [
+                        "PROVISIONING_PROFILE_SPECIFIER": "CH-4 Clip Development" // Replace with your actual App Clip profile name
+                    ]),
+                    .release(name: "Release", settings: [
+                        "PROVISIONING_PROFILE_SPECIFIER": "CH-4 Clip Distribution" // For App Store builds
+                    ])
                 ]
             )
         )
