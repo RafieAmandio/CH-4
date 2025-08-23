@@ -3,29 +3,30 @@ import UIComponentsKit
 
 struct OnboardingContainerView: View {
     @EnvironmentObject var appState: AppStateManager
-    @StateObject private var viewModel = OnBoardingDIContainer.shared.makeOnBoardingViewModel()
-
+    @StateObject private var viewModel: OnboardingViewModel = OnBoardingDIContainer.shared.makeOnBoardingViewModel()
+    
+    
     var body: some View {
         NavigationView {
-                switch viewModel.currentState {
-                case .goalSelection:
-                    GoalSelectionView()
-                case .loading:
-                    LoadingView()
-                case .questionsFlow:
-                    QuestionsFlowView()
-                case .error(let message):
-                    ErrorView(message: message)
-                }
-        }
-        .environmentObject(viewModel)
-
-        .onReceive(viewModel.$isCompleted) { completed in
-            if completed {
-                // Notify AppStateManager that onboarding is done
-                appState.completeOnboardingAndGoToUpdateProfile()
+            switch viewModel.currentState {
+            case .profileCompletion:
+                UpdateProfileView(
+                    isFromOnboarding: true, onProfileUpdated: nil
+                )
+                .environmentObject(viewModel)
+            case .goalSelection:
+                GoalSelectionView()
+                    .environmentObject(viewModel)
+            case .loading:
+                LoadingView()
+            case .questionsFlow:
+                QuestionsFlowView()
+                    .environmentObject(viewModel)
+            case .error(let message):
+                ErrorView(message: message)
             }
         }
+        .environmentObject(viewModel)
         .onAppear {
             Task {
                 await viewModel.fetchGoals()
@@ -34,9 +35,7 @@ struct OnboardingContainerView: View {
     }
 }
 
-
 #Preview {
-    let appState = AppStateManager()
     OnboardingContainerView()
-        .environmentObject(appState)
+        .environmentObject(AppStateManager.shared)
 }

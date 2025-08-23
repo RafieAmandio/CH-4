@@ -54,7 +54,12 @@ extension APIEndpoint {
         APIEndpoint(path: "/attendee/validate-event/\(code)", method: .GET)
     }
     
-    static func joinEvent(_ eventId: String) -> APIEndpoint {
-        APIEndpoint(path: "/attendee/register", method: .POST)
+    static func registerAttendee(_ payload: RegisterAttendeePayload) -> APIEndpoint {
+        APIEndpoint(path: "/attendee/register", method: .POST, body: payload.toDictionary())
     }
+    
+    static func submitGoals(_ payload: SubmitGoalPayload) -> APIEndpoint {
+        APIEndpoint(path: "/attendee/goals-category", method: .PUT, body: payload.toDictionary())
+    }
+    
 }

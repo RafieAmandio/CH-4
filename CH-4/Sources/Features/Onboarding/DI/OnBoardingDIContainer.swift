@@ -38,8 +38,19 @@ public final class OnBoardingDIContainer {
         FetchGoalsUseCase(attendeRepository: attendeeRepository)
     }()
     
+    public lazy var submitGoalUseCase: SubmitGoalUseCaseProtocol = {
+        SubmitGoalUseCase(attendeRepository: attendeeRepository)
+    }()
+    
+    public lazy var registerAttendeeUseCase: RegisterAttendeeUseCaseProtocol = {
+        RegisterAttendeeUseCase(attendeeRepository: attendeeRepository)
+    }()
+    
+    
     // MARK: - View Models
     @MainActor public func makeOnBoardingViewModel() -> OnboardingViewModel {
-        OnboardingViewModel(fetchGoalsUseCase: fetchGoals)
+        OnboardingViewModel(fetchGoalsUseCase: fetchGoals, submitGoalUseCase: submitGoalUseCase, registerAttendeeUseCase: registerAttendeeUseCase)
     }
 }
+
+

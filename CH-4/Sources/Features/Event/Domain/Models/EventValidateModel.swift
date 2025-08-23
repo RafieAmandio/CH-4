@@ -11,4 +11,5 @@ public struct EventValidateModel {
     public let name:String
     public let photoLink: String
     public let currentParticipant: Int
+    public let code: String
 }

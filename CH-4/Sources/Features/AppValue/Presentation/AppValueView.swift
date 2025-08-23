@@ -9,7 +9,7 @@ import SwiftUI
 import UIComponentsKit
 
 struct AppValueView: View {
-    @EnvironmentObject private var appState:AppStateManager
+    @EnvironmentObject private var appState :AppStateManager
     @State private var goNext = false
     private var items: [ListItem] = [
         ListItem(

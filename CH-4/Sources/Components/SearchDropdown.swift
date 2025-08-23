@@ -254,9 +254,6 @@ struct SearchDropdown: View {
             // Filter professions
             if q.isEmpty {
                 filteredProfessions = Array(professionOptions.prefix(20))
-                print(
-                    "✅ Empty query - showing first 20: \(filteredProfessions.count)"
-                )
             } else {
                 filteredProfessions = professionOptions.filter {
                     $0.name.localizedCaseInsensitiveContains(q)
@@ -272,7 +269,6 @@ struct SearchDropdown: View {
             } else {
                 results = data.filter { $0.localizedCaseInsensitiveContains(q) }
             }
-            print("✅ String results: \(results.count)")
         }
     }
 

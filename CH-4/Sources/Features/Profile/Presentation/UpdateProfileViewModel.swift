@@ -28,6 +28,8 @@ public class UpdateProfileViewModel: ObservableObject {
     // MARK: - Validation
     @Published var isFormValid = false
 
+    public var appState:AppStateManager = AppStateManager.shared
+
     private var cancellables = Set<AnyCancellable>()
 
     public init(
@@ -37,6 +39,7 @@ public class UpdateProfileViewModel: ObservableObject {
         self.fetchProfessionListUseCase = fetchProfessionListUseCase
         self.updateProfileUseCase = updateProfileUseCase
         setupValidation()
+        loadPersistedData()
     }
 
     // MARK: Dependencies
@@ -125,6 +128,20 @@ public class UpdateProfileViewModel: ObservableObject {
         isUploading = false
     }
 
+    func loadPersistedData() {
+        self.name = appState.user?.name ?? ""
+        if let imageURLString = appState.user?.photoUrl {
+            self.profileImage = UIImage(named: imageURLString)
+        }
+        if let professionId = appState.user?.professionId {
+            self.selectedProfessionId = UUID(uuidString: professionId)
+        }
+        if let linkedinUrl = appState.user?.linkedinUsername {
+            self.linkedIn = linkedinUrl
+        }
+       
+    }
+
     // MARK: - Profile Update
     func updateProfile() async {
         guard isFormValid else {
@@ -134,7 +151,6 @@ public class UpdateProfileViewModel: ObservableObject {
 
         isUpdatingProfile = true
         clearError()
-
         do {
             // First upload image if there's a new one and no URL yet
             if profileImage != UIImage(named: "placeholder")
@@ -157,9 +173,14 @@ public class UpdateProfileViewModel: ObservableObject {
                 photoLink: profileImageURL ?? "",
                 linkedinUsername: linkedIn
             )
-
-            try await self.updateProfileUseCase.execute(
+            print(profileData,"THIS IS PAYLAOD")
+            
+          
+            let result  = try await self.updateProfileUseCase.execute(
                 payload: profileData)
+            if result.success {
+                appState.completeOnboardingAndGoToUpdateProfile(with: profileData)
+            }
 
         } catch {
             setError("Failed to update profile: \(error.localizedDescription)")

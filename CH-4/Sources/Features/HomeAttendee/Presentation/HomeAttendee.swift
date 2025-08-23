@@ -34,11 +34,15 @@ struct HomeAttendee: View {
                     } label: {
                         Text("Switch Role")
                     }
-                    Button {
-                        appState.screen = .onboarding
-                    } label: {
-                        Text("onboarding")
+                    CustomButton(title: "Scan", style: .primary, width: 116) {
+                        print(appState.user)
                     }
+                    Button {
+                        appState.switchToCreator()
+                    } label: {
+                        Text("Switch Role")
+                    }
+
                 }
             }
             .toolbar {
@@ -46,7 +50,6 @@ struct HomeAttendee: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Current Event")
                             .font(AppFont.headingLargeSemiBold)
-
                         Text("No ongoing event")
                             .font(AppFont.bodySmallSemibold)
                             .foregroundColor(.white)
@@ -68,22 +71,22 @@ struct HomeAttendee: View {
 
                 }
             }
-        }
-        .sheet(isPresented: $viewModel.isShowingScanner) {
-            CodeScannerView(
-                codeTypes: [.qr],
-                completion: viewModel.handleScan
-            )
-        }
-        .sheet(isPresented: $viewModel.isShowingEventDetail) {
-            if let eventDetail = viewModel.eventDetail {
-                EventJoinSheet(eventDetail: eventDetail) {
-                    appState.screen = .onboarding
-                }
+            .sheet(isPresented: $viewModel.isShowingScanner) {
+                CodeScannerView(
+                    codeTypes: [.qr],
+                    completion: viewModel.handleScan
+                )
+            }
+            .sheet(isPresented: $viewModel.isShowingEventDetail) {
+                if let eventDetail = viewModel.eventDetail {
+                    EventJoinSheet(eventDetail: eventDetail) {
+                        appState.screen = .onboarding
+                        appState.setSelectedEvent(eventDetail)
+                    }
                     .presentationDetents([.fraction(0.65)])
+                }
             }
         }
-
     }
 }
 

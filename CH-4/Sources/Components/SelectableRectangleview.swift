@@ -112,7 +112,6 @@ struct MultipleGoalSelectionView: View {
                     } else {
                         selectedGoals.append(goal)
                     }
-                    print("Selected goal IDs: \(selectedGoals.map(\.id))")
                 }
             }
         }
@@ -137,7 +136,6 @@ struct SetBasedGoalSelectionView: View {
                     } else {
                         selectedGoalIDs.insert(goal.id)
                     }
-                    print("Selected goal IDs: \(Array(selectedGoalIDs))")
                 }
             }
         }
