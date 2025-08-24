@@ -33,13 +33,14 @@ public final class CreateEventViewModel: ObservableObject {
     }
 
     
-    private let totalSteps = 3
+    private let totalSteps = 4
     
     var canProceed: Bool {
         switch currentStep {
         case 1: return form.canProceedToStep2
         case 2: return form.canProceedToStep3
-        case 3: return form.canCreateEvent
+        case 3: return form.canProceedToStep4
+        case 4: return form.canCreateEvent
         default: return false
         }
     }
@@ -120,7 +121,7 @@ public final class CreateEventViewModel: ObservableObject {
      
     func nextStep() {
         guard canProceed else { return }
-        if currentStep < totalSteps + 1 {
+        if currentStep < totalSteps {
             currentStep += 1
         }
     }
@@ -147,6 +148,13 @@ public final class CreateEventViewModel: ObservableObject {
                 validationErrors["description"] = "Description must be at least 10 characters"
             }
         case 3:
+            if form.startDateTime <= Date() {
+                validationErrors["date"] = "Event start date must be in the future"
+            }
+            if form.endDateTime <= form.startDateTime {
+                validationErrors["endDate"] = "End date must be after start date"
+            }
+        case 4:
             if !form.isLocationValid {
                 validationErrors["location"] = "Location is required"
             }
@@ -197,7 +205,8 @@ enum CreateEventError: LocalizedError {
 public struct EventCreationForm {
     var name: String = ""
     var description: String = ""
-    var dateTime: Date = Date()
+    var startDateTime: Date = Date()
+    var endDateTime: Date = Date().addingTimeInterval(3600)
     var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
     var image: UIImage?
     
@@ -226,7 +235,11 @@ public struct EventCreationForm {
         canProceedToStep2 && isDescriptionValid
     }
     
+    var canProceedToStep4: Bool {
+        canProceedToStep3 && startDateTime > Date() && endDateTime > startDateTime
+    }
+    
     var canCreateEvent: Bool {
-        canProceedToStep3 && isLocationValid
+        canProceedToStep4 && isLocationValid
     }
 }

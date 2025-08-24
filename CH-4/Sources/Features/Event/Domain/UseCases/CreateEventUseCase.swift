@@ -23,7 +23,7 @@ public final class CreateEventUseCase: CreateEventUseCaseProtocol {
         let dtoPayload = EventCreationPayload(
             name: event.name,
             description: event.description,
-            datetime: ISO8601DateFormatter().string(from: event.dateTime),
+            datetime: ISO8601DateFormatter().string(from: event.startDateTime),
             location: event.location.name,
             latitude: event.location.coordinate.latitude,
             longitude: event.location.coordinate.longitude
