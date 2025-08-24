@@ -20,7 +20,7 @@ struct CreateEventView: View {
                     // StepNavBar with progress indicator
                     StepNavBar(
                         title: "Create Event",
-                        totalSteps: 3,
+                        totalSteps: 4,
                         currentStep: viewModel.currentStep,
                         onBack: {
                             if viewModel.currentStep > 1 {
@@ -30,12 +30,12 @@ struct CreateEventView: View {
                             }
                         },
                         onNext: {
-                            if viewModel.currentStep < 3 && viewModel.canProceed {
+                            if viewModel.currentStep < 4 && viewModel.canProceed {
                                 viewModel.nextStep()
                             }
                         },
                         canGoBack: true,
-                        canGoNext: viewModel.currentStep < 3 && viewModel.canProceed
+                        canGoNext: viewModel.currentStep < 4 && viewModel.canProceed
                     )
                     // Main content area
                     VStack(spacing: 0) {
@@ -70,7 +70,9 @@ struct CreateEventView: View {
         case 2:
             EventDescriptionView(viewModel: viewModel)
         case 3:
-            EventLocationStepView(viewModel: viewModel)
+            EventDateStepView(viewModel: viewModel)
+        case 4:
+            InteractiveMapLocationPicker(viewModel: viewModel)
         default:
             EventDetailsStepView(viewModel: viewModel)
         }
@@ -78,7 +80,7 @@ struct CreateEventView: View {
 
     private var bottomButton: some View {
         Button(action: {
-            if viewModel.currentStep < 3 {
+            if viewModel.currentStep < 4 {
                 viewModel.nextStep()
             } else {
                 // Create event logic
@@ -96,7 +98,7 @@ struct CreateEventView: View {
                 }
             }
         }) {
-            Text(viewModel.currentStep < 3 ? "Continue" : "Create Event")
+            Text(viewModel.currentStep < 4 ? "Continue" : "Create Event")
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
