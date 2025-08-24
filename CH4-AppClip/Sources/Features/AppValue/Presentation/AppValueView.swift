@@ -1,8 +1,8 @@
 //
-//  OnBoardingView.swift
+//  AppValueView.swift
 //  CH-4
 //
-//  Created by Dwiki on 21/08/25.
+//  Created by Rafie Amandio F on 24/08/25.
 //
 
 import SwiftUI
@@ -47,7 +47,6 @@ struct AppValueView: View {
                 }
                 Spacer()
                 CustomButton(title: "Continue", style: .primary) {
-                    appState.goToUpdateProfile()
                 }
 
             }
@@ -69,7 +68,7 @@ struct ListItemView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(item.title)
                     .font(AppFont.bodySmallBold)
-                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)
