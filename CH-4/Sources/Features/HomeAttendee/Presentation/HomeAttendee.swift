@@ -34,9 +34,6 @@ struct HomeAttendee: View {
                     } label: {
                         Text("Switch Role")
                     }
-                    CustomButton(title: "Scan", style: .primary, width: 116) {
-                        print(appState.user)
-                    }
                     Button {
                         appState.switchToCreator()
                     } label: {
@@ -44,6 +41,7 @@ struct HomeAttendee: View {
                     }
 
                 }
+
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -106,5 +104,7 @@ struct HomeAttendee: View {
 }
 
 #Preview {
+    var appState = AppStateManager.shared
     HomeAttendee()
+        .environmentObject(appState)
 }

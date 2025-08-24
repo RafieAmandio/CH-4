@@ -6,6 +6,16 @@ public struct SubmitGoalResponse: Codable {
     public let error:[APIErrorItem]
 }
 
+public struct SubmitAnswerResponse: Codable {
+    public let data: SubmitAnswerResponseDTO
+    public let message: String?
+    public let error:[APIErrorItem]
+}
+
+public struct SubmitAnswerResponseDTO: Codable {
+    public let answersProcessed: Int
+}
+
 public struct SubmitGoalResponseDTO: Codable {
     public let questions: [QuestionDTO]
 }
@@ -139,6 +149,81 @@ public struct AnswerSubmissionRequest: Codable {
     
     public init(answers: [AnswerDTO]) {
         self.answers = answers
+    }
+    
+    // MARK: - Dictionary Conversion
+    public func toDictionary() -> [String: Any] {
+        let answersArray = answers.map { answer in
+            var answerDict: [String: Any] = [
+                "questionId": answer.questionId
+            ]
+            
+            // Add optional fields only if they have values
+            if let answerOptionId = answer.answerOptionId {
+                answerDict["answerOptionId"] = answerOptionId
+            }
+            
+            if let textValue = answer.textValue {
+                answerDict["textValue"] = textValue
+            }
+            
+            if let numberValue = answer.numberValue {
+                answerDict["numberValue"] = numberValue
+            }
+            
+            if let dateValue = answer.dateValue {
+                answerDict["dateValue"] = dateValue
+            }
+            
+            if let rank = answer.rank {
+                answerDict["rank"] = rank
+            }
+            
+            if let weight = answer.weight {
+                answerDict["weight"] = weight
+            }
+            
+            return answerDict
+        }
+        
+        return [
+            "answers": answersArray
+        ]
+    }
+    
+    // MARK: - Debug Description
+    public var debugDescription: String {
+        let answersDescription = answers.map { answer in
+            var desc = "QuestionID: \(answer.questionId)"
+            
+            if let answerOptionId = answer.answerOptionId {
+                desc += ", OptionID: \(answerOptionId)"
+            }
+            
+            if let textValue = answer.textValue {
+                desc += ", Text: \(textValue)"
+            }
+            
+            if let numberValue = answer.numberValue {
+                desc += ", Number: \(numberValue)"
+            }
+            
+            if let dateValue = answer.dateValue {
+                desc += ", Date: \(dateValue)"
+            }
+            
+            if let rank = answer.rank {
+                desc += ", Rank: \(rank)"
+            }
+            
+            if let weight = answer.weight {
+                desc += ", Weight: \(weight)"
+            }
+            
+            return desc
+        }.joined(separator: "\n")
+        
+        return "AnswerSubmissionRequest:\n\(answersDescription)"
     }
 }
 

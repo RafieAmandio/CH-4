@@ -5,6 +5,7 @@ public protocol AttendeeAPIServiceProtocol {
     func fetchGoals() async throws -> [GoalsCategory]
     func registerAttendee(with payload: RegisterAttendeePayload) async throws -> RegisterAttendeeResponse
     func submitGoals(with payload: SubmitGoalPayload) async throws -> SubmitGoalResponse
+    func submitAnswer(with payload: AnswerSubmissionRequest) async throws  -> SubmitAnswerResponse
 }
 
 public final class AttendeeAPIService: AttendeeAPIServiceProtocol {
@@ -50,6 +51,22 @@ public final class AttendeeAPIService: AttendeeAPIServiceProtocol {
             throw APIError.noData
         }
         
-        return RegisterAttendeeResponse(message: apiResponse.message, data: apiResponse.data, errors: apiResponse.errors)
+        return RegisterAttendeeResponse(message: apiResponse.message, data: data, errors: apiResponse.errors)
     }
+    
+    public func submitAnswer(with payload: AnswerSubmissionRequest) async throws -> SubmitAnswerResponse {
+        let apiResponse: APIResponse<SubmitAnswerResponseDTO> =
+        try await apiClient.requestWithAPIResponse(
+            endpoint: .submitAnswer(payload),
+            responseType: SubmitAnswerResponseDTO.self
+        )
+        
+        guard let data = apiResponse.data else {
+            throw APIError.noData
+        }
+        
+        return SubmitAnswerResponse(data: data, message: apiResponse.message, error: apiResponse.errors)
+    }
+    
+    
 }

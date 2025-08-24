@@ -14,15 +14,18 @@ public final class OnboardingViewModel: ObservableObject {
     public let fetchGoalsUseCase: FetchGoalsUseCaseProtocol
     public let submitGoalUseCase: SubmitGoalUseCaseProtocol
     public let registerAttendeeUseCase: RegisterAttendeeUseCaseProtocol
+    public let submitAnswersUseCase: SubmitAnswerUseCaseProtocol
 
     public init(
         fetchGoalsUseCase: FetchGoalsUseCaseProtocol,
         submitGoalUseCase: SubmitGoalUseCaseProtocol,
-        registerAttendeeUseCase: RegisterAttendeeUseCaseProtocol
+        registerAttendeeUseCase: RegisterAttendeeUseCaseProtocol,
+        submitAnswersUseCase: SubmitAnswerUseCaseProtocol
     ) {
         self.fetchGoalsUseCase = fetchGoalsUseCase
         self.submitGoalUseCase = submitGoalUseCase
         self.registerAttendeeUseCase = registerAttendeeUseCase
+        self.submitAnswersUseCase = submitAnswersUseCase
     }
 
     enum OnboardingState: Equatable {
@@ -46,9 +49,11 @@ public final class OnboardingViewModel: ObservableObject {
 
     @MainActor
     func submitAnswers(_ request: AnswerSubmissionRequest) async throws {
-        // Your API call to submit answers
-        print(request)
-        //        try await answerSubmissionUseCase.execute(with: request)
+        let _ = try await submitAnswersUseCase.execute(with: request)
+        print("Answers submitted successfully")
+        AppStateManager.shared.screen = .homeAttendee
+        AppStateManager.shared.isJoinedEvent = true
+        print("YEY")
     }
 
     public func handleJoinEvent(
@@ -83,7 +88,7 @@ public final class OnboardingViewModel: ObservableObject {
             let response = try await submitGoalUseCase.execute(with: payload)
 
             self.questions = response.data.questions.sortedByDisplayOrder
-            
+
             currentState = .questionsFlow
 
         } catch {

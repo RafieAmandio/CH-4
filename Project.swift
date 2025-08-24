@@ -59,6 +59,7 @@ let project = Project(
             bundleId: "dev.tuist.CH-4",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "Findect",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSCameraUsageDescription": "This app needs camera access to scan QR codes.",
                 "NSLocationWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
@@ -94,6 +95,7 @@ let project = Project(
             bundleId: "dev.tuist.CH-4.Clip",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "Findect",
                 "NSAppClip": [
                     "NSAppClipRequestEphemeralUserNotification": false,
                     "NSAppClipRequestLocationConfirmation": false

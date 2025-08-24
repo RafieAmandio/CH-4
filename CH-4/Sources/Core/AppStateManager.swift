@@ -16,6 +16,7 @@ public class AppStateManager: ObservableObject {
     @Published var currentRole: UserRole = .attendee
     @Published var user: UserData?
     @Published var selectedEvent: EventValidateModel?
+    @Published var isJoinedEvent: Bool = false
 
     enum Screen {
         case auth
@@ -118,6 +119,13 @@ public class AppStateManager: ObservableObject {
     private init() {
         loadPersistedState()
         resolveScreen()
+        if isJoinedEvent {
+            fetchRecommendations()
+        }
+    }
+    
+    func fetchRecommendations() {
+        
     }
 
     func switchRole(to role: UserRole) {
