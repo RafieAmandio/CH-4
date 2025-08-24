@@ -15,61 +15,60 @@ struct EventDateStepView: View {
     
     var body: some View {
         ApplyBackground {
-            VStack(spacing: 0) {
-                // Header with progress indicator
+            VStack(alignment: .leading, spacing: 32) {
+                // Step Title
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Pick your event date!")
+                        .font(AppFont.headingLargeBold)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
-                VStack(alignment: .leading, spacing: 32) {
-                    // Step Title
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Pick your event date!")
-                            .font(AppFont.headingLargeBold)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(nil)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    // Date Input Fields
-                    VStack(alignment: .leading, spacing: 20) {
-                        // Start Date
-                        VStack(alignment: .leading, spacing: 8) {
-                            Button(action: {
-                                showingStartDatePicker = true
-                            }) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "calendar")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(AppColors.primary)
-                                    
-                                    Text(formatDateRange(viewModel.form.startDateTime, viewModel.form.endDateTime))
-                                        .font(Font.custom("Urbanist", size: 17).weight(.medium))
-                                        .foregroundColor(.white)
-                                    
-                                    Spacer()
-                                }
-                                .padding(20)
-                                .frame(maxWidth: .infinity)
-                                .background(Color(red: 0.13, green: 0.13, blue: 0.17))
-                                .cornerRadius(20)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .inset(by: 0.5)
-                                        .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
-                                )
+                // Date Input Fields
+                VStack(alignment: .leading, spacing: 20) {
+                    // Start Date
+                    VStack(alignment: .leading, spacing: 8) {
+                        Button(action: {
+                            showingStartDatePicker = true
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "calendar")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(AppColors.primary)
+                                
+                                Text(formatStartDate())
+                                    .font(Font.custom("Urbanist", size: 17).weight(.medium))
+                                    .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
+                                
+                                Spacer()
                             }
-                            .buttonStyle(PlainButtonStyle())
-                            
-                            // Blue line indicator
-                            Rectangle()
-                                .fill(AppColors.primary)
-                                .frame(height: 2)
-                                .frame(maxWidth: 20)
-                                .padding(.top, 10)
-                                .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(red: 0.13, green: 0.13, blue: 0.17))
+                            .cornerRadius(20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .inset(by: 0.5)
+                                    .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
+                            )
                         }
+                        .buttonStyle(PlainButtonStyle())
                         
-                        // End Date
+                        // Blue line indicator
+                        Rectangle()
+                            .fill(AppColors.primary)
+                            .frame(height: 2)
+                            .frame(maxWidth: 20)
+                            .padding(.top, 10)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    
+                    // End Date
+                    VStack(alignment: .leading, spacing: 8) {
                         Button(action: {
                             showingEndDatePicker = true
                         }) {
@@ -78,13 +77,14 @@ struct EventDateStepView: View {
                                     .font(.system(size: 20))
                                     .foregroundColor(AppColors.primary)
                                 
-                                Text("End Date")
+                                Text(formatEndDate())
                                     .font(Font.custom("Urbanist", size: 17).weight(.medium))
                                     .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
                                 
                                 Spacer()
                             }
-                            .padding(20)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
                             .frame(maxWidth: .infinity)
                             .background(Color(red: 0.13, green: 0.13, blue: 0.17))
                             .cornerRadius(20)
@@ -96,36 +96,35 @@ struct EventDateStepView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-
-                    Spacer()
                 }
-                .padding(.horizontal, 22)
+
+                Spacer()
             }
+            .padding(.horizontal, 22)
         }
         .sheet(isPresented: $showingStartDatePicker) {
             DatePickerSheet(
-                title: "Select Start Date",
                 date: $viewModel.form.startDateTime,
-                onDateSelected: { date in
-                    viewModel.form.startDateTime = date
-                    // Ensure end date is after start date
-                    if viewModel.form.endDateTime <= viewModel.form.startDateTime {
-                        viewModel.form.endDateTime = viewModel.form.startDateTime.addingTimeInterval(3600)
-                    }
-                    viewModel.validateCurrentStep()
-                }
+                minimumDate: Date(),
+                title: "Select Start Date"
             )
+            .onDisappear {
+                // Ensure end date is after start date
+                if viewModel.form.endDateTime <= viewModel.form.startDateTime {
+                    viewModel.form.endDateTime = viewModel.form.startDateTime.addingTimeInterval(3600)
+                }
+                viewModel.validateCurrentStep()
+            }
         }
         .sheet(isPresented: $showingEndDatePicker) {
             DatePickerSheet(
-                title: "Select End Date",
                 date: $viewModel.form.endDateTime,
-                minimumDate: viewModel.form.startDateTime,
-                onDateSelected: { date in
-                    viewModel.form.endDateTime = date
-                    viewModel.validateCurrentStep()
-                }
+                minimumDate: viewModel.form.startDateTime.addingTimeInterval(60),
+                title: "Select End Date"
             )
+            .onDisappear {
+                viewModel.validateCurrentStep()
+            }
         }
         .onAppear {
             // Initialize with current dates if not set
@@ -136,37 +135,24 @@ struct EventDateStepView: View {
         }
     }
     
-
-    
-    private func formatDateRange(_ start: Date, _ end: Date) -> String {
+    private func formatStartDate() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM"
-        
-        let startString = formatter.string(from: start)
-        let endString = formatter.string(from: end)
-        
-        let yearFormatter = DateFormatter()
-        yearFormatter.dateFormat = "yyyy"
-        let year = yearFormatter.string(from: start)
-        
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "h:mm a"
-        let time = timeFormatter.string(from: start)
-        
-        if Calendar.current.isDate(start, inSameDayAs: end) {
-            return "\(startString) \(year), \(time)"
-        } else {
-            return "\(startString) - \(endString) \(year), \(time)"
-        }
+        formatter.dateFormat = "d MMM yyyy, h:mm a"
+        return formatter.string(from: viewModel.form.startDateTime)
+    }
+    
+    private func formatEndDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy, h:mm a"
+        return formatter.string(from: viewModel.form.endDateTime)
     }
 }
 
-// MARK: - Date Picker Sheet
+// MARK: - Date Picker Sheet Component
 struct DatePickerSheet: View {
-    let title: String
     @Binding var date: Date
-    var minimumDate: Date?
-    let onDateSelected: (Date) -> Void
+    let minimumDate: Date
+    let title: String
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -175,34 +161,38 @@ struct DatePickerSheet: View {
                 Text(title)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .padding(.top)
+                    .padding(.top, 20)
                 
                 DatePicker(
                     "Select Date",
                     selection: $date,
-                    in: (minimumDate ?? Date())...,
+                    in: minimumDate...,
                     displayedComponents: [.date, .hourAndMinute]
                 )
                 .datePickerStyle(WheelDatePickerStyle())
-                .padding()
+                .labelsHidden()
+                .padding(.horizontal, 20)
                 
                 Spacer()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                
+                HStack(spacing: 100) {
                     Button("Cancel") {
                         dismiss()
                     }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
+                    .foregroundColor(.secondary)
+                    
                     Button("Done") {
-                        onDateSelected(date)
                         dismiss()
                     }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(AppColors.primary)
+                    .cornerRadius(8)
                 }
+                .padding(.bottom, 20)
             }
+            .navigationBarHidden(true)
         }
     }
 }
