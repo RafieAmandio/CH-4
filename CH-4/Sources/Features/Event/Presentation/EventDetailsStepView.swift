@@ -76,33 +76,19 @@ struct EventDetailsStepView: View {
                             .foregroundColor(.red)
                     }
 
-                    // Picture/Poster input area - using same styling as text field
-                    Button(action: {
-                        // TODO: Implement image picker
-                    }) {
-                        VStack(spacing: 12) {
-                            Image(systemName: "photo.badge.plus")
-                                .font(.system(size: 32))
-                                .foregroundColor(Color(red: 0.33, green: 0.53, blue: 0.86))
-                            
-                            Text("Input Picture or Poster")
-                                .font(
-                                    Font.custom("Urbanist", size: 17)
-                                        .weight(.medium)
-                                )
-                                .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 120)
-                        .background(Color(red: 0.13, green: 0.13, blue: 0.17))
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .inset(by: 0.5)
-                                .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
+                    // Picture/Poster input area - using EventImagePicker component
+                    EventImagePicker(
+                        selectedImage: Binding(
+                            get: { viewModel.form.image },
+                            set: { viewModel.setEventImage($0) }
                         )
+                    )
+                    
+                    if let error = viewModel.validationErrors["image"] {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
                     }
-                    .buttonStyle(PlainButtonStyle())
 
                 }
 

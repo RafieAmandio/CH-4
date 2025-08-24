@@ -96,6 +96,11 @@ public final class CreateEventViewModel: ObservableObject {
         
         validateCurrentStep()
     }
+    
+    func setEventImage(_ image: UIImage?) {
+        form.image = image
+        validateCurrentStep()
+    }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {
          var addressComponents: [String] = []
@@ -136,6 +141,9 @@ public final class CreateEventViewModel: ObservableObject {
             }
             if !form.isDescriptionValid {
                 validationErrors["description"] = "Description must be at least 10 characters"
+            }
+            if !form.isImageValid {
+                validationErrors["image"] = "Event image is required"
             }
         case 2:
             if form.dateTime <= Date() {
@@ -194,6 +202,7 @@ public struct EventCreationForm {
     var description: String = ""
     var dateTime: Date = Date()
     var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    var image: UIImage?
     
     // Validation computed properties
     var isNameValid: Bool {
@@ -208,8 +217,12 @@ public struct EventCreationForm {
         !location.name.isEmpty
     }
     
+    var isImageValid: Bool {
+        image != nil
+    }
+    
     var canProceedToStep2: Bool {
-        isNameValid && isDescriptionValid
+        isNameValid && isDescriptionValid && isImageValid
     }
     
     var canProceedToStep3: Bool {
