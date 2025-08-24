@@ -78,4 +78,9 @@ extension APIEndpoint {
             body: payload.toDictionary())
     }
 
+    static func fetchRecommendation() -> APIEndpoint {
+        APIEndpoint(
+            path: "/attendee/recommendations", method: .GET)
+    }
+
 }

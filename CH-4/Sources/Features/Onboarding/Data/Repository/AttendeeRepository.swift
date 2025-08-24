@@ -15,6 +15,8 @@ public protocol AttendeeRepositoryProtocol {
     func submitGoal(with payload: SubmitGoalPayload) async throws -> SubmitGoalResponse
     
     func submitAnswer(with payload: AnswerSubmissionRequest) async throws -> SubmitAnswerResponse
+    
+    func fetchRecommendations() async throws -> RecommendationResponse
 }
 
 public final class AttendeeRepository: AttendeeRepositoryProtocol {
@@ -44,5 +46,9 @@ public final class AttendeeRepository: AttendeeRepositoryProtocol {
     
     public func submitAnswer(with payload: AnswerSubmissionRequest) async throws -> SubmitAnswerResponse {
         return try await attendeeAPIService.submitAnswer(with: payload)
+    }
+    
+    public func fetchRecommendations() async throws -> RecommendationResponse {
+        return try await attendeeAPIService.fetchRecommendation()
     }
 }
