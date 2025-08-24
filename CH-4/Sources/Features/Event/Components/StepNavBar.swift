@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import UIComponentsKit
 
 // --- The new navbar component ---
 struct StepNavBar: View {
@@ -41,7 +42,7 @@ struct StepNavBar: View {
                 Spacer()
 
                 Text(title)
-                    .font(.system(.title2, weight: .bold))
+                    .font(AppFont.headingSmallBold)
                     .foregroundStyle(titleColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -63,11 +64,12 @@ struct StepNavBar: View {
                 currentStep: currentStep,
                 activeColor: Color(red: 0.22, green: 0.45, blue: 0.95),
                 inactiveColor: .white.opacity(0.35),
-                spacing: 16
+                spacing: 10
             )
+            .padding(.top, 15)
         }
         .padding(.horizontal, 20)
-        .padding(.top, 12)
+        .padding(.top, 16)
         .padding(.bottom, 12)
         .background(barBackground.ignoresSafeArea(edges: .top))
     }

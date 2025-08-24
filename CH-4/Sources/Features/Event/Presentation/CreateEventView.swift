@@ -15,43 +15,44 @@ struct CreateEventView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // StepNavBar with progress indicator
-                StepNavBar(
-                    title: "Create Event",
-                    totalSteps: 3,
-                    currentStep: viewModel.currentStep,
-                    onBack: {
-                        if viewModel.currentStep > 1 {
-                            viewModel.previousStep()
-                        } else {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                    },
-                    onNext: {
-                        if viewModel.currentStep < 3 && viewModel.canProceed {
-                            viewModel.nextStep()
-                        }
-                    },
-                    canGoBack: true,
-                    canGoNext: viewModel.currentStep < 3 && viewModel.canProceed
-                )
-                
-                // Main content area
-                VStack(alignment: .leading, spacing: 0) {
-                    // Step-specific content
-                    stepContent
-                    
-                    Spacer()
-                    
-                    // Bottom action button
-                    bottomButton
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
+            ApplyBackground {
+                VStack(spacing: 0) {
+                    // StepNavBar with progress indicator
+                    StepNavBar(
+                        title: "Create Event",
+                        totalSteps: 3,
+                        currentStep: viewModel.currentStep,
+                        onBack: {
+                            if viewModel.currentStep > 1 {
+                                viewModel.previousStep()
+                            } else {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        },
+                        onNext: {
+                            if viewModel.currentStep < 3 && viewModel.canProceed {
+                                viewModel.nextStep()
+                            }
+                        },
+                        canGoBack: true,
+                        canGoNext: viewModel.currentStep < 3 && viewModel.canProceed
+                    )
+                    // Main content area
+                    VStack(spacing: 0) {
+                        // Step-specific content
+                        stepContent
+                            .frame(maxWidth: .infinity)
+                        
+                        Spacer()
+                        
+                        // Bottom action button
+                        bottomButton
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 20)
+                    }
                 }
-                .background(Color.black)
+                .onTapGesture(perform: hideKeyboard)
             }
-            .onTapGesture(perform: hideKeyboard)
         }
     }
 

@@ -1,6 +1,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import UIComponentsKit
 
 struct EventLocationStepView: View {
     @ObservedObject var viewModel: CreateEventViewModel
@@ -9,163 +10,188 @@ struct EventLocationStepView: View {
     @State private var showMap = false
     @State private var showInteractiveMap = false
     @State private var debounceTask: Task<Void, Never>?
+    @FocusState private var isSearchFieldFocused: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Step title
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Where is the event?")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                Text("Pick Event Location")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.7))
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            
-            // Location search and selection
-            VStack(alignment: .leading, spacing: 20) {
-                // Search TextField
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Location")
-                        .font(.headline)
+        ApplyBackground {
+            VStack(alignment: .leading, spacing: 32) {
+                // Step title - using same styling as StyledTextFieldView
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Where is the event?")
+                        .font(AppFont.headingLargeBold)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                     
-                    TextField("Search for location", text: $searchText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .overlay(
-                            HStack {
-                                Spacer()
-                                if viewModel.isSearching {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                } else {
-                                    Image(systemName: "magnifyingglass")
-                                        .foregroundColor(.blue)
+                    Text("Pick Event Location")
+                        .font(AppFont.bodySmallMedium)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                
+                // Location search and selection - using same styling as StyledTextFieldView
+                VStack(alignment: .leading, spacing: 24) {
+                    // Search TextField
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Location")
+                            .font(AppFont.bodySmallSemibold)
+                            .foregroundColor(.white)
+                        
+                        TextField("Search for location", text: $searchText)
+                            .font(AppFont.bodySmallRegular)
+                            .foregroundColor(.white)
+                            .padding(16)
+                            .background(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(
+                                            isSearchFieldFocused
+                                                ? AppColors.primary : Color.clear,
+                                            lineWidth: isSearchFieldFocused ? 2 : 0
+                                        )
                                 }
-                            }
-                            .padding(.trailing, 8)
-                        )
-                        .onChange(of: searchText) { newValue in
-                            // Cancel previous debounce task
-                            debounceTask?.cancel()
-                            
-                            // Create new debounced task
-                            debounceTask = Task {
-                                try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
+                            )
+                            .focused($isSearchFieldFocused)
+                            .overlay(
+                                HStack {
+                                    Spacer()
+                                    if viewModel.isSearching {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                    } else {
+                                        Image(systemName: "magnifyingglass")
+                                            .foregroundColor(AppColors.primary)
+                                    }
+                                }
+                                .padding(.trailing, 16)
+                            )
+                            .onChange(of: searchText) { newValue in
+                                // Cancel previous debounce task
+                                debounceTask?.cancel()
                                 
-                                // Check if task wasn't cancelled
-                                if !Task.isCancelled {
-                                    await MainActor.run {
-                                        if !newValue.isEmpty && newValue != viewModel.form.location.name {
-                                            viewModel.searchForLocation(newValue)
-                                        } else if newValue.isEmpty {
-                                            viewModel.searchResults = []
+                                // Create new debounced task
+                                debounceTask = Task {
+                                    try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
+                                    
+                                    // Check if task wasn't cancelled
+                                    if !Task.isCancelled {
+                                        await MainActor.run {
+                                            if !newValue.isEmpty && newValue != viewModel.form.location.name {
+                                                viewModel.searchForLocation(newValue)
+                                            } else if newValue.isEmpty {
+                                                viewModel.searchResults = []
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                }
-                
-                // Action buttons
-                HStack(spacing: 12) {
-                    Button(action: useCurrentLocation) {
-                        HStack {
-                            Image(systemName: "location.fill")
-                            Text("Use Current Location")
-                        }
-                        .foregroundColor(.blue)
                     }
                     
-                    Button(action: { showInteractiveMap = true }) {
-                        HStack {
-                            Image(systemName: "map.fill")
-                            Text("Pick on Map")
+                    // Action buttons
+                    HStack(spacing: 12) {
+                        Button(action: useCurrentLocation) {
+                            HStack {
+                                Image(systemName: "location.fill")
+                                Text("Use Current Location")
+                            }
+                            .font(AppFont.bodySmallMedium)
+                            .foregroundColor(AppColors.primary)
                         }
-                        .foregroundColor(.green)
+                        
+                        Button(action: { showInteractiveMap = true }) {
+                            HStack {
+                                Image(systemName: "map.fill")
+                                Text("Pick on Map")
+                            }
+                            .font(AppFont.bodySmallMedium)
+                            .foregroundColor(AppColors.primary)
+                        }
                     }
-                }
-                .padding(.vertical, 4)
-                
-                // Search Results List
-                if !viewModel.searchResults.isEmpty {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 4) {
-                            ForEach(viewModel.searchResults.prefix(10), id: \.self) { mapItem in
-                                LocationResultRow(mapItem: mapItem) {
-                                    selectLocationFromSearch(mapItem)
-                                }
-                                
-                                if mapItem != viewModel.searchResults.prefix(10).last {
-                                    Divider()
-                                        .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    
+                    // Search Results List
+                    if !viewModel.searchResults.isEmpty {
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 4) {
+                                ForEach(viewModel.searchResults.prefix(10), id: \.self) { mapItem in
+                                    LocationResultRow(mapItem: mapItem) {
+                                        selectLocationFromSearch(mapItem)
+                                    }
+                                    
+                                    if mapItem != viewModel.searchResults.prefix(10).last {
+                                        Divider()
+                                            .padding(.horizontal, 12)
+                                    }
                                 }
                             }
                         }
+                        .frame(maxHeight: 300) // Limit height so it doesn't take over the screen
+                        .background(Color(.systemBackground))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(.systemGray4), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
-                    .frame(maxHeight: 300) // Limit height so it doesn't take over the screen
-                    .background(Color(.systemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(.systemGray4), lineWidth: 1)
-                    )
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                }
-                
-                // Selected location display
-                if let selectedLocation = viewModel.selectedLocation, !selectedLocation.name.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Selected Location")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        HStack {
-                            Image(systemName: "mappin.circle.fill")
-                                .foregroundColor(.red)
-                            Text(selectedLocation.name)
-                                .foregroundColor(.secondary)
-                            Spacer()
+                    
+                    // Selected location display
+                    if let selectedLocation = viewModel.selectedLocation, !selectedLocation.name.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Selected Location")
+                                .font(AppFont.bodySmallSemibold)
+                                .foregroundColor(.white)
+                            
+                            HStack {
+                                Image(systemName: "mappin.circle.fill")
+                                    .foregroundColor(.red)
+                                Text(selectedLocation.name)
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                            }
+                            .padding()
+                            .background(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                }
+                            )
                         }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
+                    }
+                    
+                    // Validation Error
+                    if let error = viewModel.validationErrors["location"] {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
                     }
                 }
-                
-                // Validation Error
-                if let error = viewModel.validationErrors["location"] {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
+
+                Spacer()
+            }
+            .padding(22)
+            .sheet(isPresented: $showMap) {
+                if let selectedLocation = viewModel.selectedLocation {
+                    LocationMapView(location: selectedLocation)
                 }
             }
-            .padding(.horizontal, 20)
-
-            Spacer()
-        }
-        .background(Color.black)
-        .sheet(isPresented: $showMap) {
-            if let selectedLocation = viewModel.selectedLocation {
-                LocationMapView(location: selectedLocation)
+            .sheet(isPresented: $showInteractiveMap) {
+                InteractiveMapLocationPicker(viewModel: viewModel)
             }
-        }
-        .sheet(isPresented: $showInteractiveMap) {
-            InteractiveMapLocationPicker(viewModel: viewModel)
-        }
-        .onAppear {
-            locationManager.requestLocation()
-            // Initialize searchText with current location if available
-            if !viewModel.form.location.name.isEmpty {
-                searchText = viewModel.form.location.name
+            .onAppear {
+                locationManager.requestLocation()
+                // Initialize searchText with current location if available
+                if !viewModel.form.location.name.isEmpty {
+                    searchText = viewModel.form.location.name
+                }
             }
-        }
-        .onDisappear {
-            // Cancel debounce task when view disappears
-            debounceTask?.cancel()
+            .onDisappear {
+                // Cancel debounce task when view disappears
+                debounceTask?.cancel()
+            }
         }
     }
     

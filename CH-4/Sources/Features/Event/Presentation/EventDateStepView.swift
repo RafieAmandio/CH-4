@@ -12,55 +12,64 @@ struct EventDateStepView: View {
     @ObservedObject var viewModel: CreateEventViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Step title
-            VStack(alignment: .leading, spacing: 8) {
-                Text("When is the event?")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                Text("Pick Your Event Date")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.7))
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-
-            // Date picker
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Event Date")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 20)
-
-                DatePicker(
-                    "Event Date", selection: $viewModel.form.dateTime,
-                    in: Date()..., displayedComponents: [.date]
-                )
-                .datePickerStyle(WheelDatePickerStyle())
-                .onChange(of: viewModel.form.dateTime) { _ in
-                    viewModel.validateCurrentStep()
+        ApplyBackground {
+            VStack(alignment: .leading, spacing: 32) {
+                // Step Title - using same styling as StyledTextFieldView
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("When is the event?")
+                        .font(AppFont.headingLargeBold)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    Text("Pick Your Event Date")
+                        .font(AppFont.bodySmallMedium)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.horizontal, 20)
-            }
 
-            if let error = viewModel.validationErrors["date"] {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.horizontal, 20)
-            }
+                // Date picker - using same styling as StyledTextFieldView
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Event Date")
+                        .font(AppFont.bodySmallSemibold)
+                        .foregroundColor(.white)
 
-            Spacer()
+                    DatePicker(
+                        "Event Date", selection: $viewModel.form.dateTime,
+                        in: Date()..., displayedComponents: [.date]
+                    )
+                    .datePickerStyle(WheelDatePickerStyle())
+                    .onChange(of: viewModel.form.dateTime) { _ in
+                        viewModel.validateCurrentStep()
+                    }
+                    .padding(20)
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.gray, lineWidth: 1)
+                        }
+                    )
+                }
+
+                if let error = viewModel.validationErrors["date"] {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+
+                Spacer()
+            }
+            .padding(22)
         }
-        .background(Color.black)
     }
 }
 
 #Preview {
     EventDateStepView(viewModel: CreateEventViewModel(createEventUseCase: MockCreateEventUseCase()))
-        .background(Color.black)
 }
 
 // Mock for preview
