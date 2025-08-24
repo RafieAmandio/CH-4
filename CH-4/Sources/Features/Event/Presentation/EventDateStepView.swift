@@ -17,25 +17,6 @@ struct EventDateStepView: View {
         ApplyBackground {
             VStack(spacing: 0) {
                 // Header with progress indicator
-                VStack(spacing: 16) {
-                    Text("Create Event")
-                        .font(AppFont.headingLargeBold)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-
-                    // Progress indicator
-                    HStack(spacing: 16) {
-                        ForEach(1...4, id: \.self) { step in
-                            Rectangle()
-                                .fill(step == 3 ? AppColors.primary : Color.white.opacity(0.35))
-                                .frame(height: 4)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 32)
 
                 VStack(alignment: .leading, spacing: 32) {
                     // Step Title
