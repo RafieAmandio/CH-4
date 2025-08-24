@@ -100,7 +100,16 @@ public final class CreateEventViewModel: ObservableObject {
     
     func setEventImage(_ image: UIImage?) {
         form.image = image
+        form.photoLink = nil // Reset photo link when image changes
         validateCurrentStep()
+    }
+    
+    func uploadEventImage() async {
+        guard let image = form.image else { return }
+        
+        // TODO: Implement actual image upload to your storage service
+        // For now, we'll simulate a successful upload
+        form.photoLink = "https://example.com/event-images/\(UUID().uuidString).jpg"
     }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {
@@ -172,7 +181,12 @@ public final class CreateEventViewModel: ObservableObject {
             throw CreateEventError.validationFailed
         }
         
-        // TODO: Add API call here
+        // Upload image first if we have one
+        if form.image != nil {
+            await uploadEventImage()
+        }
+        
+        // Create the event
         let event = try await createEventUseCase.execute(event: form)
         
         if event.success {
@@ -183,8 +197,6 @@ public final class CreateEventViewModel: ObservableObject {
             onEventCreated?()
         }
        
-                
-     
         return event
         
     }
@@ -209,6 +221,7 @@ public struct EventCreationForm {
     var endDateTime: Date = Date().addingTimeInterval(3600)
     var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
     var image: UIImage?
+    var photoLink: String?
     
     // Validation computed properties
     var isNameValid: Bool {

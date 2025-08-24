@@ -10,8 +10,6 @@ import UIComponentsKit
 
 struct EventDateStepView: View {
     @ObservedObject var viewModel: CreateEventViewModel
-    @State private var startDate = Date()
-    @State private var endDate = Date().addingTimeInterval(3600) // Default to 1 hour later
     @State private var showingStartDatePicker = false
     @State private var showingEndDatePicker = false
     
@@ -63,7 +61,7 @@ struct EventDateStepView: View {
                                         .font(.system(size: 20))
                                         .foregroundColor(AppColors.primary)
                                     
-                                    Text(formatDateRange(startDate, endDate))
+                                    Text(formatDateRange(viewModel.form.startDateTime, viewModel.form.endDateTime))
                                         .font(Font.custom("Urbanist", size: 17).weight(.medium))
                                         .foregroundColor(.white)
                                     
@@ -124,46 +122,38 @@ struct EventDateStepView: View {
         .sheet(isPresented: $showingStartDatePicker) {
             DatePickerSheet(
                 title: "Select Start Date",
-                date: $startDate,
+                date: $viewModel.form.startDateTime,
                 onDateSelected: { date in
-                    startDate = date
+                    viewModel.form.startDateTime = date
                     // Ensure end date is after start date
-                    if endDate <= startDate {
-                        endDate = startDate.addingTimeInterval(3600)
+                    if viewModel.form.endDateTime <= viewModel.form.startDateTime {
+                        viewModel.form.endDateTime = viewModel.form.startDateTime.addingTimeInterval(3600)
                     }
-                    updateViewModelDates()
+                    viewModel.validateCurrentStep()
                 }
             )
         }
         .sheet(isPresented: $showingEndDatePicker) {
             DatePickerSheet(
                 title: "Select End Date",
-                date: $endDate,
-                minimumDate: startDate,
+                date: $viewModel.form.endDateTime,
+                minimumDate: viewModel.form.startDateTime,
                 onDateSelected: { date in
-                    endDate = date
-                    updateViewModelDates()
+                    viewModel.form.endDateTime = date
+                    viewModel.validateCurrentStep()
                 }
             )
         }
         .onAppear {
             // Initialize with current dates if not set
             if viewModel.form.startDateTime == Date() {
-                startDate = Date()
-                endDate = Date().addingTimeInterval(3600)
-                updateViewModelDates()
-            } else {
-                startDate = viewModel.form.startDateTime
-                endDate = viewModel.form.endDateTime
+                viewModel.form.startDateTime = Date()
+                viewModel.form.endDateTime = Date().addingTimeInterval(3600)
             }
         }
     }
     
-    private func updateViewModelDates() {
-        viewModel.form.startDateTime = startDate
-        viewModel.form.endDateTime = endDate
-        viewModel.validateCurrentStep()
-    }
+
     
     private func formatDateRange(_ start: Date, _ end: Date) -> String {
         let formatter = DateFormatter()
