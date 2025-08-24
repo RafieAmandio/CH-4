@@ -130,15 +130,6 @@ struct UpdateProfileView: View {
                         || viewModel.isUploading) ? 0.6 : 1.0)
 
                 // Loading Indicator for Profile Update
-                if viewModel.isUpdatingProfile {
-                    HStack {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Updating profile...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
             }
             .padding()
             .alert("Error", isPresented: $viewModel.showError) {

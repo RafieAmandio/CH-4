@@ -34,7 +34,6 @@ struct GoalSelectionView: View {
                         }
                     }
                     
-                    selectedGoalView
                 }
                 Spacer()
                 
@@ -42,7 +41,7 @@ struct GoalSelectionView: View {
                     handleContinueAction()
                 }
             }
-            .padding(20)
+            .padding(22)
         }
         .onAppear{
             Task {

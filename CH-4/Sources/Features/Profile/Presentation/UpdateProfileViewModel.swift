@@ -48,13 +48,14 @@ public class UpdateProfileViewModel: ObservableObject {
 
     // MARK: - Form Validation
     private func setupValidation() {
-        Publishers.CombineLatest($name, $selectedProfessionId)
-            .map { name, selectedProfessionId in
+        Publishers.CombineLatest3($name, $selectedProfessionId, $profileImage)
+            .map { name, selectedProfessionId, profileImage in
                 let nameValid = !name.trimmingCharacters(
                     in: .whitespacesAndNewlines
                 ).isEmpty
                 let professionValid = selectedProfessionId != nil
-                let isValid = nameValid && professionValid
+                let imageValid = profileImage != nil
+                let isValid = nameValid && professionValid && imageValid
                 return isValid
             }
             .assign(to: &$isFormValid)
@@ -175,7 +176,6 @@ public class UpdateProfileViewModel: ObservableObject {
             )
             print(profileData,"THIS IS PAYLAOD")
             
-          
             let result  = try await self.updateProfileUseCase.execute(
                 payload: profileData)
             if result.success {

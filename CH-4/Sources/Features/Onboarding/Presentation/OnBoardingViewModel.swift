@@ -35,7 +35,6 @@ public final class OnboardingViewModel: ObservableObject {
 
     @MainActor
     public func fetchGoals() async {
-        print("FETCING GOALS")
         do {
             let goals = try await fetchGoalsUseCase.execute()
             self.goals = goals

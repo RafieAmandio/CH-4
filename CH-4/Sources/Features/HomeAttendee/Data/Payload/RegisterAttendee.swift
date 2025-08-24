@@ -16,13 +16,18 @@ public struct RegisterAttendeePayload: Codable {
     public var photoLink: String
     
     public func toDictionary() -> [String: Any] {
-        return [
+        var dict: [String: Any] = [
             "eventCode": eventCode,
             "nickname": name,
             "userEmail": email,
             "professionId": professionId,
-            "linkedinUsername": linkedinUsername ?? "",
             "photoLink": photoLink
         ]
+        
+        if let linkedinUsername = linkedinUsername {
+            dict["linkedinUsername"] = linkedinUsername
+        }
+        
+        return dict
     }
 }

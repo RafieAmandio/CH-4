@@ -61,11 +61,26 @@ struct HomeAttendee: View {
                     Button {
 
                     } label: {
-                        Image(systemName: "gear")
-                            .resizable()
-                            .scaledToFill()
+                        if let urlString = appState.user?.photoUrl,
+                           let url = URL(string: urlString) {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView() // loading state
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                case .failure:
+                                    Image(systemName: "person.circle.fill") // fallback
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
                             .frame(width: 50, height: 50)
-                            .foregroundStyle(.white)
+                            .clipShape(Circle())
+                        }
+
                     }
                     .offset(y: 20)
 

@@ -1,29 +1,5 @@
 import Foundation
 
-
-
-
-
-
-
-// MARK: - Answer Management
-struct Answer: Codable {
-    let questionId: String
-    let answerOptionId: String?
-    let textValue: String?
-    let numberValue: Double?
-    let dateValue: Date?
-    let rank: Int?
-    let weight: Double?
-}
-
-struct AnswerRequest: Codable {
-    let answers: [Answer]
-}
-
-// MARK: - Answer State Management
-import Foundation
-
 // MARK: - Answer State Management (Updated for QuestionDTO)
 class QuestionAnswerManager: ObservableObject {
     @Published var answers: [String: [AnswerDTO]] = [:] // questionId -> [AnswerDTO]
@@ -45,10 +21,14 @@ class QuestionAnswerManager: ObservableObject {
     func toggleMultiSelect(questionId: String, optionId: String) {
         var currentAnswers = answers[questionId] ?? []
         
+        print("🔄 Toggle multi-select: \(questionId) - \(optionId)")
+        print("📋 Current answers before toggle: \(currentAnswers.count)")
+        
         // Check if option is already selected
         if let index = currentAnswers.firstIndex(where: { $0.answerOptionId == optionId }) {
             // Remove if already selected
             currentAnswers.remove(at: index)
+            print("❌ Removed option: \(optionId)")
         } else {
             // Add new selection
             let newAnswer = AnswerDTO(
@@ -61,15 +41,25 @@ class QuestionAnswerManager: ObservableObject {
                 weight: nil
             )
             currentAnswers.append(newAnswer)
+            print("✅ Added option: \(optionId)")
         }
         
         answers[questionId] = currentAnswers.isEmpty ? nil : currentAnswers
+        print("📊 Final answers count: \(currentAnswers.count)")
+        
+        // Force UI update
+        objectWillChange.send()
     }
     
     // Check if option is selected in multi-select
     func isMultiSelectOptionSelected(questionId: String, optionId: String) -> Bool {
-        guard let currentAnswers = answers[questionId] else { return false }
-        return currentAnswers.contains { $0.answerOptionId == optionId }
+        guard let currentAnswers = answers[questionId] else {
+            print("❓ No answers found for question: \(questionId)")
+            return false
+        }
+        let isSelected = currentAnswers.contains { $0.answerOptionId == optionId }
+        print("🔍 Checking if \(optionId) is selected: \(isSelected)")
+        return isSelected
     }
     
     // MARK: - Ranked Choice
