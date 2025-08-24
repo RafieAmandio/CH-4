@@ -1,8 +1,8 @@
 //
-//  OnBoardingView.swift
+//  AppValueView.swift
 //  CH-4
 //
-//  Created by Dwiki on 21/08/25.
+//  Created by Rafie Amandio F on 24/08/25.
 //
 
 import SwiftUI
@@ -40,14 +40,13 @@ struct AppValueView: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(spacing: 24) {
+                VStack(spacing: 40) {
                     ForEach(items) { item in
                         ListItemView(item: item)
                     }
                 }
                 Spacer()
                 CustomButton(title: "Continue", style: .primary) {
-                    appState.goToUpdateProfile()
                 }
 
             }
@@ -64,16 +63,16 @@ struct ListItemView: View {
             Image(item.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 67, height: 67, alignment: .leading)
+                .frame(width: 80, height: 80, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(item.title)
                     .font(AppFont.bodySmallBold)
-                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)
-                    .font(AppFont.bodySmallRegular)
+                    .font(AppFont.bodySmallMedium)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)

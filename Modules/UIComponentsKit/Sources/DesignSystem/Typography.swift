@@ -20,5 +20,5 @@ public enum AppFont {
 
     public static let bodySmallMedium = Font.custom("Urbanist-Medium", size: 17)
     public static let bodySmallRegular = Font.custom("Urbanist-Regular", size: 17)
-    public static let bodySmallBold = Font.custom("Urbanist-Bold", size: 17)
+    public static let bodySmallBold = Font.custom("Urbanist-Bold", size: 18)
 }

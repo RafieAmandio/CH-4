@@ -76,7 +76,7 @@ let project = Project(
                 ]
             ]),
             sources: ["CH-4/Sources/**"],
-            resources: ["CH-4/Resources/**", "Modules/UIComponentsKit/Resources/Fonts/**"],
+            resources: ["CH-4/Resources/**", "Modules/UIComponentsKit/Resources/**"],
             entitlements: .file(path: "CH-4/CH-4.entitlements"),
             // Adding the App Clip as a dependency here makes Xcode embed it in the host app
             dependencies: [
@@ -108,11 +108,12 @@ let project = Project(
                     "Urbanist-Thin.ttf",
                     "Urbanist-Regular.ttf",
                     "Urbanist-Medium.ttf",
-                    "Urbanist-SemiBold.ttf"
+                    "Urbanist-SemiBold.ttf",
+                    "Urbanist-Bold.ttf"
                 ]
             ]),
             sources: ["CH4-AppClip/Sources/**"],
-            resources: ["CH4-AppClip/Resources/**", "Modules/UIComponentsKit/Resources/Fonts/**"],
+            resources: ["CH4-AppClip/Resources/**", "Modules/UIComponentsKit/Resources/**"],
             entitlements: .file(path: "CH4-AppClip/CH4-AppClip.entitlements"),
             dependencies: [
                  .target(name: "NetworkingKit"),
