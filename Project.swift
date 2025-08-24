@@ -62,6 +62,7 @@ let project = Project(
                 "CFBundleDisplayName": "Findect",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSCameraUsageDescription": "This app needs camera access to scan QR codes.",
+                "NSPhotoLibraryUsageDescription": "This app needs photo library access to select event images.",
                 "NSLocationWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
                 "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
                 "NSLocationTemporaryUsageDescriptionDictionary": .dictionary([
