@@ -153,7 +153,6 @@ public class APIClient: APIClientProtocol {
                 throw APIError.encodingError
             }
         } else {
-            print("�� No request body")
         }
 
         return request

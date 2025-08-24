@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct AuthViewContainer: View {
-    @StateObject private var authViewModel = AuthDIContainer.shared.makeAuthViewModel()
-    
+    @StateObject private var authViewModel = AuthDIContainer.shared
+        .makeAuthViewModel()
+
     @EnvironmentObject private var appState: AppStateManager
-    
+
     var body: some View {
         SignInView(viewModel: authViewModel)
             .onReceive(authViewModel.$authenticatedState) { state in
                 handleAuthenticationState(state)
             }
     }
-    
+
     private func handleAuthenticationState(_ state: AuthenticationState) {
         switch state {
         case .authenticated(let user):
@@ -29,6 +30,5 @@ struct AuthViewContainer: View {
             break
         }
     }
-    
-    
+
 }

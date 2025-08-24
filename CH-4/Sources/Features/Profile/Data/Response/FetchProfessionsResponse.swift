@@ -12,7 +12,6 @@ public struct FetchProfessionsResponse: Codable {
     let message: String
     let data: [ProfessionListDTO]
     let errors: [APIErrorItem]?
-    
 }
 
 

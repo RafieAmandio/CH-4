@@ -18,12 +18,14 @@ public struct UserData: Codable {
     let email: String
     let username: String?
     let photoUrl: String?
+    let linkedinUsername: String?
     let name: String
     let isFirst: Bool
     let isActive: Bool
     let deletedAt: Date?
     let createdAt: Date
     let updatedAt: Date
+    let professionId: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -32,10 +34,12 @@ public struct UserData: Codable {
         case username
         case name
         case photoUrl = "photo_url"
+        case linkedinUsername = "linkedinUsername"
         case isFirst
         case isActive = "is_active"
         case deletedAt = "deleted_at"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+        case professionId
     }
 }

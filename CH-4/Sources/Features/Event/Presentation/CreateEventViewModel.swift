@@ -75,7 +75,7 @@ public final class CreateEventViewModel: ObservableObject {
                     self?.searchResults = Array(uniqueResults)
                 } else {
                     self?.searchResults = []
-                    print("Search error: \(error?.localizedDescription ?? "Unknown error")")
+                   
                 }
             }
         }

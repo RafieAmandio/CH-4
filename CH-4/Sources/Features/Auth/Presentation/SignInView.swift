@@ -61,6 +61,7 @@ struct SignInView: View {
                         .padding(.horizontal, 20)
                
                 }
+                .loading(viewModel.isLoading)
             }
         }
     }

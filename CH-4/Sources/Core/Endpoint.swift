@@ -33,16 +33,49 @@ extension APIEndpoint {
     static func login() -> APIEndpoint {
         APIEndpoint(path: "/auth/callback", method: .POST)
     }
-    
+
     static func createEvent(_ event: EventCreationPayload) -> APIEndpoint {
         APIEndpoint(path: "/events", method: .POST, body: event.toDictionary())
     }
-    
-    static func completeProfile(_ profile: UpdateProfilePayload) -> APIEndpoint {
-        APIEndpoint(path: "/users/me/complete", method: .POST, body: profile.toDictionary)
+
+    static func completeProfile(_ profile: UpdateProfilePayload) -> APIEndpoint
+    {
+        APIEndpoint(
+            path: "/users/me/complete", method: .POST,
+            body: profile.toDictionary)
     }
-    
+
     static func fetchProfessions() -> APIEndpoint {
         APIEndpoint(path: "/users/professions", method: .GET)
     }
+
+    static func fetchGoals() -> APIEndpoint {
+        APIEndpoint(path: "/attendee/goals-categories", method: .GET)
+    }
+
+    static func validateEvent(_ code: String) -> APIEndpoint {
+        APIEndpoint(path: "/attendee/validate-event/\(code)", method: .GET)
+    }
+
+    static func registerAttendee(_ payload: RegisterAttendeePayload)
+        -> APIEndpoint
+    {
+        APIEndpoint(
+            path: "/attendee/register", method: .POST,
+            body: payload.toDictionary())
+    }
+
+    static func submitGoals(_ payload: SubmitGoalPayload) -> APIEndpoint {
+        APIEndpoint(
+            path: "/attendee/goals-category", method: .PUT,
+            body: payload.toDictionary())
+    }
+
+    static func submitAnswer(_ payload: AnswerSubmissionRequest) -> APIEndpoint
+    {
+        APIEndpoint(
+            path: "/attendee/answers", method: .POST,
+            body: payload.toDictionary())
+    }
+
 }
