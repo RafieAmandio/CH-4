@@ -19,9 +19,10 @@ struct HomeAttendee: View {
             ApplyBackground {
                 VStack(spacing: 20) {
                     // Show different content based on event status
-                    if true {
+                    if AppStateManager.shared.isJoinedEvent {
                         // User has an active event
                         AttendeeRecommendationView()
+                            .environmentObject(viewModel)
     
                         
                     } else {

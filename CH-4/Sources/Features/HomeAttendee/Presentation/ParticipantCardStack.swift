@@ -12,10 +12,19 @@ struct ParticipantCardStack: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                ForEach(0..<cards.count, id: \.self) { index in
-                    let cardData = cards[index]
+                ForEach(Array(cards.enumerated()), id: \.offset) { index, cardData in
                     FlexibleParticipantCard(
-                        image: cardData.image,
+                        image:  AnyView(
+                            AsyncImage(url: URL(string: cardData.imageURL ?? "")) { image in
+                                image
+                                    .resizable()  // Apply resizable here, to the Image
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Image(cardData.fallbackImageName)
+                                    .resizable()  // Apply resizable here, to the Image
+                                    .aspectRatio(contentMode: .fill)
+                            }
+                        ),
                         name: cardData.name,
                         title: cardData.title,
                         detailContent: cardData.detailContent,
@@ -119,9 +128,23 @@ struct ParticipantCardStack: View {
 
 // Data model for the cards
 struct ParticipantCardData {
-    let image: Image
+    let imageURL: String?
+    let fallbackImageName: String
     let name: String
     let title: String
     let detailContent: AnyView
     let onTap: () -> Void
+    
+    // Computed property that returns the appropriate image view
+    var imageView: some View {
+        AsyncImage(url: URL(string: imageURL ?? "")) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        } placeholder: {
+            Image(fallbackImageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        }
+    }
 }
