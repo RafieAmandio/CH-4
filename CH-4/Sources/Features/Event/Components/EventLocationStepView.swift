@@ -11,51 +11,67 @@ struct EventLocationStepView: View {
     @State private var debounceTask: Task<Void, Never>?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Pick Event Location")
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-            
+        VStack(alignment: .leading, spacing: 24) {
+            // Step title
             VStack(alignment: .leading, spacing: 8) {
+                Text("Where is the event?")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                Text("Pick Event Location")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            
+            // Location search and selection
+            VStack(alignment: .leading, spacing: 20) {
                 // Search TextField
-                TextField("Search for location", text: $searchText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .overlay(
-                        HStack {
-                            Spacer()
-                            if viewModel.isSearching {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                            } else {
-                                Image(systemName: "magnifyingglass")
-                                    .foregroundColor(.blue)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Location")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    TextField("Search for location", text: $searchText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .overlay(
+                            HStack {
+                                Spacer()
+                                if viewModel.isSearching {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "magnifyingglass")
+                                        .foregroundColor(.blue)
+                                }
                             }
-                        }
-                        .padding(.trailing, 8)
-                    )
-                    .onChange(of: searchText) { newValue in
-                        // Cancel previous debounce task
-                        debounceTask?.cancel()
-                        
-                        // Create new debounced task
-                        debounceTask = Task {
-                            try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
+                            .padding(.trailing, 8)
+                        )
+                        .onChange(of: searchText) { newValue in
+                            // Cancel previous debounce task
+                            debounceTask?.cancel()
                             
-                            // Check if task wasn't cancelled
-                            if !Task.isCancelled {
-                                await MainActor.run {
-                                    if !newValue.isEmpty && newValue != viewModel.form.location.name {
-                                        viewModel.searchForLocation(newValue)
-                                    } else if newValue.isEmpty {
-                                        viewModel.searchResults = []
+                            // Create new debounced task
+                            debounceTask = Task {
+                                try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
+                                
+                                // Check if task wasn't cancelled
+                                if !Task.isCancelled {
+                                    await MainActor.run {
+                                        if !newValue.isEmpty && newValue != viewModel.form.location.name {
+                                            viewModel.searchForLocation(newValue)
+                                        } else if newValue.isEmpty {
+                                            viewModel.searchResults = []
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
+                }
                 
-                // Current Location Button
+                // Action buttons
                 HStack(spacing: 12) {
                     Button(action: useCurrentLocation) {
                         HStack {
@@ -100,31 +116,24 @@ struct EventLocationStepView: View {
                     .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                 }
                 
-                // Selected Location Display
-                if let selectedLocation = viewModel.selectedLocation {
-                    VStack(alignment: .leading, spacing: 4) {
+                // Selected location display
+                if let selectedLocation = viewModel.selectedLocation, !selectedLocation.name.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Selected Location")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
                         HStack {
                             Image(systemName: "mappin.circle.fill")
                                 .foregroundColor(.red)
                             Text(selectedLocation.name)
-                                .font(.headline)
+                                .foregroundColor(.secondary)
+                            Spacer()
                         }
-                        
-            
-                        
-                        Text("Lat: \(selectedLocation.coordinate.latitude, specifier: "%.6f"), Lng: \(selectedLocation.coordinate.longitude, specifier: "%.6f")")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                        
-                        Button("View on Map") {
-                            showMap = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(.blue)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
                 }
                 
                 // Validation Error
@@ -134,11 +143,11 @@ struct EventLocationStepView: View {
                         .foregroundColor(.red)
                 }
             }
-            .padding(.horizontal)
-            
+            .padding(.horizontal, 20)
+
             Spacer()
         }
-        .padding(.top)
+        .background(Color.black)
         .sheet(isPresented: $showMap) {
             if let selectedLocation = viewModel.selectedLocation {
                 LocationMapView(location: selectedLocation)
