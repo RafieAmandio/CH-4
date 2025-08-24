@@ -13,7 +13,8 @@ struct AppClipView: View {
                 .navigationBarBackButtonHidden(true)
             
         case .updateProfile:
-            UpdateProfileView()
+//            UpdateProfileView()
+            AppValueView()
                 
         }
     }

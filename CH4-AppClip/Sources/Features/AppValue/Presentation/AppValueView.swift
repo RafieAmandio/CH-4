@@ -40,7 +40,7 @@ struct AppValueView: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(spacing: 24) {
+                VStack(spacing: 40) {
                     ForEach(items) { item in
                         ListItemView(item: item)
                     }
@@ -63,7 +63,7 @@ struct ListItemView: View {
             Image(item.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 67, height: 67, alignment: .leading)
+                .frame(width: 80, height: 80, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(item.title)
@@ -72,7 +72,7 @@ struct ListItemView: View {
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)
-                    .font(AppFont.bodySmallRegular)
+                    .font(AppFont.bodySmallMedium)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
