@@ -139,15 +139,12 @@ public final class CreateEventViewModel: ObservableObject {
             if !form.isNameValid {
                 validationErrors["name"] = "Event name is required"
             }
-            if !form.isDescriptionValid {
-                validationErrors["description"] = "Description must be at least 10 characters"
-            }
             if !form.isImageValid {
                 validationErrors["image"] = "Event image is required"
             }
         case 2:
-            if form.dateTime <= Date() {
-                validationErrors["date"] = "Event date must be in the future"
+            if !form.isDescriptionValid {
+                validationErrors["description"] = "Description must be at least 10 characters"
             }
         case 3:
             if !form.isLocationValid {
@@ -222,11 +219,11 @@ public struct EventCreationForm {
     }
     
     var canProceedToStep2: Bool {
-        isNameValid && isDescriptionValid && isImageValid
+        isNameValid && isImageValid
     }
     
     var canProceedToStep3: Bool {
-        canProceedToStep2 && dateTime > Date()
+        canProceedToStep2 && isDescriptionValid
     }
     
     var canCreateEvent: Bool {
