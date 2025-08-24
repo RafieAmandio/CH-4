@@ -15,8 +15,17 @@ public class AppStateManager: ObservableObject {
     @Published var isAuthenticated = false
     @Published var currentRole: UserRole = .attendee
     @Published var user: UserData?
-    @Published var selectedEvent: EventValidateModel?
-    @Published var isJoinedEvent: Bool = false
+    @Published var selectedEvent: EventValidateModel? {
+        didSet {
+            saveSelectedEvent()
+            updateJoinedEventStatus()
+        }
+    }
+    @Published var isJoinedEvent: Bool = false {
+        didSet {
+            saveJoinedEventStatus()
+        }
+    }
 
     enum Screen {
         case auth
@@ -54,12 +63,23 @@ public class AppStateManager: ObservableObject {
 
     public func setSelectedEvent(_ event: EventValidateModel?) {
         self.selectedEvent = event
+        // updateJoinedEventStatus() is automatically called by didSet
+        
+        if isJoinedEvent {
+            fetchRecommendations()
+        }
     }
     
     private enum Keys {
         static let isAuthenticated = "isAuthenticated"
         static let currentRole = "currentRole"
         static let userId = "userId"
+        static let selectedEventName = "selectedEventName"
+        static let selectedEventPhotoLink = "selectedEventPhotoLink"
+        static let selectedEventCurrentParticipant = "selectedEventCurrentParticipant"
+        static let selectedEventCode = "selectedEventCode"
+        static let selectedEventEndDate = "selectedEventEndDate"
+        static let isJoinedEvent = "isJoinedEvent"
     }
 
     func completeOnboardingAndGoToUpdateProfile(
@@ -76,7 +96,7 @@ public class AppStateManager: ObservableObject {
                     photoUrl: newUser.photoLink ?? "",
                     linkedinUsername: newUser.linkedinUsername,
                     name: newUser.name,
-                    isFirst: false,		
+                    isFirst: false,
                     isActive: u.isActive, deletedAt: u.deletedAt,
                     createdAt: u.createdAt, updatedAt: u.updatedAt,
                     professionId: newUser.professionId.uuidString
@@ -146,22 +166,119 @@ public class AppStateManager: ObservableObject {
         isAuthenticated = false
         user = nil
         currentRole = .attendee
+        selectedEvent = nil
+        isJoinedEvent = false
 
+        // Clear persisted event data
+        clearSelectedEvent()
+        clearJoinedEventStatus()
+        
         try? authRepository.clear()
         resolveScreen()
     }
+    
+    // MARK: - Event Status Management
+    func updateJoinedEventStatus() {
+        guard let selectedEvent = selectedEvent else {
+            isJoinedEvent = false
+            return
+        }
+        
+        isJoinedEvent = isEventActive(endDate: selectedEvent.endDate)
+    }
+
+    private func isEventActive(endDate: String) -> Bool {
+        let dateFormatter = DateFormatter()
+        
+        // Try different date formats that might be used
+        let formats = [
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZ",  // ISO 8601 with milliseconds
+            "yyyy-MM-dd'T'HH:mm:ssZ",      // ISO 8601 without milliseconds
+            "yyyy-MM-dd HH:mm:ss",         // Simple format
+            "yyyy-MM-dd"                   // Date only
+        ]
+        
+        for format in formats {
+            dateFormatter.dateFormat = format
+            if let eventEndDate = dateFormatter.date(from: endDate) {
+                return Date() < eventEndDate
+            }
+        }
+        
+        // If we can't parse the date, assume event is not active
+        print("Warning: Could not parse event end date: \(endDate)")
+        return false
+    }
+    
+    // MARK: - Persistence Methods
+    private func saveSelectedEvent() {
+        guard let event = selectedEvent else {
+            clearSelectedEvent()
+            return
+        }
+        
+        UserDefaults.standard.set(event.name, forKey: Keys.selectedEventName)
+        UserDefaults.standard.set(event.photoLink, forKey: Keys.selectedEventPhotoLink)
+        UserDefaults.standard.set(event.currentParticipant, forKey: Keys.selectedEventCurrentParticipant)
+        UserDefaults.standard.set(event.code, forKey: Keys.selectedEventCode)
+        UserDefaults.standard.set(event.endDate, forKey: Keys.selectedEventEndDate)
+    }
+    
+    private func clearSelectedEvent() {
+        UserDefaults.standard.removeObject(forKey: Keys.selectedEventName)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedEventPhotoLink)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedEventCurrentParticipant)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedEventCode)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedEventEndDate)
+    }
+    
+    private func saveJoinedEventStatus() {
+        UserDefaults.standard.set(isJoinedEvent, forKey: Keys.isJoinedEvent)
+    }
+    
+    private func clearJoinedEventStatus() {
+        UserDefaults.standard.removeObject(forKey: Keys.isJoinedEvent)
+    }
+    
+    private func loadSelectedEvent() -> EventValidateModel? {
+        guard let name = UserDefaults.standard.string(forKey: Keys.selectedEventName),
+              let photoLink = UserDefaults.standard.string(forKey: Keys.selectedEventPhotoLink),
+              let code = UserDefaults.standard.string(forKey: Keys.selectedEventCode),
+              let endDate = UserDefaults.standard.string(forKey: Keys.selectedEventEndDate) else {
+            return nil
+        }
+        
+        let currentParticipant = UserDefaults.standard.integer(forKey: Keys.selectedEventCurrentParticipant)
+        
+        return EventValidateModel(
+            name: name,
+            photoLink: photoLink,
+            currentParticipant: currentParticipant,
+            code: code,
+            endDate: endDate
+        )
+    }
 
     private func loadPersistedState() {
+        // Load user authentication state
         let user = authRepository.getCurrentUser()
-        let role =
-            UserRole(
-                rawValue: UserDefaults.standard.string(forKey: Keys.currentRole)
-                    ?? "attendee") ?? .attendee
+        let role = UserRole(
+            rawValue: UserDefaults.standard.string(forKey: Keys.currentRole) ?? "attendee"
+        ) ?? .attendee
 
         self.currentRole = role
 
         if user != nil {
             setAuthenticated(true, user: user)
         }
+        
+        // Load selected event
+        self.selectedEvent = loadSelectedEvent()
+        
+        // Load joined event status
+        self.isJoinedEvent = UserDefaults.standard.bool(forKey: Keys.isJoinedEvent)
+        
+        // Validate the joined status against current time
+        updateJoinedEventStatus()
     }
 }

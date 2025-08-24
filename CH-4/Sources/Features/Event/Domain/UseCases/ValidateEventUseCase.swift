@@ -23,6 +23,6 @@ public final class ValidateEventUseCase: ValidateEventUseCaseProtocol {
   
         let result = try await eventRepository.validateEvent(with: code)
 
-        return EventValidateModel(name: result.data.name, photoLink: result.data.photoLink ?? "", currentParticipant: result.data.currentParticipants , code: result.data.code)
+        return EventValidateModel(name: result.data.name, photoLink: result.data.photoLink ?? "", currentParticipant: result.data.currentParticipants , code: result.data.code, endDate: result.data.end)
     }
 }

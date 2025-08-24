@@ -18,46 +18,96 @@ struct HomeAttendee: View {
         NavigationView {
             ApplyBackground {
                 VStack(spacing: 20) {
-                    Text(
-                        "No event right now.Start networking by scanning your QR."
-                    )
-                    .multilineTextAlignment(.center)
-                    .font(AppFont.bodySmallBold)
-                    .frame(maxWidth: 296)
-                    .foregroundStyle(AppColors.gray)
+                    // Show different content based on event status
+                    if appState.isJoinedEvent, let selectedEvent = appState.selectedEvent {
+                        // User has an active event
+                        VStack(spacing: 16) {
+                            AsyncImage(url: URL(string: selectedEvent.photoLink)) { phase in
+                                switch phase {
+                                case .empty:
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(AppColors.gray.opacity(0.3))
+                                        .frame(height: 120)
+                                        .overlay(ProgressView())
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 120)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                case .failure:
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(AppColors.gray.opacity(0.3))
+                                        .frame(height: 120)
+                                        .overlay(
+                                            Image(systemName: "photo")
+                                                .foregroundColor(AppColors.gray)
+                                        )
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                            
+                            VStack(spacing: 8) {
+                                Text(selectedEvent.name)
+                                    .font(AppFont.bodySmallMedium)
+                                    .foregroundStyle(.white)
+                                    .multilineTextAlignment(.center)
+                                
+                                Text("\(selectedEvent.currentParticipant) participants")
+                                    .font(AppFont.bodySmallSemibold)
+                                    .foregroundStyle(AppColors.gray)
+                            }
+                            
+                            CustomButton(title: "View Event Details", style: .secondary, width: 200) {
+                                // Action to view event details
+                            }
+                        }
+                        .frame(maxWidth: 320)
+                    } else {
+                        // No active event
+                        Text("No event right now. Start networking by scanning your QR.")
+                            .multilineTextAlignment(.center)
+                            .font(AppFont.bodySmallBold)
+                            .frame(maxWidth: 296)
+                            .foregroundStyle(AppColors.gray)
 
-                    CustomButton(title: "Scan", style: .primary, width: 116) {
-                        viewModel.isShowingScanner = true
+                        CustomButton(title: "Scan", style: .primary, width: 116) {
+                            viewModel.isShowingScanner = true
+                        }
                     }
+                    
                     Button {
                         appState.switchToCreator()
                     } label: {
                         Text("Switch Role")
                     }
+                    
                     Button {
-                        appState.switchToCreator()
+                        print("isJoinedEvent: \(appState.isJoinedEvent)")
+                        print("selectedEvent: \(appState.selectedEvent?.name ?? "nil")")
                     } label: {
-                        Text("Switch Role")
+                        Text("Debug Status")
                     }
-
                 }
-
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Current Event")
                             .font(AppFont.headingLargeSemiBold)
-                        Text("No ongoing event")
+                        
+                        // Dynamic text based on event status
+                        Text(eventStatusText)
                             .font(AppFont.bodySmallSemibold)
-                            .foregroundColor(.white)
+                            .foregroundColor(eventStatusColor)
                     }
                     .offset(y: 20)
-
                 }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-
+                        // Profile action
                     } label: {
                         if let urlString = appState.user?.photoUrl,
                            let url = URL(string: urlString) {
@@ -78,10 +128,8 @@ struct HomeAttendee: View {
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
                         }
-
                     }
                     .offset(y: 20)
-
                 }
             }
             .sheet(isPresented: $viewModel.isShowingScanner) {
@@ -99,7 +147,23 @@ struct HomeAttendee: View {
                     .presentationDetents([.fraction(0.65)])
                 }
             }
+            .onAppear {
+                AppStateManager.shared.updateJoinedEventStatus()
+            }
         }
+    }
+    
+    // MARK: - Computed Properties
+    private var eventStatusText: String {
+        if appState.isJoinedEvent, let selectedEvent = appState.selectedEvent {
+            return selectedEvent.name
+        } else {
+            return "No ongoing event"
+        }
+    }
+    
+    private var eventStatusColor: Color {
+        appState.isJoinedEvent ? .white : AppColors.gray
     }
 }
 
