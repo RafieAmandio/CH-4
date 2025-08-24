@@ -9,21 +9,30 @@ import Foundation
 
 public struct EventCreationPayload: Codable {
     var name: String
-    var description: String
-    var datetime: String
-    var location: String
-    var latitude: Double
-    
-    var longitude: Double
+    var start: String
+    var end: String
+    var description: String?
+    var photoLink: String?
+    var locationName: String?
+    var locationAddress: String?
+    var locationLink: String?
+    var latitude: Double?
+    var longitude: Double?
+    var link: String?
     
     func toDictionary() -> [String: Any] {
         return [
             "name": name,
+            "start": start,
+            "end": end,
             "description": description,
-            "datetime": datetime,
-            "location": location,
+            "photoLink": photoLink,
+            "locationName": locationName,
+            "locationAddress": locationAddress,
+            "locationLink": locationLink,
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
+            "link": link
         ]
     }
 }
