@@ -68,7 +68,7 @@ struct CreateEventView: View {
         case 1:
             EventDetailsStepView(viewModel: viewModel)
         case 2:
-            EventDateStepView(viewModel: viewModel)
+            EventDescriptionView(viewModel: viewModel)
         case 3:
             EventLocationStepView(viewModel: viewModel)
         default:
