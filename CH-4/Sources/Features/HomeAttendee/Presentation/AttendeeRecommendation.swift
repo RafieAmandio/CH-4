@@ -8,82 +8,141 @@
 import SwiftUI
 
 struct AttendeeRecommendationView: View {
+    let sampleCards = [
+        ParticipantCardData(
+            image: Image("abg"),
+            name: "John Doe",
+            title: "iOS Developer",
+            detailContent: AnyView(
+                VStack {
+                    Text("Detailed Information")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("More details about the person...")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+            ),
+            onTap: { print("Card tapped") }
+        ),
+
+        ParticipantCardData(
+            image: Image("abg"),
+            name: "Jane Smith",
+            title: "UI/UX Designer",
+            detailContent: AnyView(
+                VStack {
+                    Text("Detailed Information")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("More details about the person...")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+            ),
+            onTap: { print("Card tapped") }
+        ),
+
+        ParticipantCardData(
+            image: Image("abg"),
+            name: "Mike Johnson",
+            title: "Product Manager",
+            detailContent: AnyView(
+                VStack {
+                    Text("Detailed Information")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("More details about the person...")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+            ),
+            onTap: { print("Card tapped") }
+        ),
+
+        ParticipantCardData(
+            image: Image("abg"),
+            name: "Sarah Wilson",
+            title: "Data Scientist",
+            detailContent: AnyView(
+                VStack {
+                    Text("Detailed Information")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("More details about the person...")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+            ),
+            onTap: { print("Card tapped") }
+        ),
+
+        ParticipantCardData(
+            image: Image("abg"),
+            name: "David Brown",
+            title: "DevOps Engineer",
+            detailContent: AnyView(
+                VStack {
+                    Text("Detailed Information")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("More details about the person...")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+            ),
+            onTap: { print("Card tapped") }
+        ),
+    ]
     var body: some View {
-        ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.black, Color(red: 0.10, green: 0.12, blue: 0.18)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+        VStack(spacing: 24) {
+            Text(
+                "We’ve found participants who could\nbe valuable connections for you."
             )
-            .ignoresSafeArea()
+            .font(.system(size: 16, weight: .regular))
+            .foregroundStyle(.white.opacity(0.9))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 24)
 
-            VStack(spacing: 24) {
-                HeaderView()
+            ParticipantCardStack(cards: sampleCards)
+                .frame(height: 500)
+                .padding(.horizontal, 40)
 
-                Text("We’ve found participants who could\nbe valuable connections for you.")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
+            //            FlexibleParticipantCard(
+            //                image: Image("abg"),
+            //                name: "John Doe",
+            //                title: "iOS Developer",
+            //                detailContent: AnyView(
+            //                    VStack {
+            //                        Text("Detailed Information")
+            //                            .font(.title2)
+            //                            .foregroundColor(.white)
+            //                        Text("More details about the person...")
+            //                            .foregroundColor(.white.opacity(0.8))
+            //                    }
+            //                    .padding()
+            //                ),
+            //                onTap: { print("Card tapped") }
+            //            )
 
-                ParticipantCard(
-                    image: Image("leonie"),            // Add asset named "leonie"
-                    name: "Leonie Marie Gogh",
-                    title: "Technopreneur",
-                    onTap: { print("Show participant details") }
-                )
-                .padding(.horizontal, 20)
+            CustomButton(title: "Refresh", style: .primary, width: 116) {
 
-                Spacer(minLength: 12)
-
-                RefreshButton(action: { print("Refresh tapped") })
-                    .padding(.bottom, 24)
             }
-            .padding(.top, 20)
+
         }
-        .preferredColorScheme(.dark)
     }
 }
-
-// MARK: - Header
-
-private struct HeaderView: View {
-    var body: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Current Event")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(.white)
-
-                Text("TechnoFest 2025")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.8))
-            }
-
-            Spacer()
-
-            // Profile bubble
-            ZStack {
-                Circle()
-                    .fill(Color.white.opacity(0.12))
-                    .frame(width: 44, height: 44)
-
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .foregroundStyle(.white)
-            }
-        }
-        .padding(.horizontal, 20)
-    }
-}
-
-
 
 // MARK: - Preview
 
 #Preview {
     AttendeeRecommendationView()
+}
+
+struct ExtractedView: View {
+    var body: some View {
+        CustomButton(title: "Refresh", style: .primary, width: 116) {
+
+        }
+    }
 }

@@ -1,10 +1,3 @@
-//
-//  ParticipantCard.swift
-//  CH-4
-//
-//  Created by Kenan Firmansyah on 24/08/25.
-//
-
 import SwiftUI
 
 struct ParticipantCard: View {
@@ -13,84 +6,214 @@ struct ParticipantCard: View {
     var title: String
     var onTap: () -> Void
 
+    private let cardCornerRadius: CGFloat = 20
+    private let cardPadding: CGFloat = 16
+
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Card background with neon border
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+        ZStack(alignment: .bottomLeading) {
+            RoundedRectangle(cornerRadius: cardCornerRadius)
                 .fill(Color.white.opacity(0.06))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    // Neon border effect
+                    RoundedRectangle(cornerRadius: cardCornerRadius)
                         .stroke(
                             LinearGradient(
-                                colors: [Color.blue, Color.purple],
+                                colors: [.blue, .purple],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
-                            lineWidth: 6
+                            lineWidth: 7
                         )
-                        .blur(radius: 0.5)
-                        .opacity(0.9)
+                        .blur(radius: 1)
+                        .opacity(0.8)
                 )
-                .shadow(color: .black.opacity(0.4), radius: 16, x: 0, y: 8)
+                .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 6)
 
-            // Photo
+            // Background image that fills the entire card
             image
                 .resizable()
                 .scaledToFill()
-                .frame(height: 380)
-                .clipped()
-                .cornerRadius(18)
-                .padding(10)
+                .clipped()  // Clip to card bounds
 
-            // Bottom gradient + texts
-            VStack(spacing: 8) {
+            // Text overlay with gradient background
+            VStack(alignment: .leading, spacing: 4) {
+                Text(name)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Text(title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.9))
+
+                Text("Tap to see detail")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .padding(.top, 2)
+            }
+            .padding(cardPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                // Gradient overlay for text readability
                 LinearGradient(
-                    colors: [Color.black.opacity(0.65), Color.black.opacity(0.0)],
+                    colors: [
+                        .black.opacity(0.7),
+                        .black.opacity(0.3),
+                        .clear,
+                    ],
                     startPoint: .bottom,
                     endPoint: .top
                 )
-                .frame(height: 140)
-                .mask(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .padding(10)
-                )
-                .overlay(
-                    VStack(spacing: 6) {
-                        Text(name)
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.white)
-
-                        Text(title)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.85))
-
-                        Text("Tap to see detail")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.6))
-                            .padding(.top, 6)
-                    }
-                    .padding(.bottom, 24)
-                )
-            }
+            )
         }
-        .frame(height: 440)
-        .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius))
+        .contentShape(RoundedRectangle(cornerRadius: cardCornerRadius))
+        .padding()
         .onTapGesture(perform: onTap)
     }
 }
 
-// MARK: - Preview
+// Alternative version with more flexible sizing
+struct FlexibleParticipantCard: View {
+    var image: Image
+    var name: String
+    var title: String
+    var detailContent: AnyView
+    var onTap: () -> Void
+
+    private let cornerRadius: CGFloat = 20
+    private let strokeWidth: CGFloat = 12
+    @State private var isFlipped = false
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Gradient stroke background (slightly larger)
+                RoundedRectangle(cornerRadius: cornerRadius + strokeWidth)
+                    .fill(
+                        LinearGradient(
+                            colors: [.blue, .purple],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .blur(radius: 1)
+                    .opacity(0.8)
+
+                // Main card content
+                if isFlipped {
+                    // Back view (detail view)
+                    backView
+                } else {
+                    // Front view (original card)
+                    frontView(geometry: geometry)
+                }
+            }
+            .contentShape(
+                RoundedRectangle(cornerRadius: cornerRadius + strokeWidth)
+            )
+            .rotation3DEffect(
+                .degrees(isFlipped ? 180 : 0),
+                axis: (x: 0, y: 1, z: 0)
+            )
+            .onTapGesture {
+                // Haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+
+                withAnimation(.spring(duration: 0.5)) {
+                    isFlipped.toggle()
+                }
+                onTap()
+            }
+        }
+        .aspectRatio(0.7, contentMode: .fit)
+    }
+
+    private func frontView(geometry: GeometryProxy) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            // Card background
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Color.white.opacity(0.06))
+                .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 6)
+
+            // Image fills entire available space
+            image
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: geometry.size.width - strokeWidth * 2,
+                    height: geometry.size.height - strokeWidth * 2
+                )
+                .clipped()
+
+            // Text overlay
+            textOverlay
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .padding(strokeWidth)  // Creates space for the stroke
+    }
+
+    private var backView: some View {
+        ZStack {
+            // Background for back view
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Color.black.opacity(0.8))
+                .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 6)
+
+            // Detail content
+            detailContent
+                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))  // Flip the content back to readable
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .padding(strokeWidth)
+    }
+
+    private var textOverlay: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(name)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.white)
+
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.white.opacity(0.9))
+
+            Text("Tap to see detail")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.white.opacity(0.7))
+                .padding(.top, 2)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [
+                    .black.opacity(0.7),
+                    .black.opacity(0.3),
+                    .clear,
+                ],
+                startPoint: .bottom,
+                endPoint: .top
+            )
+        )
+    }
+}
 
 #Preview {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        
-        ParticipantCard(
-            image: Image("leonie"),
-            name: "Leonie Marie Gogh",
-            title: "Technopreneur",
-            onTap: { print("Show participant details") }
-        )
-        .padding(.horizontal, 20)
-    }
+    FlexibleParticipantCard(
+        image: Image("person"),
+        name: "John Doe",
+        title: "iOS Developer",
+        detailContent: AnyView(
+            VStack {
+                Text("Detailed Information")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                Text("More details about the person...")
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .padding()
+        ),
+        onTap: { print("Card tapped") }
+    )
 }
