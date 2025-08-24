@@ -244,10 +244,6 @@ struct SearchDropdown: View {
         guard isOpen else { return }
         let q = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        print("🔍 Search started - query: '\(q)'")
-        print("📊 professionOptions count: \(professionOptions.count)")
-        print("📊 options count: \(options.count)")
-
         if let searchProvider {
             isLoading = true
             let out = await searchProvider(q)
@@ -258,18 +254,13 @@ struct SearchDropdown: View {
             // Filter professions
             if q.isEmpty {
                 filteredProfessions = Array(professionOptions.prefix(20))
-                print(
-                    "✅ Empty query - showing first 20: \(filteredProfessions.count)"
-                )
             } else {
                 filteredProfessions = professionOptions.filter {
                     $0.name.localizedCaseInsensitiveContains(q)
                 }
-                print("✅ Filtered professions: \(filteredProfessions.count)")
+
             }
-            print(
-                "📝 Filtered profession names: \(filteredProfessions.map { $0.name })"
-            )
+
         } else {
             // Original string filtering
             let data = options
@@ -278,7 +269,6 @@ struct SearchDropdown: View {
             } else {
                 results = data.filter { $0.localizedCaseInsensitiveContains(q) }
             }
-            print("✅ String results: \(results.count)")
         }
     }
 

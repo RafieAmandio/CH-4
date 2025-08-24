@@ -4,6 +4,8 @@ import Foundation
 public protocol EventAPIServiceProtocol {
     func createEvent(payload: EventCreationPayload) async throws
     -> CreateOrUpdateResult
+    
+    func validateEvent(with code: String) async throws -> ValidateEventResponse
 }
 
 public final class EventAPIService: EventAPIServiceProtocol {
@@ -23,5 +25,20 @@ public final class EventAPIService: EventAPIServiceProtocol {
             )
 
         return CreateOrUpdateResult(success: apiResponse.success, message: apiResponse.message, errors: apiResponse.errors)
+    }
+    
+    public func validateEvent(with code: String) async throws -> ValidateEventResponse {
+        let apiResponse: APIResponse<EventDetailDTO> =
+        try await apiClient.requestWithAPIResponse(
+            endpoint: .validateEvent(code),
+            responseType: EventDetailDTO.self
+        )
+        
+        guard let eventData = apiResponse.data else {
+            throw APIError.noData
+        }
+        
+        return ValidateEventResponse(success: apiResponse
+            .success, message: apiResponse.message, data: eventData, errors: apiResponse.errors)
     }
 }

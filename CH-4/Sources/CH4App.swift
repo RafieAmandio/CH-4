@@ -4,7 +4,6 @@ import UIComponentsKit
 
 @main
 struct CH4App: App {
-    @StateObject private var appState = AppStateManager()
     
     var body: some Scene {
         WindowGroup {
@@ -14,7 +13,7 @@ struct CH4App: App {
                     .ignoresSafeArea()
                 ContentView()
                     .preferredColorScheme(.dark)
-                    .environmentObject(appState)
+                    .environmentObject(AppStateManager.shared)
             }
         }
     }
@@ -22,14 +21,13 @@ struct CH4App: App {
 
 
 #Preview {
-    @StateObject  var appState = AppStateManager()
     ZStack {
         Rectangle()
             .fill(AppColors.offBlack)
             .ignoresSafeArea()
         ContentView()
             .preferredColorScheme(.dark)
-            .environmentObject(appState)
+            .environmentObject(AppStateManager.shared)
     }
 }
 
