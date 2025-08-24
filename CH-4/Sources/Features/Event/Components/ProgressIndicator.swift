@@ -32,7 +32,7 @@ struct ProgressIndicator: View {
         HStack(spacing: spacing) {
             ForEach(1..<totalSteps + 1, id: \.self) { index in
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(index <= currentStep ? activeColor : inactiveColor)
+                    .fill(index == currentStep ? activeColor : inactiveColor)
                     .frame(height: 8)
                     .animation(.easeInOut(duration: 0.3), value: currentStep)
             }

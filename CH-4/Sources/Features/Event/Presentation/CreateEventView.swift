@@ -19,7 +19,7 @@ struct CreateEventView: View {
                 ProgressIndicator(
                     totalSteps: 3, currentStep: viewModel.currentStep,
                     spacing: 10)
-                Text("Input Event Details")
+                Text("What's name of the event?")
                     .font(AppFont.headingLargeBold)
                 stepContent
 
@@ -102,91 +102,6 @@ struct CreateEventView: View {
     CreateEventView()
 }
 
-struct EventDetailsStepView: View {
-    @ObservedObject var viewModel: CreateEventViewModel
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Input Event Details")
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
 
-            VStack(alignment: .leading, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Name")
-                        .font(.headline)
 
-                    TextField("Event name", text: $viewModel.form.name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: viewModel.form.name) { _ in
-                            viewModel.validateCurrentStep()
-                        }
-
-                    if let error = viewModel.validationErrors["name"] {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Description")
-                        .font(.headline)
-
-                    TextEditor(text: $viewModel.form.description)
-                        .frame(height: 100)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                        .onChange(of: viewModel.form.description) { _ in
-                            viewModel.validateCurrentStep()
-                        }
-
-                    if let error = viewModel.validationErrors["description"] {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                }
-            }
-            .padding(.horizontal)
-
-            Spacer()
-        }
-        .padding(.top)
-    }
-}
-
-struct EventDateStepView: View {
-    @ObservedObject var viewModel: CreateEventViewModel
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Pick Your Event Date")
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-
-            DatePicker(
-                "Event Date", selection: $viewModel.form.dateTime,
-                in: Date()..., displayedComponents: [.date]
-            )
-            .datePickerStyle(WheelDatePickerStyle())
-            .onChange(of: viewModel.form.dateTime) { _ in
-                viewModel.validateCurrentStep()
-            }
-
-            if let error = viewModel.validationErrors["date"] {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.horizontal)
-            }
-
-            Spacer()
-        }
-        .padding(.top)
-    }
-}
