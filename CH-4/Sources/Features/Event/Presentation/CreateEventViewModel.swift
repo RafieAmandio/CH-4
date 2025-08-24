@@ -157,11 +157,11 @@ public final class CreateEventViewModel: ObservableObject {
                 validationErrors["description"] = "Description must be at least 10 characters"
             }
         case 3:
-            if form.startDateTime <= Date() {
+            if form.startDateTime <= Date().addingTimeInterval(-1) {
                 validationErrors["date"] = "Event start date must be in the future"
             }
-            if form.endDateTime <= form.startDateTime {
-                validationErrors["endDate"] = "End date must be after start date"
+            if form.endDateTime <= form.startDateTime.addingTimeInterval(60) {
+                validationErrors["endDate"] = "End date must be at least 1 minute after start date"
             }
         case 4:
             if !form.isLocationValid {
@@ -217,8 +217,8 @@ enum CreateEventError: LocalizedError {
 public struct EventCreationForm {
     var name: String = ""
     var description: String = ""
-    var startDateTime: Date = Date()
-    var endDateTime: Date = Date().addingTimeInterval(3600)
+    var startDateTime: Date = Date().addingTimeInterval(3600) // 1 hour from now
+    var endDateTime: Date = Date().addingTimeInterval(7200) // 2 hours from now
     var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
     var image: UIImage?
     var photoLink: String?
@@ -249,7 +249,9 @@ public struct EventCreationForm {
     }
     
     var canProceedToStep4: Bool {
-        canProceedToStep3 && startDateTime > Date() && endDateTime > startDateTime
+        canProceedToStep3 && 
+        startDateTime > Date().addingTimeInterval(-1) && // Allow dates very close to now
+        endDateTime > startDateTime.addingTimeInterval(60) // Ensure at least 1 minute difference
     }
     
     var canCreateEvent: Bool {
