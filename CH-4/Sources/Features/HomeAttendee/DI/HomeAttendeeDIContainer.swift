@@ -42,8 +42,13 @@ public final class HomeAttendeeDIContainer {
         RegisterAttendeeUseCase(attendeeRepository: attendeeRepository)
     }()
     
+    public lazy var fetchRecommendationUseCase:
+    FetchRecommendationsUseCaseProtocol = {
+        FetchRecommendationsUseCase(repository: attendeeRepository)
+    }()
+    
     // MARK: - View Models
     @MainActor public func createHomeAttendeeViewModel() -> HomeAttendeeViewModel {
-        HomeAttendeeViewModel(validateEventUseCase: validateEventUseCase, registerAttendeeUseCase: registerAttendeeUseCase)
+        HomeAttendeeViewModel(validateEventUseCase: validateEventUseCase, registerAttendeeUseCase: registerAttendeeUseCase, fetchRecommendationsUseCase: fetchRecommendationUseCase)
     }
 }

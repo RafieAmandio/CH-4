@@ -2,24 +2,25 @@ import SwiftUI
 import UIComponentsKit
 
 struct AppClipView: View {
+    @EnvironmentObject var appState: AppStateManager
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-              
-               
-            Text("CH-4 App Clip Made by The Team")
-                .font(AppFont.headingLargeBold)
-            Text("This is the App Clip version of CH-4")
-                .font(.caption)
-                .foregroundColor(.secondary)
+        
+        switch appState.screen {
+        case .appValue:
+            AppValueView()
+                .toolbar(.hidden, for: .navigationBar)  // just in case
+                .navigationBarBackButtonHidden(true)
+            
+        case .updateProfile:
+//            UpdateProfileView()
+            AppValueView()
+                
         }
-        .foregroundStyle(AppColors.primary)
-        .padding()
     }
 }
 
 #Preview {
     AppClipView()
-} 
+        .environmentObject(AppStateManager.shared)
+}

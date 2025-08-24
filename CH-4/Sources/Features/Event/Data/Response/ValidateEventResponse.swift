@@ -55,7 +55,7 @@ public struct EventDetailDTO: Codable {
     }
     
     public func toDomain() -> EventValidateModel {
-        return EventValidateModel(name: self.name, photoLink: self.photoLink ?? "", currentParticipant: self.currentParticipants, code: self.code)
+        return EventValidateModel(name: self.name, photoLink: self.photoLink ?? "", currentParticipant: self.currentParticipants, code: self.code, endDate: self.end)
     }
 }
 

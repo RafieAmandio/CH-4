@@ -6,6 +6,7 @@ public protocol AttendeeAPIServiceProtocol {
     func registerAttendee(with payload: RegisterAttendeePayload) async throws -> RegisterAttendeeResponse
     func submitGoals(with payload: SubmitGoalPayload) async throws -> SubmitGoalResponse
     func submitAnswer(with payload: AnswerSubmissionRequest) async throws  -> SubmitAnswerResponse
+    func fetchRecommendation() async throws -> RecommendationResponse
 }
 
 public final class AttendeeAPIService: AttendeeAPIServiceProtocol {
@@ -66,6 +67,21 @@ public final class AttendeeAPIService: AttendeeAPIServiceProtocol {
         }
         
         return SubmitAnswerResponse(data: data, message: apiResponse.message, error: apiResponse.errors)
+    }
+    
+    public func fetchRecommendation() async throws -> RecommendationResponse {
+        let apiResponse: APIResponse<RecommendationDataDTO> =
+        try await apiClient.requestWithAPIResponse(
+            endpoint: .fetchRecommendation(),
+            responseType: RecommendationDataDTO.self
+        )
+        
+        guard let data = apiResponse.data else {
+            throw APIError.noData
+        }
+        
+        
+        return RecommendationResponse(success: apiResponse.success, message: apiResponse.message, data: data, errors: apiResponse.errors)
     }
     
     

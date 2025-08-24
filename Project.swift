@@ -20,7 +20,7 @@ let project = Project(
         // MARK: - Shared module
         .target(
            name: "FoundationExtras",
-           destinations: .iOS,
+           destinations: [.iPhone], // Changed to iPhone only
            product: .staticFramework,
            bundleId: "dev.tuist.CH4.FoundationExtras",
            deploymentTargets: iOSDeployment,
@@ -28,7 +28,7 @@ let project = Project(
          ),
         .target(
           name: "NetworkingKit",
-          destinations: .iOS,
+          destinations: [.iPhone], // Changed to iPhone only
           product: .staticFramework,
           bundleId: "dev.tuist.CH4.NetworkingKit",
           deploymentTargets: iOSDeployment,
@@ -40,7 +40,7 @@ let project = Project(
         ),
         .target(
           name: "UIComponentsKit",
-          destinations: .iOS,
+          destinations: [.iPhone], // Changed to iPhone only
           product: .staticFramework,
           bundleId: "dev.tuist.CH4.UIComponentsKit",
           deploymentTargets: iOSDeployment,
@@ -54,7 +54,7 @@ let project = Project(
         // MARK: - App (host)
         .target(
             name: "CH-4",
-            destinations: .iOS,
+            destinations: [.iPhone], // Changed to iPhone only
             product: .app,
             bundleId: "dev.tuist.CH-4",
             deploymentTargets: iOSDeployment,
@@ -73,24 +73,33 @@ let project = Project(
                     "Urbanist-Regular.ttf",
                     "Urbanist-Medium.ttf",
                     "Urbanist-SemiBold.ttf"
+                ],
+                // Add iPhone-specific interface orientations
+                "UISupportedInterfaceOrientations": [
+                    "UIInterfaceOrientationPortrait"
                 ]
             ]),
             sources: ["CH-4/Sources/**"],
             resources: ["CH-4/Resources/**", "Modules/UIComponentsKit/Resources/Fonts/**"],
             entitlements: .file(path: "CH-4/CH-4.entitlements"),
-            // Adding the App Clip as a dependency here makes Xcode embed it in the host app
             dependencies: [
                 .target(name: "NetworkingKit"),
                 .target(name: "UIComponentsKit"),
                 .package(product: "CodeScanner"),
                 .target(name: "CH4-AppClip") // embed the clip
-              ]
+              ],
+            settings: .settings(
+                base: [
+                    "TARGETED_DEVICE_FAMILY": "1", // 1 = iPhone only
+                    "SUPPORTS_MACCATALYST": "NO"
+                ]
+            )
         ),
 
         // MARK: - App Clip
         .target(
             name: "CH4-AppClip",
-            destinations: .iOS,
+            destinations: [.iPhone], // Changed to iPhone only
             product: .appClip,
             bundleId: "dev.tuist.CH-4.Clip",
             deploymentTargets: iOSDeployment,
@@ -108,7 +117,8 @@ let project = Project(
                     "Urbanist-Thin.ttf",
                     "Urbanist-Regular.ttf",
                     "Urbanist-Medium.ttf",
-                    "Urbanist-SemiBold.ttf"
+                    "Urbanist-SemiBold.ttf",
+                    "Urbanist-Bold.ttf"
                 ]
             ]),
             sources: ["CH4-AppClip/Sources/**"],
@@ -120,7 +130,9 @@ let project = Project(
                ],
             settings: .settings(
                 base: [
-                    "CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION": "YES"
+                    "CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION": "YES",
+                    "TARGETED_DEVICE_FAMILY": "1", // 1 = iPhone only
+                    "SUPPORTS_MACCATALYST": "NO"
                 ],
                 configurations: [
                     .debug(name: "Debug"),
