@@ -23,8 +23,7 @@ public final class ProfileAPIService: ProfileAPIServiceProtocol {
                 endpoint: .completeProfile(payload),
                 responseType: UpdateProfileResponseDTO.self
             )
-        
-        print(apiResponse,"apiresponse")
+    
 
         return CreateOrUpdateResult(
             success: apiResponse.success, message: apiResponse.message,

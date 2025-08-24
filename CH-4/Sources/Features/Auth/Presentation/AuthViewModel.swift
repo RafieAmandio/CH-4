@@ -63,12 +63,10 @@ public final class AuthViewModel: ObservableObject {
             isLoading = false
             
 
-
         } catch {
             isLoading = false
             errorMessage = error.localizedDescription
             showError = true
-            print("❌ Sign in failed: \(error)")
         }
        
     }

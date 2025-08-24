@@ -18,6 +18,7 @@ public final class ProfileDIContainer {
     public lazy var profileAPIService: ProfileAPIServiceProtocol = {
         ProfileAPIService(apiClient: APIClient.shared)
     }()
+    
 
     public lazy var userRepository: UserRepositoryProtocol = {
         UserRepository(ProfileAPIService: profileAPIService)
@@ -40,6 +41,5 @@ public final class ProfileDIContainer {
         UpdateProfileViewModel(
             fetchProfessionListUseCase: fetchProfessionListUseCase,
             updateProfileUseCase: updateProfileUseCase)
-      
     }
 }

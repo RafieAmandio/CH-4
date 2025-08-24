@@ -12,15 +12,20 @@ public struct UpdateProfilePayload: Codable {
     var username: String?
     var email: String?
     var professionId: UUID
-    var photoLink: String?
-    var linkedinUsername: String
+    var photoLink: String
+    var linkedinUsername: String?
 
     var toDictionary: [String: Any] {
-        return [
+        var dict: [String: Any] = [
             "name": self.name,
             "professionId": professionId.uuidString,
-            "photoLink": photoLink ?? "",
-            "linkedinUsername": linkedinUsername,
+            "photoLink": photoLink,
         ]
+        
+        if let linkedinUsername = linkedinUsername {
+            dict["linkedinUsername"] = linkedinUsername
+        }
+        
+        return dict
     }
 }

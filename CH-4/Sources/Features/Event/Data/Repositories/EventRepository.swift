@@ -9,6 +9,7 @@ import Foundation
 
 public protocol EventRepositoryProtocol {
     func createEvent(_ input : EventCreationPayload) async throws -> CreateOrUpdateResult
+    func validateEvent(with code:String) async throws -> ValidateEventResponse
 }
 
 public final class EventRepository: EventRepositoryProtocol {
@@ -22,5 +23,11 @@ public final class EventRepository: EventRepositoryProtocol {
         let event = try await eventAPIService.createEvent(payload: input)
         
         return event
+    }
+    
+    public func validateEvent(with code: String) async throws -> ValidateEventResponse {
+        let response = try await eventAPIService.validateEvent(with: code)
+        
+        return response
     }
 }

@@ -16,14 +16,12 @@ struct ContentView: View {
                 .toolbar(.hidden, for: .navigationBar)  // just in case
                 .navigationBarBackButtonHidden(true)
 
-        case .updateProfile:
-            UpdateProfileView()
+        case .updateProfile(let onProfileUpdated):
+            UpdateProfileView(onProfileUpdated: onProfileUpdated)
                 .toolbar(.hidden, for: .navigationBar)
                 .navigationBarBackButtonHidden(true)
-
         case .homeAttendee:
             HomeAttendee()
-
         case .homeCreator:
             HomeCreatorView()
         case .onboarding:
@@ -36,7 +34,7 @@ struct ContentView: View {
     ContentView()
         .environmentObject(
             {
-                let mock = AppStateManager()
+                let mock = AppStateManager.shared
                 mock.isAuthenticated = true
                 return mock
             }())
@@ -46,7 +44,7 @@ struct ContentView: View {
     ContentView()
         .environmentObject(
             {
-                let mock = AppStateManager()
+                let mock = AppStateManager.shared
                 mock.isAuthenticated = false
                 return mock
             }())

@@ -30,7 +30,7 @@ struct CustomButton: View {
     let title: String
     let style: CustomButtonStyle
     let width: CGFloat?
-    let action: () -> Void
+    let action: ()  -> Void
     
     // Optional parameters with default values
     private let height: CGFloat = 44

@@ -6,9 +6,12 @@ let packages: [Package] = [
   .package(
     url: "https://github.com/supabase-community/supabase-swift.git",
     .upToNextMajor(from: "2.0.0")
+  ),
+  .package(
+    url: "https://github.com/twostraws/CodeScanner",
+    .upToNextMajor(from: "2.0.0")
   )
 ]
-
 
 let project = Project(
     name: "CH-4",
@@ -56,7 +59,9 @@ let project = Project(
             bundleId: "dev.tuist.CH-4",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "Findect",
                 "UILaunchStoryboardName": "LaunchScreen",
+                "NSCameraUsageDescription": "This app needs camera access to scan QR codes.",
                 "NSLocationWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
                 "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to help you set event locations.",
                 "NSLocationTemporaryUsageDescriptionDictionary": .dictionary([
@@ -77,6 +82,7 @@ let project = Project(
             dependencies: [
                 .target(name: "NetworkingKit"),
                 .target(name: "UIComponentsKit"),
+                .package(product: "CodeScanner"),
                 .target(name: "CH4-AppClip") // embed the clip
               ]
         ),
@@ -89,6 +95,7 @@ let project = Project(
             bundleId: "dev.tuist.CH-4.Clip",
             deploymentTargets: iOSDeployment,
             infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "Findect",
                 "NSAppClip": [
                     "NSAppClipRequestEphemeralUserNotification": false,
                     "NSAppClipRequestLocationConfirmation": false
