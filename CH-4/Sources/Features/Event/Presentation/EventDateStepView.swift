@@ -64,7 +64,9 @@ struct EventDateStepView: View {
                             Rectangle()
                                 .fill(AppColors.primary)
                                 .frame(height: 2)
-                                .frame(maxWidth: .infinity)
+                                .frame(maxWidth: 20)
+                                .padding(.top, 10)
+                                .frame(maxWidth: .infinity, alignment: .center)
                         }
                         
                         // End Date
