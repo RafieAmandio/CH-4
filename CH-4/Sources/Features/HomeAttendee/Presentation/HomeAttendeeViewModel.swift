@@ -8,6 +8,7 @@
 import CodeScanner
 import Foundation
 
+@MainActor
 public final class HomeAttendeeViewModel: ObservableObject {
     // MARK: - Scanner Properties
     @Published var isShowingScanner = false
@@ -114,7 +115,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
             self.isLoadingRecommendations = false
             self.lastFetchTime = Date()
 
-            cacheManager.cacheRecommendations(
+            await cacheManager.cacheRecommendations(
                 fetchedRecommendations, for: eventId)
 
             // Log success for debugging

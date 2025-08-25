@@ -16,7 +16,7 @@ public class RecommendationCacheManager {
     private init() {}
     
     // MARK: - Cache Operations
-    func cacheRecommendations(_ recommendations: [RecommendationModel], for eventId: String) {
+    func cacheRecommendations(_ recommendations: [RecommendationModel], for eventId: String) async {
         do {
             let data = try JSONEncoder().encode(recommendations)
             UserDefaults.standard.set(data, forKey: CacheKeys.recommendations)
