@@ -6,6 +6,7 @@ struct EventLocation:Identifiable {
     let id = UUID()
     let name: String
     let coordinate: CLLocationCoordinate2D
+    let address: String
 }
 
 @MainActor
@@ -85,7 +86,8 @@ public final class CreateEventViewModel: ObservableObject {
     func selectLocation(_ mapItem: MKMapItem) {
         let location = EventLocation(
             name: mapItem.name ?? "Unknown Location",
-            coordinate: mapItem.placemark.coordinate
+            coordinate: mapItem.placemark.coordinate,
+            address: formatAddress(from: mapItem.placemark)
         )
         
         // Update both selectedLocation and form.location
@@ -113,20 +115,29 @@ public final class CreateEventViewModel: ObservableObject {
     }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {
-         var addressComponents: [String] = []
-         
-         if let thoroughfare = placemark.thoroughfare {
-             addressComponents.append(thoroughfare)
-         }
-         if let locality = placemark.locality {
-             addressComponents.append(locality)
-         }
-         if let administrativeArea = placemark.administrativeArea {
-             addressComponents.append(administrativeArea)
-         }
-         
-         return addressComponents.joined(separator: ", ")
-     }
+        var components: [String] = []
+        
+        if let thoroughfare = placemark.thoroughfare {
+            components.append(thoroughfare)
+        }
+        if let subThoroughfare = placemark.subThoroughfare {
+            components.append(subThoroughfare)
+        }
+        if let locality = placemark.locality {
+            components.append(locality)
+        }
+        if let administrativeArea = placemark.administrativeArea {
+            components.append(administrativeArea)
+        }
+        if let postalCode = placemark.postalCode {
+            components.append(postalCode)
+        }
+        if let country = placemark.country {
+            components.append(country)
+        }
+        
+        return components.joined(separator: ", ")
+    }
      
     func nextStep() {
         guard canProceed else { return }
@@ -219,7 +230,7 @@ public struct EventCreationForm {
     var description: String = ""
     var startDateTime: Date = Date().addingTimeInterval(3600) // 1 hour from now
     var endDateTime: Date = Date().addingTimeInterval(7200) // 2 hours from now
-    var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0), address: "")
     var image: UIImage?
     var photoLink: String?
     

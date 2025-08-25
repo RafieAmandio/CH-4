@@ -202,7 +202,8 @@ struct EventLocationStepView: View {
         // Update the form's location field to trigger validation
         viewModel.form.location = EventLocation(
             name: mapItem.name ?? "Unknown Location",
-            coordinate: mapItem.placemark.coordinate
+            coordinate: mapItem.placemark.coordinate,
+            address: formatAddress(from: mapItem.placemark)
         )
         viewModel.validateCurrentStep()
     }
@@ -221,7 +222,8 @@ struct EventLocationStepView: View {
             DispatchQueue.main.async {
                 let location = EventLocation(
                     name: placemark.name ?? "Current Location",
-                    coordinate: currentLocation.coordinate
+                    coordinate: currentLocation.coordinate,
+                    address: formatPlacemarkAddress(placemark)
                 )
                 
                 // Update both selectedLocation and form.location
