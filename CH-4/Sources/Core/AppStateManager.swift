@@ -17,6 +17,7 @@ public class AppStateManager: ObservableObject {
     @Published var user: UserData?
     @Published private var _selectedEvent: EventValidateModel?
     @Published private var _isJoinedEvent: Bool = false
+ 
     
     // Public computed properties that trigger didSet only when needed
     public var selectedEvent: EventValidateModel? {
@@ -63,7 +64,7 @@ public class AppStateManager: ObservableObject {
     }
 
     private func resolveScreen() {
-        guard isAuthenticated || AppConfig.isDebug else {
+        guard isAuthenticated  else {
             screen = .auth
             return
         }
@@ -204,7 +205,7 @@ public class AppStateManager: ObservableObject {
         currentRole = .attendee
         selectedEvent = nil // This will trigger the setter and clear persistence
         isJoinedEvent = false // This will trigger the setter
-        
+        KeychainManager.shared.delete(key: "access_token")
         resolveScreen()
     }
     

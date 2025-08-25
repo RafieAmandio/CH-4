@@ -28,7 +28,7 @@ public class UpdateProfileViewModel: ObservableObject {
     // MARK: - Validation
     @Published var isFormValid = false
 
-    public var appState:AppStateManager = AppStateManager.shared
+    public var appState: AppStateManager = AppStateManager.shared
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -140,14 +140,14 @@ public class UpdateProfileViewModel: ObservableObject {
         if let linkedinUrl = appState.user?.linkedinUsername {
             self.linkedIn = linkedinUrl
         }
-       
+
     }
 
     // MARK: - Profile Update
-    func updateProfile() async {
+    func updateProfile() async -> UpdateProfilePayload? {
         guard isFormValid else {
             setError("Please fill in all required fields")
-            return
+            return nil
         }
 
         isUpdatingProfile = true
@@ -165,7 +165,7 @@ public class UpdateProfileViewModel: ObservableObject {
                 && profileImageURL == nil
             {
                 isUpdatingProfile = false
-                return
+                setError("something went wrong")
             }
 
             let profileData = UpdateProfilePayload(
@@ -174,19 +174,20 @@ public class UpdateProfileViewModel: ObservableObject {
                 photoLink: profileImageURL ?? "",
                 linkedinUsername: linkedIn
             )
-            print(profileData,"THIS IS PAYLAOD")
             
-            let result  = try await self.updateProfileUseCase.execute(
-                payload: profileData)
-            if result.success {
-                appState.completeOnboardingAndGoToUpdateProfile(with: profileData)
-            }
+            return profileData
+
+            //            let result  = try await self.updateProfileUseCase.execute(
+            //                payload: profileData)
+            //            if result.success {
+            //                appState.completeOnboardingAndGoToUpdateProfile(with: profileData)
+            //            }
 
         } catch {
             setError("Failed to update profile: \(error.localizedDescription)")
         }
 
-        isUpdatingProfile = false
+   
     }
 
     // MARK: - Image Selection Handling

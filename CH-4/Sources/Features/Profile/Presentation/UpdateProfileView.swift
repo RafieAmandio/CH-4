@@ -6,7 +6,7 @@ struct UpdateProfileView: View {
 
     @EnvironmentObject private var appState: AppStateManager
     @StateObject private var viewModel: UpdateProfileViewModel =
-    ProfileDIContainer.shared.createProfileViewModel()
+        ProfileDIContainer.shared.createProfileViewModel()
 
     let isFromOnboarding: Bool
     let onProfileUpdated: (() -> Void)?
@@ -18,25 +18,21 @@ struct UpdateProfileView: View {
         self.onProfileUpdated = onProfileUpdated
     }
 
-    private func handlePostUpdateNavigation() async throws {
+    private func handlePostUpdateNavigation(result: UpdateProfilePayload?) async throws {
         if isFromOnboarding {
             let selectedEvent = appState.selectedEvent
-            let registerAttendePayload = RegisterAttendeePayload(
-                eventCode: selectedEvent?.code ?? "",
-                name: appState.user?.name ?? "",
-                email: appState.user?.email ?? "",
-                professionId: (appState.user?.professionId)!,
-                linkedinUsername: appState.user?.linkedinUsername ?? "",
-                photoLink: appState.user?.photoUrl ?? "")
             
+            let payload: RegisterAttendeePayload = RegisterAttendeePayload(eventCode: selectedEvent?.code ?? "",  name: result?.name ?? "", professionId: result?.professionId.uuidString ?? "", photoLink: result?.photoLink ?? "")
+              
+
             await onBoardingViewModel.handleJoinEvent(
-                with: registerAttendePayload
+                with: payload
             ) { success in
                 if success ?? false {
                     print("successfully joined event")
                 }
             }
-         
+
             onBoardingViewModel.currentState = .goalSelection
         } else {
             onProfileUpdated?()
@@ -109,10 +105,11 @@ struct UpdateProfileView: View {
                     Task {
                         do {
                             // First update the profile
-                            await viewModel.updateProfile()
+                            let result = await viewModel.updateProfile()
                             // Handle navigation based on context
                             if !viewModel.showError {
-                                try await handlePostUpdateNavigation()
+                                try await handlePostUpdateNavigation(
+                                    result: result)
                             }
                         } catch {
                             // You might want to show an error alert here

@@ -22,8 +22,8 @@ struct AuthViewContainer: View {
 
     private func handleAuthenticationState(_ state: AuthenticationState) {
         switch state {
-        case .authenticated(let user):
-            appState.setAuthenticated(true, user: user)
+        case .authenticated:
+            appState.setAuthenticated(true)
         case .unauthenticated:
             appState.setAuthenticated(false)
         case .loading:

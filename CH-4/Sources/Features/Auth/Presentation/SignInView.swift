@@ -57,8 +57,19 @@ struct SignInView: View {
                         .frame(minHeight: 20, maxHeight: adaptiveBottomSpacing(for: geometry))
 
                     // Apple Sign In button
-                    appleSignInView
+                    
+                    if AppConfig.isDebug {
+                        CustomButton(title: "Continue", style: .primary) {
+                            viewModel.authenticatedState = .authenticated
+                            appState.screen = .appValue
+                        }
                         .padding(.horizontal, 20)
+                     
+                    } else {
+                        appleSignInView
+                            .padding(.horizontal, 20)
+                    }
+                   
                
                 }
                 .loading(viewModel.isLoading)

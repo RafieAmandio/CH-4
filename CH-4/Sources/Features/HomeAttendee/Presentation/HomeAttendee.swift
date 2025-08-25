@@ -19,24 +19,28 @@ struct HomeAttendee: View {
             ApplyBackground {
                 VStack(spacing: 0) {
                     // Custom Toolbar at the top
-                    customToolbar
-                    
+                    customToolbarAttendee
+
                     // Main Content
                     VStack(spacing: 20) {
                         // Show different content based on event status
-                        if true {
+                        if appState.isJoinedEvent {
                             // User has an active event
                             AttendeeRecommendationView()
                                 .environmentObject(viewModel)
                         } else {
                             // No active event
-                            Text("No event right now. Start networking by scanning your QR.")
-                                .multilineTextAlignment(.center)
-                                .font(AppFont.bodySmallBold)
-                                .frame(maxWidth: 296)
-                                .foregroundStyle(AppColors.gray)
+                            Text(
+                                "No event right now. Start networking by scanning your QR."
+                            )
+                            .multilineTextAlignment(.center)
+                            .font(AppFont.bodySmallBold)
+                            .frame(maxWidth: 296)
+                            .foregroundStyle(AppColors.gray)
 
-                            CustomButton(title: "Scan", style: .primary, width: 116) {
+                            CustomButton(
+                                title: "Scan", style: .primary, width: 116
+                            ) {
                                 viewModel.isShowingScanner = true
                             }
                         }
@@ -45,7 +49,7 @@ struct HomeAttendee: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .navigationBarHidden(true) // Hide the default navigation bar
+            .navigationBarHidden(true)  // Hide the default navigation bar
             .sheet(isPresented: $viewModel.isShowingScanner) {
                 CodeScannerView(
                     codeTypes: [.qr],
@@ -61,36 +65,49 @@ struct HomeAttendee: View {
                     .presentationDetents([.fraction(0.65)])
                 }
             }
+            .sheet(isPresented: $viewModel.isLogoutPresented) {
+                CustomButton(
+                    title: "Sign Out", style: .primary,
+                    action: {
+                        appState.logout()
+                    }
+                )
+                .padding()
+                .presentationDetents([.height(120)])
+            }
             .onAppear {
                 guard appState.isInitialized else { return }
                 appState.updateJoinedEventStatus()
             }
         }
     }
-    
+
     // MARK: - Custom Toolbar
-    private var customToolbar: some View {
+    private var customToolbarAttendee: some View {
         HStack(alignment: .top) {
             // Left side - Event info
             VStack(alignment: .leading, spacing: 4) {
                 Text("Current Event")
                     .font(AppFont.headingLargeSemiBold)
                     .foregroundColor(.white)
-                
+
                 Text(eventStatusText)
                     .font(AppFont.bodySmallSemibold)
                     .foregroundColor(eventStatusColor)
             }
-            
+
             Spacer()
-            
+
             // Right side - Profile button
             Button {
+                print("HELLO")
                 // Profile action
+                viewModel.isLogoutPresented.toggle()
             } label: {
                 // Now we can use AsyncImage safely here!
                 if let urlString = appState.user?.photoUrl,
-                   let url = URL(string: urlString) {
+                    let url = URL(string: urlString)
+                {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .empty:
@@ -168,10 +185,10 @@ struct HomeAttendeeAlternative: View {
                         Rectangle()
                             .fill(Color.clear)
                             .frame(height: geometry.safeAreaInsets.top)
-                        
+
                         // Custom header
                         customHeader
-                        
+
                         // Main content with scroll if needed
                         ScrollView {
                             VStack(spacing: 20) {
@@ -181,17 +198,22 @@ struct HomeAttendeeAlternative: View {
                                 } else {
                                     VStack(spacing: 20) {
                                         Spacer().frame(height: 40)
-                                        
-                                        Text("No event right now. Start networking by scanning your QR.")
-                                            .multilineTextAlignment(.center)
-                                            .font(AppFont.bodySmallBold)
-                                            .frame(maxWidth: 296)
-                                            .foregroundStyle(AppColors.gray)
 
-                                        CustomButton(title: "Scan", style: .primary, width: 116) {
+                                        Text(
+                                            "No event right now. Start networking by scanning your QR."
+                                        )
+                                        .multilineTextAlignment(.center)
+                                        .font(AppFont.bodySmallBold)
+                                        .frame(maxWidth: 296)
+                                        .foregroundStyle(AppColors.gray)
+
+                                        CustomButton(
+                                            title: "Scan", style: .primary,
+                                            width: 116
+                                        ) {
                                             viewModel.isShowingScanner = true
                                         }
-                                        
+
                                         Spacer().frame(height: 40)
                                     }
                                 }
@@ -224,7 +246,7 @@ struct HomeAttendeeAlternative: View {
             }
         }
     }
-    
+
     // MARK: - Custom Header
     private var customHeader: some View {
         VStack(spacing: 0) {
@@ -234,20 +256,20 @@ struct HomeAttendeeAlternative: View {
                     Text("Current Event")
                         .font(AppFont.headingLargeSemiBold)
                         .foregroundColor(.white)
-                    
+
                     Text(eventStatusText)
                         .font(AppFont.bodySmallSemibold)
                         .foregroundColor(eventStatusColor)
                 }
-                
+
                 Spacer()
-                
+
                 // Right side - Profile with smooth loading
                 ProfileImageButton(imageURL: appState.user?.photoUrl)
             }
             .padding(.horizontal, 22)
             .padding(.vertical, 16)
-            
+
             // Optional separator line
             Rectangle()
                 .fill(Color.white.opacity(0.1))
@@ -274,7 +296,7 @@ struct ProfileImageButton: View {
     let imageURL: String?
     @State private var loadedImage: UIImage?
     @State private var isLoading = false
-    
+
     var body: some View {
         Button {
             // Profile action
@@ -293,7 +315,7 @@ struct ProfileImageButton: View {
                             LinearGradient(
                                 colors: [
                                     Color.blue.opacity(0.7),
-                                    Color.purple.opacity(0.7)
+                                    Color.purple.opacity(0.7),
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -324,30 +346,31 @@ struct ProfileImageButton: View {
             loadImageIfNeeded()
         }
     }
-    
+
     private func loadImageIfNeeded() {
         guard let imageURL = imageURL,
-              !imageURL.isEmpty,
-              loadedImage == nil,
-              !isLoading else { return }
-        
+            !imageURL.isEmpty,
+            loadedImage == nil,
+            !isLoading
+        else { return }
+
         isLoading = true
-        
+
         Task {
             // Small delay to ensure smooth initial rendering
-            try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
-            
+            try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
+
             guard let url = URL(string: imageURL) else {
                 await MainActor.run {
                     self.isLoading = false
                 }
                 return
             }
-            
+
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
                 let image = UIImage(data: data)
-                
+
                 await MainActor.run {
                     self.loadedImage = image
                     self.isLoading = false

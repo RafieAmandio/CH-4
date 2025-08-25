@@ -47,7 +47,8 @@ struct AppValueView: View {
                 }
                 Spacer()
                 CustomButton(title: "Continue", style: .primary) {
-                    appState.goToUpdateProfile()
+                    appState.screen = .homeAttendee
+                    appState.currentRole = .attendee
                 }
 
             }

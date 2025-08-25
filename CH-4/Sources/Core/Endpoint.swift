@@ -46,7 +46,7 @@ extension APIEndpoint {
     }
 
     static func fetchProfessions() -> APIEndpoint {
-        APIEndpoint(path: "/users/professions", method: .GET)
+        APIEndpoint(path: "/attendee/professions", method: .GET)
     }
 
     static func fetchGoals() -> APIEndpoint {

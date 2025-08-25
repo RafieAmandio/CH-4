@@ -10,7 +10,7 @@ import Foundation
 public struct RegisterAttendeePayload: Codable {
     public var eventCode: String
     public var name: String
-    public var email: String
+    public var email: String = "testEmail@gmail.com"
     public var professionId: String
     public var linkedinUsername: String?
     public var photoLink: String

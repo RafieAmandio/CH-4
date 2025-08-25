@@ -4,7 +4,7 @@ import UIComponentsKit
 
 @main
 struct CH4App: App {
-    
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -18,7 +18,6 @@ struct CH4App: App {
         }
     }
 }
-
 
 #Preview {
     ZStack {

@@ -13,20 +13,20 @@ struct AttendeeRecommendationView: View {
 
     var body: some View {
         ZStack {
-            contentView
-            //            if viewModel.isLoadingRecommendations {
-            //                // Loading state
-            //                loadingView
-            //            } else if let error = viewModel.recommendationError {
-            //                // Error state
-            //                errorView(error: error)
-            //            } else if viewModel.recommendations.isEmpty {
-            //                // Empty state
-            //                emptyStateView
-            //            } else {
-            //                // Content with recommendations
-            //                contentView
-            //            }
+
+            if viewModel.isLoadingRecommendations {
+                // Loading state
+                loadingView
+            } else if let error = viewModel.recommendationError {
+                // Error state
+                errorView(error: error)
+            } else if viewModel.recommendations.isEmpty {
+                // Empty state
+                emptyStateView
+            } else {
+                // Content with recommendations
+                contentView
+            }
         }
         .onAppear {
             viewModel.onViewAppear()
@@ -102,7 +102,7 @@ struct AttendeeRecommendationView: View {
 
             CustomButton(title: "Refresh", style: .primary, width: 116) {
                 Task {
-                    await viewModel.fetchRecommendations()
+                    await viewModel.fetchRecommendations(forceRefresh: true)
                 }
             }
         }
