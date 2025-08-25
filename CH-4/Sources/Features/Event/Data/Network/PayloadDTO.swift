@@ -9,21 +9,50 @@ import Foundation
 
 public struct EventCreationPayload: Codable {
     var name: String
-    var description: String
-    var datetime: String
-    var location: String
-    var latitude: Double
-    
-    var longitude: Double
+    var start: String
+    var end: String
+    var description: String?
+    var photoLink: String?
+    var locationName: String?
+    var locationAddress: String?
+    var locationLink: String?
+    var latitude: Double?
+    var longitude: Double?
+    var link: String?
     
     func toDictionary() -> [String: Any] {
-        return [
+        var dict: [String: Any] = [
             "name": name,
-            "description": description,
-            "datetime": datetime,
-            "location": location,
-            "latitude": latitude,
-            "longitude": longitude
+            "start": start,
+            "end": end
         ]
+        
+        // Only add optional fields if they have values
+        if let description = description {
+            dict["description"] = description
+        }
+        if let photoLink = photoLink {
+            dict["photoLink"] = photoLink
+        }
+        if let locationName = locationName {
+            dict["locationName"] = locationName
+        }
+        if let locationAddress = locationAddress {
+            dict["locationAddress"] = locationAddress
+        }
+        if let locationLink = locationLink {
+            dict["locationLink"] = locationLink
+        }
+        if let latitude = latitude {
+            dict["latitude"] = latitude
+        }
+        if let longitude = longitude {
+            dict["longitude"] = longitude
+        }
+        if let link = link {
+            dict["link"] = link
+        }
+        
+        return dict
     }
 }
