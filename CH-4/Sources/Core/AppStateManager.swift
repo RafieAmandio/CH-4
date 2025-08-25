@@ -93,7 +93,7 @@ public class AppStateManager: ObservableObject {
                     authProvider: u.authProvider,
                     email: u.email,
                     username: u.username,
-                    photoUrl: newUser.photoLink ?? "",
+                    photoUrl: newUser.photoLink,
                     linkedinUsername: newUser.linkedinUsername,
                     name: newUser.name,
                     isFirst: false,
@@ -157,7 +157,6 @@ public class AppStateManager: ObservableObject {
         isAuthenticated = authenticated
 
         guard let foundedUser = user else { return }
-        print(foundedUser,"FOUNDEDUSER")
         self.user = foundedUser
         resolveScreen()
     }
@@ -206,7 +205,6 @@ public class AppStateManager: ObservableObject {
         }
         
         // If we can't parse the date, assume event is not active
-        print("Warning: Could not parse event end date: \(endDate)")
         return false
     }
     

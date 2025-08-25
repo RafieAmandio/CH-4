@@ -19,51 +19,12 @@ struct HomeAttendee: View {
             ApplyBackground {
                 VStack(spacing: 20) {
                     // Show different content based on event status
-                    if appState.isJoinedEvent, let selectedEvent = appState.selectedEvent {
+                    if AppStateManager.shared.isJoinedEvent {
                         // User has an active event
-                        VStack(spacing: 16) {
-                            AsyncImage(url: URL(string: selectedEvent.photoLink)) { phase in
-                                switch phase {
-                                case .empty:
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(AppColors.gray.opacity(0.3))
-                                        .frame(height: 120)
-                                        .overlay(ProgressView())
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(height: 120)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                                case .failure:
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(AppColors.gray.opacity(0.3))
-                                        .frame(height: 120)
-                                        .overlay(
-                                            Image(systemName: "photo")
-                                                .foregroundColor(AppColors.gray)
-                                        )
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                            
-                            VStack(spacing: 8) {
-                                Text(selectedEvent.name)
-                                    .font(AppFont.bodySmallMedium)
-                                    .foregroundStyle(.white)
-                                    .multilineTextAlignment(.center)
-                                
-                                Text("\(selectedEvent.currentParticipant) participants")
-                                    .font(AppFont.bodySmallSemibold)
-                                    .foregroundStyle(AppColors.gray)
-                            }
-                            
-                            CustomButton(title: "View Event Details", style: .secondary, width: 200) {
-                                // Action to view event details
-                            }
-                        }
-                        .frame(maxWidth: 320)
+                        AttendeeRecommendationView()
+                            .environmentObject(viewModel)
+
+                        
                     } else {
                         // No active event
                         Text("No event right now. Start networking by scanning your QR.")
@@ -77,19 +38,20 @@ struct HomeAttendee: View {
                         }
                     }
                     
-                    Button {
-                        appState.switchToCreator()
-                    } label: {
-                        Text("Switch Role")
-                    }
-                    
-                    Button {
-                        print("isJoinedEvent: \(appState.isJoinedEvent)")
-                        print("selectedEvent: \(appState.selectedEvent?.name ?? "nil")")
-                    } label: {
-                        Text("Debug Status")
-                    }
+//                    Button {
+//                        appState.switchToCreator()
+//                    } label: {
+//                        Text("Switch Role")
+//                    }
+//                    
+//                    Button {
+//                        print("isJoinedEvent: \(appState.isJoinedEvent)")
+//                        print("selectedEvent: \(appState.selectedEvent?.name ?? "nil")")
+//                    } label: {
+//                        Text("Debug Status")
+//                    }
                 }
+                .padding(22)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

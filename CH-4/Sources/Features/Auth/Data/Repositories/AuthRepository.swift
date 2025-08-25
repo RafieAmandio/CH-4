@@ -50,7 +50,6 @@ public final class AuthRepository: AuthRepositoryProtocol {
     }
     
     public func save(_ user: UserData) throws {
-        print("ABOUT TO BE SAVED, \(user)")
         let data = try JSONEncoder().encode(user)
         userDefaults.set(data, forKey: userKey)
     }
