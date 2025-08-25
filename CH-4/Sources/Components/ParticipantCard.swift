@@ -195,22 +195,3 @@ struct FlexibleParticipantCard: View {
         )
     }
 }
-
-//#Preview {
-//    FlexibleParticipantCard(
-//        image: Image("person"),
-//        name: "John Doe",
-//        title: "iOS Developer",
-//        detailContent: AnyView(
-//            VStack {
-//                Text("Detailed Information")
-//                    .font(.title2)
-//                    .foregroundColor(.white)
-//                Text("More details about the person...")
-//                    .foregroundColor(.white.opacity(0.8))
-//            }
-//            .padding()
-//        ),
-//        onTap: { print("Card tapped") }
-//    )
-//}

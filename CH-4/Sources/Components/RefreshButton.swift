@@ -29,15 +29,3 @@ struct RefreshButton: View {
 }
 
 // MARK: - Preview
-
-#Preview {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        
-        VStack {
-            RefreshButton(action: { print("Refresh tapped") })
-        }
-        .padding(.bottom, 24)
-    }
-}
-

@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - Domain Models
 
-public struct RecommendationModel: Identifiable, Equatable {
+public struct RecommendationModel: Identifiable, Equatable, Codable {
     public let id: String
     public let score: Decimal
     public let reasoning: String
@@ -32,7 +32,7 @@ public struct RecommendationModel: Identifiable, Equatable {
     }
 }
 
-public struct TargetAttendeeModel: Equatable {
+public struct TargetAttendeeModel: Equatable, Codable{
     public let nickname: String
     public let profession: ProfessionModelRecommendation
     public let goalsCategory: GoalsCategoryModel
@@ -67,7 +67,7 @@ public struct TargetAttendeeModel: Equatable {
     }
 }
 
-public struct ProfessionModelRecommendation: Equatable {
+public struct ProfessionModelRecommendation: Equatable, Codable {
     public let name: String
     public let categoryName: String
 
@@ -77,7 +77,7 @@ public struct ProfessionModelRecommendation: Equatable {
     }
 }
 
-public struct GoalsCategoryModel: Equatable {
+public struct GoalsCategoryModel: Equatable , Codable{
     public let name: String
 
     public init(name: String) {
@@ -85,7 +85,7 @@ public struct GoalsCategoryModel: Equatable {
     }
 }
 
-public struct ShareableAnswerModel: Equatable {
+public struct ShareableAnswerModel: Equatable, Codable {
     public let question: String
     public let questionType: QuestionTypeResponse
     public let answerLabel: String?
@@ -314,30 +314,5 @@ extension RecommendationModel {
             .padding(20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-class ImageLoader {
-    static func loadImage(from urlString: String) async -> UIImage? {
-        guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            return nil
-        }
-
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-
-            guard let httpResponse = response as? HTTPURLResponse,
-                httpResponse.statusCode == 200
-            else {
-                print("Invalid response")
-                return nil
-            }
-
-            return UIImage(data: data)
-        } catch {
-            print("Failed to load image: \(error.localizedDescription)")
-            return nil
-        }
     }
 }

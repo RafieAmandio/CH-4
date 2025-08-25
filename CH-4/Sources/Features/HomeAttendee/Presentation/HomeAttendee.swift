@@ -23,7 +23,7 @@ struct HomeAttendee: View {
                         // User has an active event
                         AttendeeRecommendationView()
                             .environmentObject(viewModel)
-    
+
                         
                     } else {
                         // No active event

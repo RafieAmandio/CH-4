@@ -21,6 +21,10 @@ public final class HomeAttendeeViewModel: ObservableObject {
     @Published var recommendations: [RecommendationModel] = []
     @Published var isLoadingRecommendations: Bool = false
     @Published var recommendationError: String?
+    
+    private let cacheManager = RecommendationCacheManager.shared
+    @Published var lastFetchTime: Date?
+    @Published var isUsingCachedData: Bool = false
 
     // MARK: - Use Cases
     private var validateEventUseCase: ValidateEventUseCaseProtocol
@@ -35,6 +39,8 @@ public final class HomeAttendeeViewModel: ObservableObject {
     public var recommendationCount: Int {
         return recommendations.count
     }
+
+ 
 
     // MARK: - Initialization
     public init(
@@ -65,36 +71,68 @@ public final class HomeAttendeeViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Recommendations Methods
-    @MainActor
-    public func fetchRecommendations() async {
+
+    public func fetchRecommendations(forceRefresh: Bool = false) async {
         // Prevent multiple simultaneous requests
         guard !isLoadingRecommendations else { return }
 
-        isLoadingRecommendations = true
         recommendationError = nil
 
-        guard await AppStateManager.shared.selectedEvent != nil else {
-            isLoadingRecommendations = false
+        guard let selectedEvent = await AppStateManager.shared.selectedEvent else {
             recommendationError = "No event selected"
             return
         }
 
+        let eventId = selectedEvent.code
+
+        if !forceRefresh,
+            let cachedRecommendations = cacheManager.getCachedRecommendations(
+                for: eventId)
+        {
+            self.recommendations = cachedRecommendations
+            self.isUsingCachedData = true
+            self.lastFetchTime =
+                UserDefaults.standard.object(
+                    forKey: "recommendations_last_fetch") as? Date
+            print(
+                "Using cached recommendations (\(cachedRecommendations.count) items)"
+            )
+            return
+        }
+
+        isLoadingRecommendations = true
+        recommendationError = nil
+        isUsingCachedData = false
+
         do {
             let response = try await fetchRecommendationsUseCase.execute()
-
-            self.recommendations = response.data.recommendations.map {
+            let fetchedRecommendations = response.data.recommendations.map {
                 $0.toDomain()
             }
+
+            self.recommendations = fetchedRecommendations
             self.isLoadingRecommendations = false
+            self.lastFetchTime = Date()
+
+            cacheManager.cacheRecommendations(
+                fetchedRecommendations, for: eventId)
 
             // Log success for debugging
             print(
-                "Successfully fetched \(recommendations.count) recommendations")
+                "Successfully fetched and cached \(fetchedRecommendations.count) recommendations"
+            )
 
         } catch {
             self.recommendationError = error.localizedDescription
             self.isLoadingRecommendations = false
+
+            if let cachedRecommendations =
+                cacheManager.getCachedRecommendations(for: eventId)
+            {
+                self.recommendations = cachedRecommendations
+                self.isUsingCachedData = true
+                print("Using expired cached data as fallback")
+            }
 
             print(
                 "Failed to fetch recommendations: \(error.localizedDescription)"
@@ -113,6 +151,17 @@ public final class HomeAttendeeViewModel: ObservableObject {
         recommendations = []
         recommendationError = nil
         isLoadingRecommendations = false
+    }
+    
+    public var cacheInfo: String {
+        if isUsingCachedData {
+            if let age = cacheManager.getCacheAge() {
+                let minutes = Int(age / 60)
+                return "Cached \(minutes) min ago"
+            }
+            return "Using cached data"
+        }
+        return "Live data"
     }
 
     // MARK: - Scanner Methods
@@ -179,3 +228,5 @@ public final class HomeAttendeeViewModel: ObservableObject {
         recommendations.removeAll { $0.id == id }
     }
 }
+
+

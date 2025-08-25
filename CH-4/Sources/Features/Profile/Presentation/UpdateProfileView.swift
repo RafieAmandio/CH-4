@@ -36,7 +36,7 @@ struct UpdateProfileView: View {
                     print("successfully joined event")
                 }
             }
-            print("MSKSINIGAN")
+         
             onBoardingViewModel.currentState = .goalSelection
         } else {
             onProfileUpdated?()

@@ -132,7 +132,7 @@ struct AttendeeRecommendationView: View {
 
             CustomButton(title: "Refresh", style: .primary, width: 116) {
                 Task {
-                    await viewModel.fetchRecommendations()
+                    await viewModel.fetchRecommendations(forceRefresh: true )
                 }
             }
         }
