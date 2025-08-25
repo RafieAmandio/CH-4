@@ -1,13 +1,14 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import UIComponentsKit
 
 struct InteractiveMapLocationPicker: View {
     @ObservedObject var viewModel: CreateEventViewModel
     @StateObject private var locationManager = LocationManager()
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // Default to SF
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        center: CLLocationCoordinate2D(latitude: -8.6500, longitude: 115.2167), // Default to Bali
+        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     )
     @State private var selectedCoordinate: CLLocationCoordinate2D?
     @State private var searchText = ""
@@ -18,62 +19,141 @@ struct InteractiveMapLocationPicker: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            ZStack {
+        ApplyBackground {
+            VStack(spacing: 0) {
+                // Header Section
+                VStack(alignment: .leading, spacing: 16) {
+                    // Title
+                    Text("Select the event location!")
+                        .font(AppFont.headingLargeBold)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 22)
+                }
+                .padding(.top, 20)
+                
+                // Search Input
+                HStack(spacing: 12) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
+                    
+                    TextField("Input Location", text: $searchText)
+                        .font(Font.custom("Urbanist", size: 17).weight(.medium))
+                        .foregroundColor(.white)
+                        .onChange(of: searchText) { newValue in
+                            handleSearchTextChange(newValue)
+                        }
+                    
+                    if isSearching {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .foregroundColor(.white)
+                    } else if !searchText.isEmpty {
+                        Button(action: {
+                            searchText = ""
+                            searchResults = []
+                            showingSearchResults = false
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity)
+                .background(Color(red: 0.13, green: 0.13, blue: 0.17))
+                .cornerRadius(20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .inset(by: 0.5)
+                        .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
+                )
+                .padding(.horizontal, 22)
+                .padding(.top, 20)
+                
+                // Search Results
+                if showingSearchResults && !searchResults.isEmpty {
+                    searchResultsList
+                        .padding(.horizontal, 22)
+                        .padding(.top, 8)
+                }
+                
                 // Map View
-                Map(coordinateRegion: $region,
-                    interactionModes: [.pan, .zoom],
-                    showsUserLocation: true,
-                    annotationItems: pinLocations) { location in
-                    MapPin(coordinate: location.coordinate, tint: .red)
-                }
-                .onTapGesture { location in
-                    let coordinate = convertTapToCoordinate(location)
-                    handleMapTap(at: coordinate)
-                }
-                
-                // Search Bar at top
-                VStack {
-                    searchBarView
-                    
-                    if showingSearchResults && !searchResults.isEmpty {
-                        searchResultsList
+                ZStack {
+                    Map(coordinateRegion: $region,
+                        interactionModes: [.pan, .zoom],
+                        showsUserLocation: true,
+                        annotationItems: pinLocations) { location in
+                        MapAnnotation(coordinate: location.coordinate) {
+                            // Custom blue teardrop marker
+                            VStack(spacing: 0) {
+                                Image(systemName: "mappin.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(AppColors.primary)
+                                
+                                Circle()
+                                    .fill(AppColors.primary)
+                                    .frame(width: 8, height: 8)
+                                    .offset(y: -2)
+                            }
+                        }
+                    }
+                    .onTapGesture { location in
+                        let coordinate = convertTapToCoordinate(location)
+                        handleMapTap(at: coordinate)
                     }
                     
-                    Spacer()
+                    // Zoom Controls (right side)
+                    VStack(spacing: 12) {
+                        Button(action: zoomIn) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(AppColors.primary)
+                                    .frame(width: 40, height: 40)
+                                
+                                Image(systemName: "plus")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        Button(action: zoomOut) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(AppColors.primary)
+                                    .frame(width: 40, height: 40)
+                                
+                                Image(systemName: "minus")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                    .padding(.trailing, 16)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     
-                    // Bottom controls
-                    bottomControls
-                }
-                
-                // Center crosshairs (optional visual aid)
-                if selectedCoordinate == nil {
-                    Image(systemName: "plus")
-                        .font(.title2)
-                        .foregroundColor(.red)
-                        .background(
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 30, height: 30)
-                        )
-                        .shadow(radius: 3)
-                }
-            }
-            .navigationTitle("Pick Location")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                    // Center crosshairs (when no location selected)
+                    if selectedCoordinate == nil {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .foregroundColor(.red)
+                            .background(
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 30, height: 30)
+                            )
+                            .shadow(radius: 3)
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 20)
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        saveSelectedLocation()
-                    }
-                    .disabled(selectedCoordinate == nil)
-                }
+                Spacer()
             }
         }
         .onAppear {
@@ -82,54 +162,6 @@ struct InteractiveMapLocationPicker: View {
         .onDisappear {
             debounceTask?.cancel()
         }
-    }
-    
-    private var searchBarView: some View {
-        HStack {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
-                
-                TextField("Search for a place", text: $searchText)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .onChange(of: searchText) { newValue in
-                        handleSearchTextChange(newValue)
-                    }
-                
-                if isSearching {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                } else if !searchText.isEmpty {
-                    Button(action: {
-                        searchText = ""
-                        searchResults = []
-                        showingSearchResults = false
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
-            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-            
-            Button(action: centerOnUserLocation) {
-                Image(systemName: "location.fill")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .background(
-                        Circle()
-                            .fill(Color(.systemBackground))
-                            .frame(width: 40, height: 40)
-                    )
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
     }
     
     private var searchResultsList: some View {
@@ -142,47 +174,19 @@ struct InteractiveMapLocationPicker: View {
                     
                     if mapItem != searchResults.prefix(8).last {
                         Divider()
+                            .background(Color(red: 0.21, green: 0.21, blue: 0.21))
                     }
                 }
             }
         }
         .frame(maxHeight: 250)
-        .background(Color(.systemBackground))
+        .background(Color(red: 0.13, green: 0.13, blue: 0.17))
         .cornerRadius(10)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-        .padding(.horizontal, 16)
-        .padding(.top, 4)
-    }
-    
-    private var bottomControls: some View {
-        VStack(spacing: 12) {
-            if let coordinate = selectedCoordinate {
-                locationInfoCard(for: coordinate)
-            }
-            
-            HStack(spacing: 16) {
-                Button("Drop Pin Here") {
-                    dropPinAtCenter()
-                }
-                .buttonStyle(SecondaryButtonStyle())
-                
-                if selectedCoordinate != nil {
-                    Button("Clear Pin") {
-                        selectedCoordinate = nil
-                    }
-                    .buttonStyle(SecondaryButtonStyle())
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-    }
-    
-    private var pinLocations: [PinLocation] {
-        if let coordinate = selectedCoordinate {
-            return [PinLocation(coordinate: coordinate)]
-        }
-        return []
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .inset(by: 0.5)
+                .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
+        )
     }
     
     // MARK: - Helper Functions
@@ -273,37 +277,18 @@ struct InteractiveMapLocationPicker: View {
         selectedCoordinate = coordinate
     }
     
-    private func dropPinAtCenter() {
-        selectedCoordinate = region.center
-    }
-    
-    private func centerOnUserLocation() {
-        if let currentLocation = locationManager.currentLocation {
-            region = MKCoordinateRegion(
-                center: currentLocation.coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-            )
-        } else {
-            locationManager.requestLocation()
+    private func zoomIn() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            region.span.latitudeDelta *= 0.5
+            region.span.longitudeDelta *= 0.5
         }
     }
     
-    private func locationInfoCard(for coordinate: CLLocationCoordinate2D) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Selected Location")
-                .font(.headline)
-            Text("Lat: \(coordinate.latitude, specifier: "%.6f")")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text("Lng: \(coordinate.longitude, specifier: "%.6f")")
-                .font(.caption)
-                .foregroundColor(.secondary)
+    private func zoomOut() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            region.span.latitudeDelta *= 2.0
+            region.span.longitudeDelta *= 2.0
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemBackground))
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private func saveSelectedLocation() {
@@ -348,6 +333,13 @@ struct InteractiveMapLocationPicker: View {
         
         return components.joined(separator: ", ")
     }
+    
+    private var pinLocations: [PinLocation] {
+        if let coordinate = selectedCoordinate {
+            return [PinLocation(coordinate: coordinate)]
+        }
+        return []
+    }
 }
 
 // MARK: - Supporting Types and Views
@@ -365,20 +357,20 @@ struct SearchResultRow: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Image(systemName: "mappin.circle.fill")
-                    .foregroundColor(.blue)
+                    .foregroundColor(AppColors.primary)
                     .font(.title3)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(mapItem.name ?? "Unknown Location")
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.leading)
                         .lineLimit(1)
                     
                     if let address = formatAddress(mapItem) {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56))
                             .lineLimit(2)
                     }
                 }
@@ -406,17 +398,5 @@ struct SearchResultRow: View {
         }
         
         return components.isEmpty ? nil : components.joined(separator: ", ")
-    }
-}
-
-struct SecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-            .background(Color(.systemGray6))
-            .foregroundColor(.primary)
-            .cornerRadius(8)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
     }
 }
