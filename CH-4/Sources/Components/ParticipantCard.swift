@@ -81,7 +81,7 @@ struct FlexibleParticipantCard: View {
     var onTap: () -> Void
 
     private let cornerRadius: CGFloat = 20
-    private let strokeWidth: CGFloat = 2
+    private let strokeWidth: CGFloat = 10
     @State private var isFlipped = false
 
     var body: some View {

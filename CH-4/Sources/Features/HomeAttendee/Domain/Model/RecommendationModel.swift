@@ -189,27 +189,6 @@ extension RecommendationModel {
                         .foregroundColor(.white.opacity(0.7))
                 }
 
-                // Match Score
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Match Score")
-                        .font(.headline)
-                        .foregroundColor(.white)
-
-                    HStack {
-                        Text("\(Int(scorePercentage))%")
-                            .font(.title2.bold())
-                            .foregroundColor(.green)
-
-                        Spacer()
-
-                        // Score bar
-                        ProgressView(value: scorePercentage / 100)
-                            .progressViewStyle(
-                                LinearProgressViewStyle(tint: .green)
-                            )
-                            .frame(width: 100)
-                    }
-                }
 
                 // Goals
                 VStack(alignment: .leading, spacing: 8) {
