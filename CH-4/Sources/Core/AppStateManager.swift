@@ -15,17 +15,31 @@ public class AppStateManager: ObservableObject {
     @Published var isAuthenticated = false
     @Published var currentRole: UserRole = .attendee
     @Published var user: UserData?
-    @Published var selectedEvent: EventValidateModel? {
-        didSet {
-            saveSelectedEvent()
-            updateJoinedEventStatus()
+    @Published private var _selectedEvent: EventValidateModel?
+    @Published private var _isJoinedEvent: Bool = false
+    
+    // Public computed properties that trigger didSet only when needed
+    public var selectedEvent: EventValidateModel? {
+        get { _selectedEvent }
+        set {
+            _selectedEvent = newValue
+            Task {
+                await saveSelectedEvent()
+                updateJoinedEventStatus()
+            }
         }
     }
-    @Published var isJoinedEvent: Bool = false {
-        didSet {
-            saveJoinedEventStatus()
+    
+    public var isJoinedEvent: Bool {
+        get { _isJoinedEvent }
+        set {
+            _isJoinedEvent = newValue
+            Task {
+                await saveJoinedEventStatus()
+            }
         }
     }
+    @Published var isInitialized: Bool = false // Track initialization state
 
     enum Screen {
         case auth
@@ -40,6 +54,8 @@ public class AppStateManager: ObservableObject {
 
     private var authRepository = AuthRepository(
         supabaseAuthService: SupabaseAuthService())
+    
+    private let persistenceQueue = DispatchQueue(label: "app-state-persistence", qos: .utility)
 
     enum UserRole: String, CaseIterable {
         case attendee = "attendee"
@@ -62,8 +78,7 @@ public class AppStateManager: ObservableObject {
     }
 
     public func setSelectedEvent(_ event: EventValidateModel?) {
-        self.selectedEvent = event
-        // updateJoinedEventStatus() is automatically called by didSet
+        self.selectedEvent = event // This will trigger the setter
         
         if isJoinedEvent {
             fetchRecommendations()
@@ -93,7 +108,7 @@ public class AppStateManager: ObservableObject {
                     authProvider: u.authProvider,
                     email: u.email,
                     username: u.username,
-                    photoUrl: newUser.photoLink ?? "",
+                    photoUrl: newUser.photoLink,
                     linkedinUsername: newUser.linkedinUsername,
                     name: newUser.name,
                     isFirst: false,
@@ -102,10 +117,13 @@ public class AppStateManager: ObservableObject {
                     professionId: newUser.professionId.uuidString
                 )
             self.user = newUser
-            do {
-                try authRepository.save(newUser)
-            } catch {
-                fatalError("something went wrong")
+            
+            Task.detached(priority: .background) {
+                do {
+                    try await self.authRepository.save(newUser)
+                } catch {
+                    print("Failed to save user: \(error)")
+                }
             }
         }
     }
@@ -135,29 +153,47 @@ public class AppStateManager: ObservableObject {
         }
     }
 
-    // MARK: - Private Initializer
+    // MARK: - Async Initializer
     private init() {
-        loadPersistedState()
-        resolveScreen()
+        // Start with minimal blocking initialization
+        Task {
+            await initializeAsync()
+        }
+    }
+    
+    private func initializeAsync() async {
+        // Load state in background
+        await loadPersistedState()
+        
+        // Update UI on main thread
+        await MainActor.run {
+            resolveScreen()
+            isInitialized = true
+        }
+        
+        // Trigger recommendations if needed (non-blocking)
         if isJoinedEvent {
             fetchRecommendations()
         }
     }
     
     func fetchRecommendations() {
-        
+        // This will be handled by the ViewModel
+        NotificationCenter.default.post(name: .shouldFetchRecommendations, object: nil)
     }
 
     func switchRole(to role: UserRole) {
         currentRole = role
-        UserDefaults.standard.set(role.rawValue, forKey: Keys.currentRole)
+        
+        Task.detached(priority: .background) {
+            UserDefaults.standard.set(role.rawValue, forKey: Keys.currentRole)
+        }
     }
 
     func setAuthenticated(_ authenticated: Bool, user: UserData? = nil) {
         isAuthenticated = authenticated
 
         guard let foundedUser = user else { return }
-        print(foundedUser,"FOUNDEDUSER")
         self.user = foundedUser
         resolveScreen()
     }
@@ -166,25 +202,21 @@ public class AppStateManager: ObservableObject {
         isAuthenticated = false
         user = nil
         currentRole = .attendee
-        selectedEvent = nil
-        isJoinedEvent = false
-
-        // Clear persisted event data
-        clearSelectedEvent()
-        clearJoinedEventStatus()
+        selectedEvent = nil // This will trigger the setter and clear persistence
+        isJoinedEvent = false // This will trigger the setter
         
-        try? authRepository.clear()
         resolveScreen()
     }
     
     // MARK: - Event Status Management
     func updateJoinedEventStatus() {
-        guard let selectedEvent = selectedEvent else {
-            isJoinedEvent = false
+        guard let selectedEvent = _selectedEvent else {
+            _isJoinedEvent = false
             return
         }
         
-        isJoinedEvent = isEventActive(endDate: selectedEvent.endDate)
+        // This is fast enough to stay synchronous
+        _isJoinedEvent = isEventActive(endDate: selectedEvent.endDate)
     }
 
     private func isEventActive(endDate: String) -> Bool {
@@ -206,79 +238,142 @@ public class AppStateManager: ObservableObject {
         }
         
         // If we can't parse the date, assume event is not active
-        print("Warning: Could not parse event end date: \(endDate)")
         return false
     }
     
-    // MARK: - Persistence Methods
-    private func saveSelectedEvent() {
-        guard let event = selectedEvent else {
-            clearSelectedEvent()
+    // MARK: - Async Persistence Methods
+    private func saveSelectedEvent() async {
+        guard let event = _selectedEvent else {
+            await clearSelectedEvent()
             return
         }
         
-        UserDefaults.standard.set(event.name, forKey: Keys.selectedEventName)
-        UserDefaults.standard.set(event.photoLink, forKey: Keys.selectedEventPhotoLink)
-        UserDefaults.standard.set(event.currentParticipant, forKey: Keys.selectedEventCurrentParticipant)
-        UserDefaults.standard.set(event.code, forKey: Keys.selectedEventCode)
-        UserDefaults.standard.set(event.endDate, forKey: Keys.selectedEventEndDate)
-    }
-    
-    private func clearSelectedEvent() {
-        UserDefaults.standard.removeObject(forKey: Keys.selectedEventName)
-        UserDefaults.standard.removeObject(forKey: Keys.selectedEventPhotoLink)
-        UserDefaults.standard.removeObject(forKey: Keys.selectedEventCurrentParticipant)
-        UserDefaults.standard.removeObject(forKey: Keys.selectedEventCode)
-        UserDefaults.standard.removeObject(forKey: Keys.selectedEventEndDate)
-    }
-    
-    private func saveJoinedEventStatus() {
-        UserDefaults.standard.set(isJoinedEvent, forKey: Keys.isJoinedEvent)
-    }
-    
-    private func clearJoinedEventStatus() {
-        UserDefaults.standard.removeObject(forKey: Keys.isJoinedEvent)
-    }
-    
-    private func loadSelectedEvent() -> EventValidateModel? {
-        guard let name = UserDefaults.standard.string(forKey: Keys.selectedEventName),
-              let photoLink = UserDefaults.standard.string(forKey: Keys.selectedEventPhotoLink),
-              let code = UserDefaults.standard.string(forKey: Keys.selectedEventCode),
-              let endDate = UserDefaults.standard.string(forKey: Keys.selectedEventEndDate) else {
-            return nil
+        await withCheckedContinuation { continuation in
+            persistenceQueue.async {
+                UserDefaults.standard.set(event.name, forKey: Keys.selectedEventName)
+                UserDefaults.standard.set(event.photoLink, forKey: Keys.selectedEventPhotoLink)
+                UserDefaults.standard.set(event.currentParticipant, forKey: Keys.selectedEventCurrentParticipant)
+                UserDefaults.standard.set(event.code, forKey: Keys.selectedEventCode)
+                UserDefaults.standard.set(event.endDate, forKey: Keys.selectedEventEndDate)
+                continuation.resume()
+            }
         }
-        
-        let currentParticipant = UserDefaults.standard.integer(forKey: Keys.selectedEventCurrentParticipant)
-        
-        return EventValidateModel(
-            name: name,
-            photoLink: photoLink,
-            currentParticipant: currentParticipant,
-            code: code,
-            endDate: endDate
-        )
     }
-
-    private func loadPersistedState() {
-        // Load user authentication state
-        let user = authRepository.getCurrentUser()
-        let role = UserRole(
-            rawValue: UserDefaults.standard.string(forKey: Keys.currentRole) ?? "attendee"
-        ) ?? .attendee
-
-        self.currentRole = role
-
-        if user != nil {
-            setAuthenticated(true, user: user)
+    
+    private func clearSelectedEvent() async {
+        await withCheckedContinuation { continuation in
+            persistenceQueue.async {
+                UserDefaults.standard.removeObject(forKey: Keys.selectedEventName)
+                UserDefaults.standard.removeObject(forKey: Keys.selectedEventPhotoLink)
+                UserDefaults.standard.removeObject(forKey: Keys.selectedEventCurrentParticipant)
+                UserDefaults.standard.removeObject(forKey: Keys.selectedEventCode)
+                UserDefaults.standard.removeObject(forKey: Keys.selectedEventEndDate)
+                continuation.resume()
+            }
         }
-        
-        // Load selected event
-        self.selectedEvent = loadSelectedEvent()
-        
-        // Load joined event status
-        self.isJoinedEvent = UserDefaults.standard.bool(forKey: Keys.isJoinedEvent)
-        
-        // Validate the joined status against current time
-        updateJoinedEventStatus()
     }
+    
+    private func saveJoinedEventStatus() async {
+        await withCheckedContinuation { continuation in
+            persistenceQueue.async {
+                UserDefaults.standard.set(self._isJoinedEvent, forKey: Keys.isJoinedEvent)
+                continuation.resume()
+            }
+        }
+    }
+    
+    private func clearJoinedEventStatus() async {
+        await withCheckedContinuation { continuation in
+            persistenceQueue.async {
+                UserDefaults.standard.removeObject(forKey: Keys.isJoinedEvent)
+                continuation.resume()
+            }
+        }
+    }
+    
+    private func loadSelectedEvent() async -> EventValidateModel? {
+        return await withCheckedContinuation { continuation in
+            persistenceQueue.async {
+                guard let name = UserDefaults.standard.string(forKey: Keys.selectedEventName),
+                      let photoLink = UserDefaults.standard.string(forKey: Keys.selectedEventPhotoLink),
+                      let code = UserDefaults.standard.string(forKey: Keys.selectedEventCode),
+                      let endDate = UserDefaults.standard.string(forKey: Keys.selectedEventEndDate) else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let currentParticipant = UserDefaults.standard.integer(forKey: Keys.selectedEventCurrentParticipant)
+                
+                let event = EventValidateModel(
+                    name: name,
+                    photoLink: photoLink,
+                    currentParticipant: currentParticipant,
+                    code: code,
+                    endDate: endDate
+                )
+                continuation.resume(returning: event)
+            }
+        }
+    }
+
+    private func loadPersistedState() async {
+        // Load everything in background
+        let (user, role, selectedEvent, joinedStatus) = await withTaskGroup(of: (UserData?, UserRole, EventValidateModel?, Bool).self) { group in
+            group.addTask {
+                // Load user (potentially slow)
+                let user = try? await self.authRepository.getCurrentUser()
+                
+                // Load other UserDefaults values
+                let roleString = UserDefaults.standard.string(forKey: Keys.currentRole) ?? "attendee"
+                let role = UserRole(rawValue: roleString) ?? .attendee
+                
+                let joinedStatus = UserDefaults.standard.bool(forKey: Keys.isJoinedEvent)
+                
+                return (user, role, nil, joinedStatus)
+            }
+            
+            group.addTask {
+                // Load selected event
+                let selectedEvent = await self.loadSelectedEvent()
+                return (nil, .attendee, selectedEvent, false)
+            }
+            
+            // Combine results
+            var user: UserData?
+            var role: UserRole = .attendee
+            var selectedEvent: EventValidateModel?
+            var joinedStatus = false
+            
+            for await result in group {
+                if let resultUser = result.0 { user = resultUser }
+                if result.1 != .attendee { role = result.1 }
+                if let resultEvent = result.2 { selectedEvent = resultEvent }
+                if result.3 { joinedStatus = result.3 }
+            }
+            
+            return (user, role, selectedEvent, joinedStatus)
+        }
+
+        // Update UI on main thread
+        await MainActor.run {
+            self.currentRole = role
+            
+            if user != nil {
+                setAuthenticated(true, user: user)
+            }
+            
+            // Set values directly without triggering persistence during initialization
+            self._selectedEvent = selectedEvent
+            self._isJoinedEvent = joinedStatus
+            
+            // Validate the joined status against current time
+            updateJoinedEventStatus()
+        }
+    }
+}
+
+// MARK: - Notification Extensions
+extension Notification.Name {
+    static let shouldFetchRecommendations = Notification.Name("shouldFetchRecommendations")
+    static let shouldClearRecommendations = Notification.Name("shouldClearRecommendations")
 }

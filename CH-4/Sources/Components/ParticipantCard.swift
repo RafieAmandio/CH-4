@@ -74,14 +74,14 @@ struct ParticipantCard: View {
 
 // Alternative version with more flexible sizing
 struct FlexibleParticipantCard: View {
-    var image: Image
+    var image: AnyView
     var name: String
     var title: String
     var detailContent: AnyView
     var onTap: () -> Void
 
     private let cornerRadius: CGFloat = 20
-    private let strokeWidth: CGFloat = 12
+    private let strokeWidth: CGFloat = 10
     @State private var isFlipped = false
 
     var body: some View {
@@ -98,7 +98,7 @@ struct FlexibleParticipantCard: View {
                     )
                     .blur(radius: 1)
                     .opacity(0.8)
-
+                
                 // Main card content
                 if isFlipped {
                     // Back view (detail view)
@@ -108,9 +108,7 @@ struct FlexibleParticipantCard: View {
                     frontView(geometry: geometry)
                 }
             }
-            .contentShape(
-                RoundedRectangle(cornerRadius: cornerRadius + strokeWidth)
-            )
+            .contentShape(RoundedRectangle(cornerRadius: cornerRadius + strokeWidth))
             .rotation3DEffect(
                 .degrees(isFlipped ? 180 : 0),
                 axis: (x: 0, y: 1, z: 0)
@@ -119,8 +117,8 @@ struct FlexibleParticipantCard: View {
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                 impactFeedback.impactOccurred()
-
-                withAnimation(.spring(duration: 0.5)) {
+                
+                withAnimation(.easeInOut(duration: 0.6)) {
                     isFlipped.toggle()
                 }
                 onTap()
@@ -128,7 +126,7 @@ struct FlexibleParticipantCard: View {
         }
         .aspectRatio(0.7, contentMode: .fit)
     }
-
+    
     private func frontView(geometry: GeometryProxy) -> some View {
         ZStack(alignment: .bottomLeading) {
             // Card background
@@ -138,7 +136,6 @@ struct FlexibleParticipantCard: View {
 
             // Image fills entire available space
             image
-                .resizable()
                 .scaledToFill()
                 .frame(
                     width: geometry.size.width - strokeWidth * 2,
@@ -150,19 +147,19 @@ struct FlexibleParticipantCard: View {
             textOverlay
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-        .padding(strokeWidth)  // Creates space for the stroke
+        .padding(strokeWidth) // Creates space for the stroke
     }
-
+    
     private var backView: some View {
         ZStack {
             // Background for back view
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(Color.black.opacity(0.8))
                 .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 6)
-
+            
             // Detail content
             detailContent
-                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))  // Flip the content back to readable
+                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0)) // Flip the content back to readable
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .padding(strokeWidth)
@@ -197,23 +194,4 @@ struct FlexibleParticipantCard: View {
             )
         )
     }
-}
-
-#Preview {
-    FlexibleParticipantCard(
-        image: Image("person"),
-        name: "John Doe",
-        title: "iOS Developer",
-        detailContent: AnyView(
-            VStack {
-                Text("Detailed Information")
-                    .font(.title2)
-                    .foregroundColor(.white)
-                Text("More details about the person...")
-                    .foregroundColor(.white.opacity(0.8))
-            }
-            .padding()
-        ),
-        onTap: { print("Card tapped") }
-    )
 }

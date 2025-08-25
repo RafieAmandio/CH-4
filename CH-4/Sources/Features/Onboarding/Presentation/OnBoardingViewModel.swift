@@ -53,7 +53,6 @@ public final class OnboardingViewModel: ObservableObject {
         print("Answers submitted successfully")
         AppStateManager.shared.screen = .homeAttendee
         AppStateManager.shared.isJoinedEvent = true
-        print("YEY")
     }
 
     public func handleJoinEvent(
@@ -61,7 +60,6 @@ public final class OnboardingViewModel: ObservableObject {
         completion: @escaping (Bool?) -> Void
     ) async {
         do {
-            print(payload, "PAYLOAD")
             let result = try await registerAttendeeUseCase.execute(
                 with: payload)
             guard let accessToken = result.accessToken
@@ -69,7 +67,7 @@ public final class OnboardingViewModel: ObservableObject {
                 fatalError("Access token not found")
             }
 
-            KeychainManager.shared.save(token: "access_token", for: accessToken)
+            let _ = KeychainManager.shared.save(token: "access_token", for: accessToken)
             APIClient.shared.setAuthToken(accessToken)
 
         } catch {
