@@ -232,7 +232,8 @@ struct InteractiveMapLocationPicker: View {
         // Update the view model
         let location = EventLocation(
             name: mapItem.name ?? "Selected Location",
-            coordinate: coordinate
+            coordinate: coordinate,
+            address: formatAddress(from: mapItem.placemark)
         )
         
         viewModel.selectedLocation = location
@@ -272,6 +273,33 @@ struct InteractiveMapLocationPicker: View {
             return [PinLocation(coordinate: coordinate)]
         }
         return []
+    }
+    
+    private func formatAddress(from placemark: CLPlacemark?) -> String {
+        guard let placemark = placemark else { return "" }
+        
+        var components: [String] = []
+        
+        if let thoroughfare = placemark.thoroughfare {
+            components.append(thoroughfare)
+        }
+        if let subThoroughfare = placemark.subThoroughfare {
+            components.append(subThoroughfare)
+        }
+        if let locality = placemark.locality {
+            components.append(locality)
+        }
+        if let administrativeArea = placemark.administrativeArea {
+            components.append(administrativeArea)
+        }
+        if let postalCode = placemark.postalCode {
+            components.append(postalCode)
+        }
+        if let country = placemark.country {
+            components.append(country)
+        }
+        
+        return components.joined(separator: ", ")
     }
 }
 

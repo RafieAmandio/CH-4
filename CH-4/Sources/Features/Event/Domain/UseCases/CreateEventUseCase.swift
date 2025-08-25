@@ -22,6 +22,12 @@ public final class CreateEventUseCase: CreateEventUseCaseProtocol {
     public func execute(event: EventCreationForm) async throws -> CreateOrUpdateResult {
         let dateFormatter = ISO8601DateFormatter()
         
+        // Create Google Maps link for the location
+        let locationLink = "https://maps.google.com/?q=\(event.location.coordinate.latitude),\(event.location.coordinate.longitude)"
+        
+        // Create a basic event link (can be customized later)
+        let eventLink = "https://ch-4.app/events/\(UUID().uuidString)"
+        
         let dtoPayload = EventCreationPayload(
             name: event.name,
             start: dateFormatter.string(from: event.startDateTime),
@@ -29,11 +35,11 @@ public final class CreateEventUseCase: CreateEventUseCaseProtocol {
             description: event.description.isEmpty ? nil : event.description,
             photoLink: event.photoLink,
             locationName: event.location.name.isEmpty ? nil : event.location.name,
-            locationAddress: nil, // TODO: Get from location if available
-            locationLink: nil, // TODO: Get from location if available
+            locationAddress: event.location.address.isEmpty ? nil : event.location.address,
+            locationLink: locationLink,
             latitude: event.location.coordinate.latitude == 0 ? nil : event.location.coordinate.latitude,
             longitude: event.location.coordinate.longitude == 0 ? nil : event.location.coordinate.longitude,
-            link: nil // TODO: Add event link if needed
+            link: nil
         )
         
         let result = try await eventRepository.createEvent(dtoPayload)
