@@ -15,6 +15,8 @@ public enum AppFont {
     public static let headingLargeBold = Font.custom("Urbanist-Bold", size: 30)
     public static let headingLargeSemiBold = Font.custom("Urbanist-SemiBold", size: 30)
     
+    public static let headingMediumBold = Font.custom("Urbanist-Bold", size: 25)
+                                                      
     public static let headingSmallBold = Font.custom("Urbanist-Bold", size: 20)
     
     public static let bodySmallSemibold = Font.custom("Urbanist-SemiBold", size: 17)
