@@ -29,13 +29,7 @@ struct CreateEventView: View {
                                 presentationMode.wrappedValue.dismiss()
                             }
                         },
-                        onNext: {
-                            if viewModel.currentStep < 4 && viewModel.canProceed {
-                                viewModel.nextStep()
-                            }
-                        },
-                        canGoBack: true,
-                        canGoNext: viewModel.currentStep < 4 && viewModel.canProceed
+                        canGoBack: true
                     )
                     // Main content area
                     VStack(spacing: 0) {

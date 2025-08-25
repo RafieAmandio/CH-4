@@ -29,16 +29,14 @@ struct EventDescriptionView: View {
                 // Description Input Field - using same styling as EventDetailsStepView
                 VStack(alignment: .leading, spacing: 12) {
                     TextField(
-                        "", text: $viewModel.form.description,
-                        prompt: Text("Input Event Description").foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.56)),
+                        "Input Event Description", 
+                        text: $viewModel.form.description,
                         axis: .vertical
                     )
-                    .font(
-                        Font.custom("Urbanist", size: 17)
-                            .weight(.medium)
-                    )
+                    .font(Font.custom("Urbanist", size: 17).weight(.medium))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
+                    .lineLimit(5...10)
                     .padding(20)
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 200, alignment: .topLeading)
@@ -50,8 +48,16 @@ struct EventDescriptionView: View {
                             .stroke(Color(red: 0.21, green: 0.21, blue: 0.21), lineWidth: 1)
                     )
                     .focused($isDescriptionFieldFocused)
+                    .onTapGesture {
+                        // Ensure text field gets focus when tapped
+                        isDescriptionFieldFocused = true
+                    }
                     .onChange(of: viewModel.form.description) { _ in
                         viewModel.validateCurrentStep()
+                    }
+                    .onSubmit {
+                        // Hide keyboard when return is pressed
+                        isDescriptionFieldFocused = false
                     }
 
                     if let error = viewModel.validationErrors["description"] {
@@ -66,10 +72,8 @@ struct EventDescriptionView: View {
             .padding(22)
         }
         .onTapGesture {
-            // Focus text field when tapping outside
-            if !isDescriptionFieldFocused {
-                isDescriptionFieldFocused = false
-            }
+            // Hide keyboard when tapping outside the text field
+            isDescriptionFieldFocused = false
         }
     }
 }
