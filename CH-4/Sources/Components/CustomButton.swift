@@ -5,6 +5,7 @@ import UIComponentsKit
 enum CustomButtonStyle {
     case primary
     case secondary
+    case danger
     
     var backgroundColor: Color {
         switch self {
@@ -12,6 +13,8 @@ enum CustomButtonStyle {
             return AppColors.primary
         case .secondary:
             return Color.black
+        case .danger:
+            return Color(red: 238/255, green: 95/255, blue: 95/255) // dangerRed
         }
     }
     
@@ -21,6 +24,8 @@ enum CustomButtonStyle {
             return Color.white
         case .secondary:
             return Color.white
+        case .danger:
+            return Color.black
         }
     }
 }

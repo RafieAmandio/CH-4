@@ -140,7 +140,7 @@ struct CircularImagePickerWithBinding: View {
                 }
                 
                 // Optional: Add a small camera icon overlay
-                if selectedImage != nil {
+//                if selectedImage != nil {
                     VStack {
                         Spacer()
                         HStack {
@@ -155,7 +155,7 @@ struct CircularImagePickerWithBinding: View {
                         }
                     }
                     .frame(width: size, height: size)
-                }
+//                }
             }
             .overlay(
                 Circle()
