@@ -17,9 +17,7 @@ struct StepNavBar: View {
 
     // Nav button actions + state
     var onBack: () -> Void
-    var onNext: () -> Void
     var canGoBack: Bool = true
-    var canGoNext: Bool = true
 
     // Styling (tweak to match your dark theme)
     var barBackground: Color = Color(.sRGB, white: 0.10, opacity: 1) // near-black
@@ -48,15 +46,10 @@ struct StepNavBar: View {
                     .minimumScaleFactor(0.8)
 
                 Spacer()
-
-                Button(action: onNext) {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(canGoNext ? iconActive : iconDisabled)
-                        .padding(8)
-                        .contentShape(Rectangle())
-                }
-                .disabled(!canGoNext)
+                
+                // Empty spacer to balance the layout
+                Color.clear
+                    .frame(width: 38, height: 38) // Same size as the back button
             }
 
             ProgressIndicator(
@@ -82,9 +75,7 @@ struct StepNavBar: View {
             totalSteps: 3,
             currentStep: 1,
             onBack: {},
-            onNext: {},
-            canGoBack: false,
-            canGoNext: true
+            canGoBack: false
         )
         Spacer().background(Color.black.opacity(0.9))
     }
