@@ -44,6 +44,10 @@ struct HomeAttendee: View {
                                 viewModel.isShowingScanner = true
                             }
                         }
+                        
+                        CustomButton(title: "Switch role", style: .secondary, width: 116) {
+                            appState.switchToCreator()
+                        }
                     }
                     .padding(22)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
