@@ -18,6 +18,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isShowError: Bool = false
     @Published var isLogoutPresented: Bool = false
+    @Published var codeText: String?
 
     // MARK: - Recommendations Properties
     @Published var recommendations: [RecommendationModel] = []
@@ -64,6 +65,26 @@ public final class HomeAttendeeViewModel: ObservableObject {
 
             // Fetch recommendations if user joined an event and we don't have data yet
             await fetchRecommendations(forceRefresh: true)
+        }
+    }
+    
+    public func validateEventFromManualCode(_ code: String) async {
+        // Clear the text field after attempting validation
+        defer { codeText = nil }
+        
+        isLoading = true
+        clearError()
+
+        do {
+            let data = try await validateEventUseCase.execute(code: code)
+            eventDetail = data
+            self.isShowingEventDetail = true
+            isLoading = false
+
+        } catch {
+            showError(message: error.localizedDescription)
+            isLoading = false
+            print("Manual code validation failed: \(error.localizedDescription)")
         }
     }
 

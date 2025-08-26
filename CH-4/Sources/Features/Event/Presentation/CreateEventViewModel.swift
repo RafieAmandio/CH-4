@@ -111,7 +111,7 @@ public final class CreateEventViewModel: ObservableObject {
         
         // TODO: Implement actual image upload to your storage service
         // For now, we'll simulate a successful upload
-        form.photoLink = "https://example.com/event-images/\(UUID().uuidString).jpg"
+        form.photoLink =         "https://example.com/event-images/\(UUID().uuidString).jpg"
     }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {

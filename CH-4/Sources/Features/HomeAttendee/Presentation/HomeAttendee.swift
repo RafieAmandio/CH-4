@@ -43,10 +43,49 @@ struct HomeAttendee: View {
                             ) {
                                 viewModel.isShowingScanner = true
                             }
-                        }
-                        
-                        CustomButton(title: "Switch role", style: .secondary, width: 116) {
-                            appState.switchToCreator()
+
+                            Text("or")
+                                .font(AppFont.bodySmallBold)
+                                .foregroundStyle(AppColors.gray)
+
+                            // Fixed TextField
+                            TextField(
+                                "Enter event code",
+                                text: Binding(
+                                    get: { viewModel.codeText ?? "" },
+                                    set: {
+                                        viewModel.codeText =
+                                            $0.isEmpty ? nil : $0
+                                    }
+                                )
+                            )
+                            .textFieldStyle(CustomTextFieldStyle())
+                            .autocapitalization(.allCharacters)
+                            .disableAutocorrection(true)
+
+                            // Fixed Join button
+                            CustomButton(
+                                title: "Join", style: .primary, width: 116
+                            ) {
+                                // Use the manually entered code
+                                if let code = viewModel.codeText,
+                                    !code.trimmingCharacters(
+                                        in: .whitespacesAndNewlines
+                                    ).isEmpty
+                                {
+                                    Task {
+                                        await viewModel
+                                            .validateEventFromManualCode(
+                                                code.trimmingCharacters(
+                                                    in: .whitespacesAndNewlines)
+                                            )
+                                    }
+                                }
+                            }
+                            .disabled(
+                                viewModel.codeText?.trimmingCharacters(
+                                    in: .whitespacesAndNewlines
+                                ).isEmpty != false)
                         }
                     }
                     .padding(22)
@@ -70,12 +109,19 @@ struct HomeAttendee: View {
                 }
             }
             .sheet(isPresented: $viewModel.isLogoutPresented) {
-                CustomButton(
-                    title: "Sign Out", style: .primary,
-                    action: {
-                        appState.logout()
+                VStack {
+                    CustomButton(
+                        title: "Switch role", style: .secondary, width: 116
+                    ) {
+                        appState.switchToCreator()
                     }
-                )
+                    CustomButton(
+                        title: "Sign Out", style: .primary,
+                        action: {
+                            appState.logout()
+                        }
+                    )
+                }
                 .padding()
                 .presentationDetents([.height(120)])
             }
