@@ -154,7 +154,7 @@ struct CompleteTextFieldOnboardingView: View {
             .background(AppColors.offBlack)
         }
         .background(AppColors.offBlack)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }
 

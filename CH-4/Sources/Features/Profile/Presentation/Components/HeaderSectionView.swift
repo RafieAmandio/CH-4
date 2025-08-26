@@ -10,16 +10,19 @@ import UIComponentsKit
 
 struct HeaderSectionView: View {
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(alignment:.leading, spacing: 5) {
             Text("Tell us about yourself!")
-                .font(AppFont.headingLargeSemiBold)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(AppFont.inter30Bold)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+
             Text("Your information becomes visible to others when you’re suggested to them.")
-                .font(AppFont.bodySmallRegular)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(AppFont.inter14Regular)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
                 .multilineTextAlignment(.leading)
         }
-        .padding(.horizontal, 20)
+        .frame(height: 100)
+        .padding(.horizontal, 15)
+        .padding(.vertical, 35)
     }
 }
 

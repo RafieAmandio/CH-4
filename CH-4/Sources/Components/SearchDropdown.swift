@@ -14,14 +14,14 @@ struct SearchDropdown: View {
 
     // MARK: - Appearance
     var height: CGFloat = 56
-    var cornerRadius: CGFloat = 22
-    var fieldBackground: Color = Color(red: 0.14, green: 0.16, blue: 0.20)  // #242831
-    var dropdownBackground: Color = Color(red: 0.12, green: 0.13, blue: 0.16)
-    var textColor: Color = .white
+    var cornerRadius: CGFloat = 11
+    var fieldBackground: Color = Color(red: 0.98, green: 0.98, blue: 0.98)  // #242831
+    var dropdownBackground: Color = Color(red: 0.98, green: 0.98, blue: 0.98)
+    var textColor: Color = .black
     var placeholderColor: Color = .white.opacity(0.45)
     var focusedStroke: Color = .white.opacity(0.12)
     var unfocusedStroke: Color = .white.opacity(0.04)
-    var font: Font = .system(size: 18, weight: .semibold, design: .rounded)
+    var font: Font = AppFont.inter14Regular
     var maxVisibleRows: Int = 6
     var debounceMs: UInt64 = 180_000_000  // 180ms
 
@@ -35,7 +35,10 @@ struct SearchDropdown: View {
 
     var body: some View {
         // Host view
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(placeholder)
+                .font(AppFont.interSmallBold)
+                .foregroundStyle(.black.opacity(0.6))
             field
                 .background(
                     RoundedRectangle(
@@ -87,17 +90,10 @@ struct SearchDropdown: View {
     // MARK: - Subviews
     private var field: some View {
         HStack(spacing: 12) {
-            Image(systemName: "briefcase.fill").opacity(0.6)
-                .foregroundStyle(AppColors.primary)
+            Image(systemName: "briefcase.fill").opacity(1)
+                .foregroundStyle(.black)
 
             ZStack(alignment: .leading) {
-                if text.isEmpty {
-                    Text(placeholder)
-                        .foregroundColor(placeholderColor)
-                        .font(font)
-                        .padding(.vertical, 2)
-                }
-
                 TextField("", text: $text)
                     .font(font)
                     .foregroundColor(textColor)
@@ -123,8 +119,9 @@ struct SearchDropdown: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .rotationEffect(.degrees(isOpen ? 180 : 0))
-                    .opacity(0.6)
+                    .opacity(1)
                     .animation(.easeInOut(duration: 0.15), value: isOpen)
+                    .foregroundStyle(.black)
             }
             .accessibilityLabel(isOpen ? "Hide options" : "Show options")
         }
@@ -155,12 +152,8 @@ struct SearchDropdown: View {
                                 } label: {
                                     HStack {
                                         Text(profession.name)
-                                            .foregroundColor(.white)
-                                            .font(
-                                                .system(
-                                                    size: 16, weight: .semibold,
-                                                    design: .rounded)
-                                            )
+                                            .foregroundColor(.black)
+                                            .font(AppFont.inter14Regular)
                                             .lineLimit(1)
                                         Spacer()
                                     }
@@ -183,12 +176,8 @@ struct SearchDropdown: View {
                                 } label: {
                                     HStack {
                                         Text(item)
-                                            .foregroundColor(.white)
-                                            .font(
-                                                .system(
-                                                    size: 16, weight: .semibold,
-                                                    design: .rounded)
-                                            )
+                                            .foregroundColor(.black)
+                                            .font(AppFont.inter14Regular)
                                             .lineLimit(1)
                                         Spacer()
                                     }
@@ -210,10 +199,10 @@ struct SearchDropdown: View {
             }
         }
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .fill(dropdownBackground)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 11, style: .continuous)
                         .stroke(.white.opacity(0.08), lineWidth: 1)
                 )
                 .shadow(radius: 18, y: 8)

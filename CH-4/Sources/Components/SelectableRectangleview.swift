@@ -13,9 +13,9 @@ struct SelectableRectangleView: View {
     var unselectedColor: Color = AppColors.TextFieldBackground
     var selectedBorderColor: Color = AppColors.selectedBorder
     var unselectedBorderColor: Color = .clear
-    var borderWidth: CGFloat = 2
-    var textColor: Color = .primary
-    var selectedTextColor: Color = .white
+    var borderWidth: CGFloat = 3
+    var textColor: Color = .black
+    var selectedTextColor: Color = .black
 
     enum SelectionMode {
         case single
@@ -26,7 +26,7 @@ struct SelectableRectangleView: View {
         Button(action: action) {
             HStack {
                 Text(title)
-                    .font(AppFont.bodySmallMedium)
+                    .font(AppFont.interSmallMedium)
                     .foregroundColor(isSelected ? selectedTextColor : textColor)
                     .multilineTextAlignment(.leading)
                 
@@ -61,6 +61,7 @@ struct SelectableRectangleView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .animation(.easeInOut(duration: 0.2), value: isSelected)
+        
     }
 }
 
@@ -155,4 +156,11 @@ extension GoalsCategory {
         GoalsCategory(id: "goal-007", name: "Startup Funding"),
         GoalsCategory(id: "goal-008", name: "Mentorship"),
     ]
+}
+
+
+#Preview {
+    SelectableRectangleView(title: "Test", isSelected: true) {
+        
+    }
 }

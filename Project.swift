@@ -73,7 +73,11 @@ let project = Project(
                     "Urbanist-Bold.ttf",
                     "Urbanist-Regular.ttf",
                     "Urbanist-Medium.ttf",
-                    "Urbanist-SemiBold.ttf"
+                    "Urbanist-SemiBold.ttf",
+                    "Inter-Regular.ttf",
+                    "Inter-Medium.ttf",
+                    "Inter-SemiBold.ttf",
+                    "Inter-Bold.ttf"
                 ],
                 // Add iPhone-specific interface orientations
                 "UISupportedInterfaceOrientations": [

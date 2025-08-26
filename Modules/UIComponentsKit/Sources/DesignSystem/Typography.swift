@@ -7,10 +7,8 @@
 
 import SwiftUI
 
-
 public enum AppFont {
     public static let headingLargest = Font.custom("Urbanist-Bold", size: 40)
-    
     
     public static let headingLargeBold = Font.custom("Urbanist-Bold", size: 30)
     public static let headingLargeSemiBold = Font.custom("Urbanist-SemiBold", size: 30)
@@ -23,4 +21,26 @@ public enum AppFont {
     public static let bodySmallMedium = Font.custom("Urbanist-Medium", size: 17)
     public static let bodySmallRegular = Font.custom("Urbanist-Regular", size: 17)
     public static let bodySmallBold = Font.custom("Urbanist-Bold", size: 18)
+
+    // Fixed Inter font names - no underscores, no hyphens before weight
+    public static let interSmallRegular = Font.custom("Inter28pt-Regular", size: 12)
+    public static let interMidRegular = Font.custom("Inter28pt-Regular", size: 16)
+    public static let interLargeRegular = Font.custom("Inter28pt-Regular", size: 36)
+
+    public static let interSmallMedium = Font.custom("Inter28pt-Medium", size: 12)
+    public static let interMidMedium = Font.custom("Inter28pt-Medium", size: 16)
+    public static let interLargeMedium = Font.custom("Inter28pt-Medium", size: 36)
+
+    public static let interSmallSemiBold = Font.custom("Inter28pt-SemiBold", size: 12)
+    public static let interMidSemiBold = Font.custom("Inter28pt-SemiBold", size: 16)
+    public static let interLargeSemiBold = Font.custom("Inter28pt-SemiBold", size: 36)
+
+    public static let interSmallBold = Font.custom("Inter28pt-Bold", size: 12)
+    public static let interMidBold = Font.custom("Inter28pt-Bold", size: 16)
+    public static let interLargeBold = Font.custom("Inter28pt-Bold", size: 36)
+    
+    
+    public static let inter30Bold = Font.custom("Inter28pt-Bold", size: 30)
+    public static let inter14Regular = Font.custom("Inter28pt-Regular", size: 14)
 }
+

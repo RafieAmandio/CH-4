@@ -5,6 +5,7 @@ import UIComponentsKit
 enum CustomButtonStyle {
     case primary
     case secondary
+    case newPrimary
     
     var backgroundColor: Color {
         switch self {
@@ -12,6 +13,8 @@ enum CustomButtonStyle {
             return AppColors.primary
         case .secondary:
             return Color.black
+        case .newPrimary:
+            return Color.clear // Will use LinearGradient instead
         }
     }
     
@@ -20,6 +23,8 @@ enum CustomButtonStyle {
         case .primary:
             return Color.white
         case .secondary:
+            return Color.white
+        case .newPrimary:
             return Color.white
         }
     }
@@ -50,17 +55,42 @@ struct CustomButton: View {
     
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(AppFont.bodySmallSemibold)
-                .foregroundColor(style.textColor)
-                .multilineTextAlignment(.center)
-                .frame(
-                    width: width,
-                    height: height
-                )
-                .frame(maxWidth: width == nil ? .infinity : width)
-                .background(style.backgroundColor)
-                .cornerRadius(cornerRadius)
+            HStack(alignment: .center, spacing: 10) {
+                Text(title)
+                    .font(AppFont.bodySmallSemibold)
+                    .foregroundColor(style.textColor)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 0)
+            .padding(.vertical, 15)
+            .frame(
+                width: width,
+                height: height
+            )
+            .frame(maxWidth: width == nil ? .infinity : width, alignment: .center)
+            .background(
+                Group {
+                    if style == .newPrimary {
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 0.26, green: 0.48, blue: 0.84), location: 0.44),
+                                Gradient.Stop(color: Color(red: 0.26, green: 0.66, blue: 0.84), location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: -0.03, y: 0),
+                            endPoint: UnitPoint(x: 1, y: 1.04)
+                        )
+                    } else {
+                        style.backgroundColor
+                    }
+                }
+            )
+            .cornerRadius(style == .newPrimary ? 10 : cornerRadius)
+            .shadow(
+                color: style == .newPrimary ? .black.opacity(0.1) : .clear,
+                radius: style == .newPrimary ? 12.5 : 0,
+                x: style == .newPrimary ? 5 : 0,
+                y: style == .newPrimary ? 5 : 0
+            )
         }
     }
 }
@@ -92,17 +122,42 @@ struct CustomButtonAdvanced: View {
     
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(AppFont.bodySmallRegular)
-                .foregroundColor(style.textColor)
-                .multilineTextAlignment(.center)
-                .frame(
-                    width: width,
-                    height: height
-                )
-                .frame(maxWidth: width == nil ? .infinity : width)
-                .background(style.backgroundColor)
-                .cornerRadius(cornerRadius)
+            HStack(alignment: .center, spacing: 10) {
+                Text(title)
+                    .font(AppFont.bodySmallRegular)
+                    .foregroundColor(style.textColor)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 0)
+            .padding(.vertical, 15)
+            .frame(
+                width: width,
+                height: height
+            )
+            .frame(maxWidth: width == nil ? .infinity : width, alignment: .center)
+            .background(
+                Group {
+                    if style == .newPrimary {
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 0.26, green: 0.48, blue: 0.84), location: 0.44),
+                                Gradient.Stop(color: Color(red: 0.26, green: 0.66, blue: 0.84), location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: -0.03, y: 0),
+                            endPoint: UnitPoint(x: 1, y: 1.04)
+                        )
+                    } else {
+                        style.backgroundColor
+                    }
+                }
+            )
+            .cornerRadius(style == .newPrimary ? 10 : cornerRadius)
+            .shadow(
+                color: style == .newPrimary ? .black.opacity(0.1) : .clear,
+                radius: style == .newPrimary ? 12.5 : 0,
+                x: style == .newPrimary ? 5 : 0,
+                y: style == .newPrimary ? 5 : 0
+            )
         }
     }
 }
@@ -134,6 +189,15 @@ struct CustomButtonExamples: View {
                 message = "Secondary button pressed"
             }
             
+            // New Primary button with fixed width
+            CustomButton(
+                title: "New Primary",
+                style: .newPrimary,
+                width: 116
+            ) {
+                message = "New Primary button pressed"
+            }
+            
             // Primary button with full width (maxWidth: .infinity)
             CustomButton(
                 title: "Sign In",
@@ -149,6 +213,15 @@ struct CustomButtonExamples: View {
                 style: .secondary
             ) {
                 message = "Full width secondary button pressed"
+            }
+            .padding(.horizontal)
+            
+            // New Primary button with full width
+            CustomButton(
+                title: "New Primary Full Width",
+                style: .newPrimary
+            ) {
+                message = "Full width new primary button pressed"
             }
             .padding(.horizontal)
             

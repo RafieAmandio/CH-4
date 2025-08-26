@@ -9,56 +9,54 @@ import SwiftUI
 import UIComponentsKit
 
 struct GoalSelectionView: View {
-    @State private var selectedGoal: GoalsCategory? // Single selection
+    @State private var selectedGoal: GoalsCategory?  // Single selection
 
     @EnvironmentObject var viewModel: OnboardingViewModel
 
     var body: some View {
-        ApplyBackground {
-            VStack {
-                VStack(spacing: 45) {
-                    HeaderView
-                    ScrollView {
-                        LazyVStack(spacing: 15) {
-                            ForEach(viewModel.goals, id: \.id) { goal in
-                                let isSelected = selectedGoal?.id == goal.id
+        VStack {
+            VStack(spacing: 45) {
+                HeaderView
+                ScrollView {
+                    LazyVStack(spacing: 15) {
+                        ForEach(viewModel.goals, id: \.id) { goal in
+                            let isSelected = selectedGoal?.id == goal.id
 
-                                SelectableRectangleView(
-                                    title: goal.name,
-                                    isSelected: isSelected,
-                                    selectionMode: .single
-                                ) {
-                                    handleGoalSelection(goal: goal)
-                                }
+                            SelectableRectangleView(
+                                title: goal.name,
+                                isSelected: isSelected,
+                                selectionMode: .single
+                            ) {
+                                handleGoalSelection(goal: goal)
                             }
                         }
                     }
-                    
                 }
-                Spacer()
-                
-                CustomButton(title: "Continue", style: .primary) {
-                    handleContinueAction()
-                }
+
             }
-            .padding(22)
+            Spacer()
+
+            CustomButton(title: "Continue", style: .newPrimary) {
+                handleContinueAction()
+            }
         }
-        .onAppear{
+        .padding(22)
+
+        .onAppear {
             Task {
-                 await viewModel.fetchGoals()
+                await viewModel.fetchGoals()
             }
         }
     }
-    
+
     // MARK: - Computed Properties
-    
+
     @ViewBuilder
     private var selectedGoalView: some View {
         if let selectedGoal = selectedGoal {
             VStack {
                 Text("Selected:")
                     .font(AppFont.bodySmallMedium)
-                    .fontWeight(.semibold)
 
                 Text(selectedGoal.name)
                     .font(AppFont.bodySmallMedium)
@@ -70,18 +68,20 @@ struct GoalSelectionView: View {
             .padding(.horizontal, 20)
         }
     }
-    
+
     private var HeaderView: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Why did you join this event?")
-                .font(AppFont.headingLargeBold)
-            Text("Pick a goal — Your answer helps us match you with the best connections.")
-                .font(AppFont.bodySmallMedium)
+                .font(AppFont.interLargeBold)
+            Text(
+                "Pick a goal — Your answer helps us match you with the best connections."
+            )
+            .font(AppFont.interSmallMedium)
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func handleGoalSelection(goal: GoalsCategory) {
         if selectedGoal?.id == goal.id {
             // Deselect if already selected
@@ -90,21 +90,25 @@ struct GoalSelectionView: View {
             // Select the new goal
             selectedGoal = goal
         }
-        
+
     }
-    
+
     private func handleContinueAction() {
         guard let selectedGoal = selectedGoal else {
             print("No goal selected")
             return
         }
         Task {
-            try await viewModel.submitGoal(payload: SubmitGoalPayload(goalsCategoryId: selectedGoal.id))
+            try await viewModel.submitGoal(
+                payload: SubmitGoalPayload(goalsCategoryId: selectedGoal.id))
 
         }
     }
 }
 
 #Preview {
+    let vm = OnBoardingDIContainer.shared.makeOnBoardingViewModel()
     GoalSelectionView()
+        .environmentObject(vm)
+
 }

@@ -1,5 +1,5 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 import UIComponentsKit
 
 // MARK: - Circular Image Picker Component
@@ -7,13 +7,13 @@ struct CircularImagePicker: View {
     @State private var selectedImage: UIImage?
     @State private var isShowingImagePicker = false
     @State private var photoPickerItem: PhotosPickerItem?
-    
+
     let size: CGFloat
     let borderColor: Color
     let borderWidth: CGFloat
     let placeholderIcon: String
     let placeholderIconSize: CGFloat
-    
+
     init(
         size: CGFloat = 200,
         borderColor: Color = .blue,
@@ -27,7 +27,7 @@ struct CircularImagePicker: View {
         self.placeholderIcon = placeholderIcon
         self.placeholderIconSize = placeholderIconSize
     }
-    
+
     var body: some View {
         Button(action: {
             isShowingImagePicker = true
@@ -36,12 +36,15 @@ struct CircularImagePicker: View {
                 Circle()
                     .fill(Color.gray.opacity(0.3))
                     .frame(width: size, height: size)
-                
+
                 if let selectedImage = selectedImage {
                     Image(uiImage: selectedImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: size - borderWidth * 2, height: size - borderWidth * 2)
+                        .frame(
+                            width: size - borderWidth * 2,
+                            height: size - borderWidth * 2
+                        )
                         .clipShape(Circle())
                 } else {
                     // Placeholder
@@ -63,8 +66,10 @@ struct CircularImagePicker: View {
         )
         .onChange(of: photoPickerItem) { newItem in
             Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
+                if let data = try? await newItem?.loadTransferable(
+                    type: Data.self),
+                    let uiImage = UIImage(data: data)
+                {
                     selectedImage = uiImage
                 }
             }
@@ -79,8 +84,9 @@ struct CircularImagePickerWithBinding: View {
     @State private var isShowingImagePicker = false
     @State private var isShowingCamera = false
     @State private var photoPickerItem: PhotosPickerItem?
-    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    
+    @State private var sourceType: UIImagePickerController.SourceType =
+        .photoLibrary
+
     let onImageSelected: ((UIImage?) async -> Void)?
     let size: CGFloat
     let borderColor: Color
@@ -88,16 +94,16 @@ struct CircularImagePickerWithBinding: View {
     let placeholderIcon: String
     let placeholderIconSize: CGFloat
     let backgroundColor: Color
-    
+
     private func handleImageSelection(_ image: UIImage?) async {
         selectedImage = image
         await onImageSelected?(image)
     }
-    
+
     init(
         selectedImage: Binding<UIImage?>,
         size: CGFloat = 200,
-        borderColor: Color = AppColors.pickerBackground,
+        borderColor: Color = Color(red: 0.93, green: 0.93, blue: 0.93),
         borderWidth: CGFloat = 4,
         placeholderIcon: String = "person.circle.fill",
         placeholderIconSize: CGFloat = 30,
@@ -113,54 +119,63 @@ struct CircularImagePickerWithBinding: View {
         self.backgroundColor = backgroundColor
         self.onImageSelected = onImageSelected
     }
-    
+
     var body: some View {
         Button(action: {
             isShowingActionSheet = true
         }) {
             ZStack {
-                Circle()
-                    .fill(backgroundColor)
-                    .frame(width: size, height: size)
-                
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(width: size, height: size).cornerRadius(
+                        18.76463)
                 if let selectedImage = selectedImage {
                     Image(uiImage: selectedImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: size - borderWidth * 2, height: size - borderWidth * 2)
-                        .clipShape(Circle())
+                        .frame(
+                            width: size - borderWidth * 2,
+                            height: size - borderWidth * 2
+                        )
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 18)
+
+                        )
                 } else {
                     // Placeholder
                     VStack(spacing: 8) {
                         Image(systemName: placeholderIcon)
                             .font(.system(size: placeholderIconSize))
                             .foregroundColor(.gray)
-                        
+
                         Text("Tap to select photo")
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
                 }
-                
+
                 // Camera icon overlay when image is selected
-                if selectedImage != nil {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            ZStack {
-                                Image(systemName: "camera.circle.fill")
-                                    .font(.system(size: 26.5))
-                                    .foregroundColor(borderColor)
-                            }
-                            .offset(x: -2, y: 8)
-                        }
-                    }
-                    .frame(width: size, height: size)
-                }
+
+//                VStack {
+//                    Spacer()
+//                    HStack {
+//                        Spacer()
+//                        ZStack {
+//                        
+//                            Image(systemName: "camera.circle.fill")
+//                                .font(.system(size: 26.5))
+//                                .foregroundColor(.blue)
+//    
+//                        }
+//                        .offset(x: -2, y: 8)
+//                    }
+//                }
+//                .frame(width: size, height: size)
+
             }
             .overlay(
-                Circle()
+                RoundedRectangle(cornerRadius: 18.76463)
+                    .inset(by: 3)
                     .stroke(borderColor, lineWidth: 3)
             )
         }
@@ -171,7 +186,9 @@ struct CircularImagePickerWithBinding: View {
                 message: Text("Choose how you'd like to select your photo"),
                 buttons: [
                     .default(Text("Camera")) {
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        if UIImagePickerController.isSourceTypeAvailable(
+                            .camera)
+                        {
                             sourceType = .camera
                             isShowingCamera = true
                         }
@@ -179,7 +196,7 @@ struct CircularImagePickerWithBinding: View {
                     .default(Text("Photo Library")) {
                         isShowingImagePicker = true
                     },
-                    .cancel()
+                    .cancel(),
                 ]
             )
         }
@@ -189,16 +206,20 @@ struct CircularImagePickerWithBinding: View {
             matching: .images
         )
         .fullScreenCover(isPresented: $isShowingCamera) {
-            ImagePicker(sourceType: sourceType, onImageSelected: { image in
-                Task {
-                    await handleImageSelection(image)
-                }
-            })
+            ImagePicker(
+                sourceType: sourceType,
+                onImageSelected: { image in
+                    Task {
+                        await handleImageSelection(image)
+                    }
+                })
         }
         .onChange(of: photoPickerItem) { newItem in
             Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
+                if let data = try? await newItem?.loadTransferable(
+                    type: Data.self),
+                    let uiImage = UIImage(data: data)
+                {
                     await handleImageSelection(uiImage)
                 }
             }
@@ -210,11 +231,11 @@ struct CircularImagePickerWithBinding: View {
 //struct CircularImagePickerSheet: View {
 //    @State private var selectedImage: UIImage?
 //    @State private var isShowingImagePicker = false
-//    
+//
 //    let size: CGFloat
 //    let borderColor: Color
 //    let borderWidth: CGFloat
-//    
+//
 //    init(
 //        size: CGFloat = 200,
 //        borderColor: Color = Color(red: 0.3, green: 0.7, blue: 1.0),
@@ -224,7 +245,7 @@ struct CircularImagePickerWithBinding: View {
 //        self.borderColor = borderColor
 //        self.borderWidth = borderWidth
 //    }
-//    
+//
 //    var body: some View {
 //        Button(action: {
 //            isShowingImagePicker = true
@@ -233,7 +254,7 @@ struct CircularImagePickerWithBinding: View {
 //                Circle()
 //                    .fill(Color.gray.opacity(0.2))
 //                    .frame(width: size, height: size)
-//                
+//
 //                if let selectedImage = selectedImage {
 //                    Image(uiImage: selectedImage)
 //                        .resizable()
@@ -262,9 +283,9 @@ struct CircularImagePickerWithBinding: View {
 struct ImagePicker: UIViewControllerRepresentable {
     let sourceType: UIImagePickerController.SourceType
     let onImageSelected: (UIImage?) -> Void
-    
+
     @Environment(\.presentationMode) private var presentationMode
-    
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
@@ -272,29 +293,38 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.allowsEditing = true
         return picker
     }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
+
+    func updateUIViewController(
+        _ uiViewController: UIImagePickerController, context: Context
+    ) {}
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate,
+        UINavigationControllerDelegate
+    {
         let parent: ImagePicker
-        
+
         init(_ parent: ImagePicker) {
             self.parent = parent
         }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage
+
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController
+                .InfoKey: Any]
+        ) {
+            let image =
+                info[.editedImage] as? UIImage ?? info[.originalImage]
+                as? UIImage
             parent.onImageSelected(image)
             parent.presentationMode.wrappedValue.dismiss()
         }
-        
+
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }
 }
-

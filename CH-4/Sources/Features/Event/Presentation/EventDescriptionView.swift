@@ -19,7 +19,6 @@ struct EventDescriptionView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("What's the event about?")
                         .font(AppFont.headingLargeBold)
-                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .multilineTextAlignment(.leading)
                         .lineLimit(nil)
