@@ -24,7 +24,7 @@ struct HomeAttendee: View {
                     // Main Content
                     VStack(spacing: 20) {
                         // Show different content based on event status
-                        if true {
+                        if appState.isJoinedEvent {
                             // User has an active event
                             AttendeeRecommendationView()
                                 .environmentObject(viewModel)
@@ -39,6 +39,10 @@ struct HomeAttendee: View {
                             CustomButton(title: "Scan", style: .primary, width: 116) {
                                 viewModel.isShowingScanner = true
                             }
+                        }
+                        
+                        CustomButton(title: "Switch role", style: .secondary, width: 116) {
+                            appState.switchToCreator()
                         }
                     }
                     .padding(22)

@@ -6,6 +6,7 @@ struct EventLocation:Identifiable {
     let id = UUID()
     let name: String
     let coordinate: CLLocationCoordinate2D
+    let address: String
 }
 
 @MainActor
@@ -33,13 +34,14 @@ public final class CreateEventViewModel: ObservableObject {
     }
 
     
-    private let totalSteps = 3
+    private let totalSteps = 4
     
     var canProceed: Bool {
         switch currentStep {
         case 1: return form.canProceedToStep2
         case 2: return form.canProceedToStep3
-        case 3: return form.canCreateEvent
+        case 3: return form.canProceedToStep4
+        case 4: return form.canCreateEvent
         default: return false
         }
     }
@@ -84,7 +86,8 @@ public final class CreateEventViewModel: ObservableObject {
     func selectLocation(_ mapItem: MKMapItem) {
         let location = EventLocation(
             name: mapItem.name ?? "Unknown Location",
-            coordinate: mapItem.placemark.coordinate
+            coordinate: mapItem.placemark.coordinate,
+            address: formatAddress(from: mapItem.placemark)
         )
         
         // Update both selectedLocation and form.location
@@ -96,26 +99,49 @@ public final class CreateEventViewModel: ObservableObject {
         
         validateCurrentStep()
     }
+    
+    func setEventImage(_ image: UIImage?) {
+        form.image = image
+        form.photoLink = nil // Reset photo link when image changes
+        validateCurrentStep()
+    }
+    
+    func uploadEventImage() async {
+        guard let image = form.image else { return }
+        
+        // TODO: Implement actual image upload to your storage service
+        // For now, we'll simulate a successful upload
+        form.photoLink = "https://example.com/event-images/\(UUID().uuidString).jpg"
+    }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {
-         var addressComponents: [String] = []
-         
-         if let thoroughfare = placemark.thoroughfare {
-             addressComponents.append(thoroughfare)
-         }
-         if let locality = placemark.locality {
-             addressComponents.append(locality)
-         }
-         if let administrativeArea = placemark.administrativeArea {
-             addressComponents.append(administrativeArea)
-         }
-         
-         return addressComponents.joined(separator: ", ")
-     }
+        var components: [String] = []
+        
+        if let thoroughfare = placemark.thoroughfare {
+            components.append(thoroughfare)
+        }
+        if let subThoroughfare = placemark.subThoroughfare {
+            components.append(subThoroughfare)
+        }
+        if let locality = placemark.locality {
+            components.append(locality)
+        }
+        if let administrativeArea = placemark.administrativeArea {
+            components.append(administrativeArea)
+        }
+        if let postalCode = placemark.postalCode {
+            components.append(postalCode)
+        }
+        if let country = placemark.country {
+            components.append(country)
+        }
+        
+        return components.joined(separator: ", ")
+    }
      
     func nextStep() {
         guard canProceed else { return }
-        if currentStep < totalSteps + 1 {
+        if currentStep < totalSteps {
             currentStep += 1
         }
     }
@@ -134,14 +160,21 @@ public final class CreateEventViewModel: ObservableObject {
             if !form.isNameValid {
                 validationErrors["name"] = "Event name is required"
             }
+            if !form.isImageValid {
+                validationErrors["image"] = "Event image is required"
+            }
+        case 2:
             if !form.isDescriptionValid {
                 validationErrors["description"] = "Description must be at least 10 characters"
             }
-        case 2:
-            if form.dateTime <= Date() {
-                validationErrors["date"] = "Event date must be in the future"
-            }
         case 3:
+            if form.startDateTime <= Date().addingTimeInterval(-1) {
+                validationErrors["date"] = "Event start date must be in the future"
+            }
+            if form.endDateTime <= form.startDateTime.addingTimeInterval(60) {
+                validationErrors["endDate"] = "End date must be at least 1 minute after start date"
+            }
+        case 4:
             if !form.isLocationValid {
                 validationErrors["location"] = "Location is required"
             }
@@ -159,7 +192,12 @@ public final class CreateEventViewModel: ObservableObject {
             throw CreateEventError.validationFailed
         }
         
-        // TODO: Add API call here
+        // Upload image first if we have one
+        if form.image != nil {
+            await uploadEventImage()
+        }
+        
+        // Create the event
         let event = try await createEventUseCase.execute(event: form)
         
         if event.success {
@@ -170,8 +208,6 @@ public final class CreateEventViewModel: ObservableObject {
             onEventCreated?()
         }
        
-                
-     
         return event
         
     }
@@ -192,8 +228,11 @@ enum CreateEventError: LocalizedError {
 public struct EventCreationForm {
     var name: String = ""
     var description: String = ""
-    var dateTime: Date = Date()
-    var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    var startDateTime: Date = Date().addingTimeInterval(3600) // 1 hour from now
+    var endDateTime: Date = Date().addingTimeInterval(7200) // 2 hours from now
+    var location: EventLocation = .init(name: "", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0), address: "")
+    var image: UIImage?
+    var photoLink: String?
     
     // Validation computed properties
     var isNameValid: Bool {
@@ -208,15 +247,25 @@ public struct EventCreationForm {
         !location.name.isEmpty
     }
     
+    var isImageValid: Bool {
+        image != nil
+    }
+    
     var canProceedToStep2: Bool {
-        isNameValid && isDescriptionValid
+        isNameValid && isImageValid
     }
     
     var canProceedToStep3: Bool {
-        canProceedToStep2 && dateTime > Date()
+        canProceedToStep2 && isDescriptionValid
+    }
+    
+    var canProceedToStep4: Bool {
+        canProceedToStep3 && 
+        startDateTime > Date().addingTimeInterval(-1) && // Allow dates very close to now
+        endDateTime > startDateTime.addingTimeInterval(60) // Ensure at least 1 minute difference
     }
     
     var canCreateEvent: Bool {
-        canProceedToStep3 && isLocationValid
+        canProceedToStep4 && isLocationValid
     }
 }
