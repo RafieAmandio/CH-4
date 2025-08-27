@@ -362,7 +362,7 @@ struct LocationSearchSheet: View {
                     dismiss()
                 }) {
                     HStack(spacing: 12) {
-                        Image(systemName: "paperplane.fill")
+                        Image(systemName: "location.fill")
                             .font(.system(size: 18))
                             .foregroundColor(AppColors.primary)
                         
