@@ -162,7 +162,6 @@ struct FlexibleParticipantCardNew: View {
                     Text(name)
                         .font(AppFont.cardHead1)
                         .foregroundStyle(.white)
-
                     Text(title)
                         .font(AppFont.cardDetail)
                         .foregroundStyle(AppColors.cardTextDetails)

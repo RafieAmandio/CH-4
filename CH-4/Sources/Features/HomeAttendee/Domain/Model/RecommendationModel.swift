@@ -191,21 +191,19 @@ extension RecommendationModel {
                     )
             }
 
-            // Connect section
-            if let connectText = targetAttendee.linkedinUsername {
+            Button {
+                openLinkedInProfile()
+            } label: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Connect")
                         .font(AppFont.cardHead2)
                         .foregroundStyle(.white)
-
                     HStack {
-                        Image(systemName: "link")
+                        Image("linkedin")
+                        Text("Linkedin Profile")
                             .font(AppFont.cardText)
                             .foregroundStyle(.white)
-                        Text(connectText)
-                            .font(AppFont.cardText)
-                            .foregroundStyle(.white)
-                        //                            Spacer()
+
                         Image(systemName: "arrow.up.right")
                             .foregroundStyle(.white)
                             .font(AppFont.cardText)
@@ -219,8 +217,6 @@ extension RecommendationModel {
                 }
             }
 
-            // Key Reasons section
-
             VStack(alignment: .leading, spacing: 12) {
                 Text("Key Reason")
                     .font(AppFont.cardHead2)
@@ -233,6 +229,24 @@ extension RecommendationModel {
 
             }
         }
+    }
 
+    private func openLinkedInProfile() {
+        let linkedInUsername = targetAttendee.linkedinUsername ?? ""
+
+        // Try to open in LinkedIn app first
+        let linkedInAppURL = "linkedin://profile/\(linkedInUsername)"
+
+        if let appURL = URL(string: linkedInAppURL),
+            UIApplication.shared.canOpenURL(appURL)
+        {
+            UIApplication.shared.open(appURL)
+        } else {
+            // Fall back to web browser
+            let webURL = "https://www.linkedin.com/in/\(linkedInUsername)"
+            if let url = URL(string: webURL) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }

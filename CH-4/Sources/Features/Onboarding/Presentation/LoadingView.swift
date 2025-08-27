@@ -9,10 +9,8 @@ import SwiftUI
 
 struct LoadingView: View {
     var body: some View {
-        ApplyBackground {
-            ProgressView()
-                .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-        }
+        ProgressView()
+            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
     }
 }
 
