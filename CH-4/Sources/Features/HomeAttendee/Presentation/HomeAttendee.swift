@@ -84,7 +84,7 @@ struct HomeAttendee: View {
                     
                 VStack(alignment:.leading, spacing:20 ) {
                     Text("Input Your Event Code")
-                        .font(AppFont.inter20Bold)
+                        .font(AppFont.inter30Bold)
 
                     Text(
                         "Please enter your event code to access and join the session."
