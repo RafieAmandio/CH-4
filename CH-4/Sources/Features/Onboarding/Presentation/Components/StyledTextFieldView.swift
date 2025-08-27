@@ -13,7 +13,7 @@ struct StyledTextFieldView: View {
             // Question Title
             VStack(alignment: .leading, spacing: 16) {
                 Text(question.question)
-                    .font(AppFont.headingLargeBold)
+                    .font(AppFont.interLargeSemiBold)
                     .fontWeight(.bold)
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
@@ -22,8 +22,7 @@ struct StyledTextFieldView: View {
                 Text(
                     "Adding your experience makes it easier to connect you with people who fit your goals"
                 )
-                .font(AppFont.bodySmallMedium)
-
+                .font(AppFont.interMidRegular)
                 .multilineTextAlignment(.leading)
             }
 
@@ -34,7 +33,7 @@ struct StyledTextFieldView: View {
                     prompt: Text(getPlaceholderText()).foregroundColor(
                         .gray), axis: .vertical
                 )
-                .font(AppFont.bodySmallMedium)
+                .font(AppFont.interMidMedium)
                 .foregroundColor(.black)
                 .padding(20)
                 .background(

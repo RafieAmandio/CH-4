@@ -17,14 +17,14 @@ struct StyledSingleSelectView: View {
             // Question Title
             VStack(alignment: .leading, spacing: 15) {
                 Text(question.question)
-                    .font(AppFont.interLargeBold)
+                    .font(AppFont.interLargeSemiBold)
                     .multilineTextAlignment(.leading)
                     .lineLimit(nil)  // Allows unlimited lines
                     .fixedSize(horizontal: false, vertical: true)
 
                 // Subtitle
-                Text("Pick one!")
-                    .font(AppFont.interMidMedium)
+                Text("Pick one that feels right - Your answer will help us match you with the best connections.")
+                    .font(AppFont.interMidRegular)
                     .multilineTextAlignment(.leading)
             }
 
@@ -127,7 +127,7 @@ struct SingleSelectOptionButton: View {
                 }
 
                 Text(text)
-                    .font(AppFont.interSmallMedium)
+                    .font(AppFont.interMidMedium)
 
                     .multilineTextAlignment(.leading)
 
@@ -182,7 +182,7 @@ struct StyledSingleSelectView_Previews: PreviewProvider {
     static var previews: some View {
         let mockQuestion = QuestionDTO(
             id: "single_question",
-            question: "What is your primary careeasfsfssafsar goal right now?",
+            question: "What is your primary career goal right now?",
             type: .singleChoice,
             placeholder: nil,
             displayOrder: 1,

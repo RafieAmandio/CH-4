@@ -14,7 +14,7 @@ struct ParticipantCardStack: View {
             ZStack {
                 ForEach(Array(cards.enumerated()), id: \.offset) {
                     index, cardData in
-                    FlexibleParticipantCardNew(
+                    FlexibleParticipantCard(
                         image: AnyView(
                             AsyncImage(
                                 url: URL(string: cardData.imageURL ?? "")

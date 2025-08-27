@@ -17,14 +17,14 @@ struct StyledMultiSelectView: View {
             // Question Title
             VStack(alignment: .leading, spacing: 10) {
                 Text(question.question)
-                    .font(AppFont.interLargeBold)
+                    .font(AppFont.interLargeSemiBold)
                     .multilineTextAlignment(.leading)
                     .lineLimit(nil)  // Allows unlimited lines
                     .fixedSize(horizontal: false, vertical: true)
 
                 // Subtitle
                 Text("Pick one or more!")
-                    .font(AppFont.interSmallMedium)
+                    .font(AppFont.interMidRegular)
                     .multilineTextAlignment(.leading)
 
             }
@@ -109,7 +109,7 @@ struct MultiSelectOptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(text)
-                .font(AppFont.interSmallMedium)
+                .font(AppFont.interMidMedium)
                 .foregroundColor(isSelected ? AppColors.primary : .black)
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
