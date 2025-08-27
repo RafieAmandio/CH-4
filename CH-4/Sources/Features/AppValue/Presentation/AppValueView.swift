@@ -15,17 +15,17 @@ struct AppValueView: View {
         ListItem(
             title: "Meet people with your interest",
             description:
-                "Match with the right people— those who share your goals, interests, and collaboration potential.",
+                "Match with the right people to those share your goals",
             image: "charm_people"),
         ListItem(
             title: "Turn events into opportunities",
             description:
-                "From partners to mentors, find the right connection while you’re here.",
+                "From partners to mentors, find the right connection",
             image: "handshake"),
         ListItem(
             title: "Make every moment count",
             description:
-                "Match with the right people— those who share your goals, interests, and collaboration potential.",
+                "Make the most of your time at networking events",
             image: "clock"),
     ]
 
@@ -33,13 +33,13 @@ struct AppValueView: View {
         VStack(alignment: .leading) {
             if #available(iOS 17.0, *) {
                 Text("Unlock Networking potential with ")
-                    .font(AppFont.inter30Bold)
+                    .font(AppFont.interLargeSemiBold)
                     + Text("Findect.")
                     .foregroundStyle(LinearGradient.customGradient3)
-                    .font(AppFont.inter30Bold)
+                    .font(AppFont.interLargeSemiBold)
             } else {
                 Text("Unlock Networking potential with Findect.")
-                    .font(AppFont.inter30Bold)
+                    .font(AppFont.interLargeSemiBold)
             }
 
             Image("talking")
@@ -70,13 +70,13 @@ struct ListItemView: View {
             Image("lineicons:hand-shake")
                 .frame(width: 22.8, height: 22.8)
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(item.title)
                     .font(AppFont.interMidBold)
 
                 Text(item.description)
                     .multilineTextAlignment(.leading)
-                    .font(AppFont.interSmallMedium)
+                    .font(AppFont.interMidMedium)
                     .foregroundColor(AppColors.gray)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
