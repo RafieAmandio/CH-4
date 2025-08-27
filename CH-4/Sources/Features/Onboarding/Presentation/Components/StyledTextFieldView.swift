@@ -325,10 +325,12 @@ struct StyledTextFieldView_Previews: PreviewProvider {
         Group {
             // Large text field
             StyledTextFieldTestView()
+                .padding(.horizontal, 20)
                 .previewDisplayName("Large Text Field")
 
             // Compact text field
             CompactTextFieldTestView()
+                .padding(.horizontal, 20)
                 .previewDisplayName("Compact Text Field")
         }
     }
