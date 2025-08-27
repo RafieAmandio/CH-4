@@ -56,6 +56,7 @@ struct ManualEventCodeView: View {
                     title: "Join",
                     style: .newPrimary
                 ) {
+                    HapticManager.shared.trigger(.medium)
                     if let code = viewModel.codeText,
                        !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Task {
