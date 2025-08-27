@@ -33,7 +33,7 @@ struct HomeAttendee: View {
                             "No event right now. Start networking by scanning your QR."
                         )
                         .multilineTextAlignment(.center)
-                        .font(AppFont.interSmallBold)
+                        .font(AppFont.interMidMedium)
                         .frame(maxWidth: 296)
                         .foregroundStyle(AppColors.gray)
 
@@ -45,7 +45,7 @@ struct HomeAttendee: View {
                             }
 
                             Text("or")
-                                .font(AppFont.interSmallBold)
+                                .font(AppFont.interMidMedium)
                                 .foregroundStyle(AppColors.gray)
 
                             CustomButton(
@@ -111,7 +111,7 @@ struct HomeAttendee: View {
             // Left side - Event info
             VStack(alignment: .leading, spacing: 4) {
                 Text("Current Event")
-                    .font(AppFont.inter30Bold)
+                    .font(AppFont.interLargeBold)
 
                 Text(eventStatusText)
                     .font(AppFont.interMidMedium)
@@ -275,7 +275,7 @@ struct HomeAttendeeAlternative: View {
                 // Left side - Event info
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Current Event")
-                        .font(AppFont.inter30Bold)
+                        .font(AppFont.interLargeSemiBold)
 
                     Text(eventStatusText)
                         .font(AppFont.interMidMedium)
