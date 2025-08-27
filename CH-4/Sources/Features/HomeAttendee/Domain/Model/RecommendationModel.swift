@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIComponentsKit
 
 // MARK: - Domain Models
 
@@ -32,7 +33,7 @@ public struct RecommendationModel: Identifiable, Equatable, Codable {
     }
 }
 
-public struct TargetAttendeeModel: Equatable, Codable{
+public struct TargetAttendeeModel: Equatable, Codable {
     public let nickname: String
     public let profession: ProfessionModelRecommendation
     public let goalsCategory: GoalsCategoryModel
@@ -77,7 +78,7 @@ public struct ProfessionModelRecommendation: Equatable, Codable {
     }
 }
 
-public struct GoalsCategoryModel: Equatable , Codable{
+public struct GoalsCategoryModel: Equatable, Codable {
     public let name: String
 
     public init(name: String) {
@@ -169,129 +170,83 @@ extension RecommendationModel {
                 // Add any additional tap actions here
             }
         )
+
     }
 
     private func createDetailView() -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Header with name and profession
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(targetAttendee.nickname)
-                        .font(.title.bold())
-                        .foregroundColor(.white)
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Goal")
+                    .font(AppFont.cardHead2)
+                    .foregroundStyle(.white)
 
-                    Text(targetAttendee.profession.name)
-                        .font(.headline)
-                        .foregroundColor(.white.opacity(0.9))
-
-                    Text(targetAttendee.profession.categoryName)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
-                }
-
-
-                // Goals
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Goals")
-                        .font(.headline)
-                        .foregroundColor(.white)
-
-                    Text(targetAttendee.goalsCategory.name)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.blue.opacity(0.3))
-                        .cornerRadius(8)
-                }
-
-                // LinkedIn (if available)
-                if targetAttendee.hasLinkedIn {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Connect")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        HStack {
-                            Image(systemName: "link.circle.fill")
-                                .foregroundColor(.blue)
-
-                            Text("LinkedIn Profile")
-                                .foregroundColor(.white.opacity(0.8))
-
-                            Spacer()
-
-                            Image(systemName: "arrow.up.right")
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(8)
-                        .onTapGesture {
-                            if let url = targetAttendee.linkedinUrl,
-                                let linkedinURL = URL(string: url)
-                            {
-                                UIApplication.shared.open(linkedinURL)
-                            }
-                        }
-                    }
-                }
-
-                // Reasoning for recommendation
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Why We Recommend")
-                        .font(.headline)
-                        .foregroundColor(.white)
-
-                    Text(reasoning)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
-                        .lineLimit(nil)
-                        .multilineTextAlignment(.leading)
-                }
-
-                // Shareable answers (if any)
-                if !targetAttendee.shareableAnswers.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Common Interests")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        LazyVGrid(
-                            columns: [
-                                GridItem(.flexible()),
-                                GridItem(.flexible()),
-                            ], spacing: 8
-                        ) {
-                            ForEach(
-                                Array(
-                                    targetAttendee.shareableAnswers.prefix(4)
-                                        .enumerated()), id: \.offset
-                            ) { _, answer in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(answer.question)
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.7))
-                                        .lineLimit(2)
-
-                                    Text(answer.displayValue)
-                                        .font(.caption.bold())
-                                        .foregroundColor(.white)
-                                        .lineLimit(1)
-                                }
-                                .padding(8)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.white.opacity(0.1))
-                                .cornerRadius(6)
-                            }
-                        }
-                    }
-                }
-
-                Spacer()
+                Text(targetAttendee.goalsCategory.name)
+                    .font(AppFont.cardText)
+                    .foregroundStyle(AppColors.cardTextDetails)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.white, lineWidth: 1)
+                    )
             }
-            .padding(20)
+
+            Button {
+                openLinkedInProfile()
+            } label: {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Connect")
+                        .font(AppFont.cardHead2)
+                        .foregroundStyle(.white)
+                    HStack {
+                        Image("linkedin")
+                        Text("Linkedin Profile")
+                            .font(AppFont.cardText)
+                            .foregroundStyle(.white)
+
+                        Image(systemName: "arrow.up.right")
+                            .foregroundStyle(.white)
+                            .font(AppFont.cardText)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.white, lineWidth: 1)
+                    )
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Key Reason")
+                    .font(AppFont.cardHead2)
+                    .foregroundStyle(.white)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(reasoning)
+                        .foregroundStyle(.white)
+                }
+
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func openLinkedInProfile() {
+        let linkedInUsername = targetAttendee.linkedinUsername ?? ""
+
+        // Try to open in LinkedIn app first
+        let linkedInAppURL = "linkedin://profile/\(linkedInUsername)"
+
+        if let appURL = URL(string: linkedInAppURL),
+            UIApplication.shared.canOpenURL(appURL)
+        {
+            UIApplication.shared.open(appURL)
+        } else {
+            // Fall back to web browser
+            let webURL = "https://www.linkedin.com/in/\(linkedInUsername)"
+            if let url = URL(string: webURL) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }

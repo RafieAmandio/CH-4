@@ -22,7 +22,8 @@ struct DynamicQuestionView: View {
         case .rankedChoice:
             RankedChoiceView(question: question, answerManager: answerManager)
         case .freeText:
-            StyledTextFieldView(question: question, answerManager: answerManager)
+            StyledTextFieldView(
+                question: question, answerManager: answerManager)
         case .number:
             NumberInputView(question: question, answerManager: answerManager)
         case .scale:
@@ -74,10 +75,11 @@ struct DynamicQuestionView: View {
                 displayOrder: 6),
         ]
     )
-    DynamicQuestionView(question: mockQuestion, answerManager: QuestionAnswerManager())
-        .padding()
+    DynamicQuestionView(
+        question: mockQuestion, answerManager: QuestionAnswerManager()
+    )
+    .padding()
 }
-
 
 // MARK: - Free Text View
 struct FreeTextView: View {

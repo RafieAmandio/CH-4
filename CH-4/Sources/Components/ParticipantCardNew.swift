@@ -1,10 +1,3 @@
-//
-//  ParticipantCardNew.swift
-//  CH-4
-//
-//  Created by Kenan Firmansyah on 26/08/25.
-//
-
 import SwiftUI
 import UIComponentsKit
 
@@ -13,7 +6,6 @@ struct ParticipantCardNew: View {
     var name: String
     var title: String
     var onTap: () -> Void
-    //    var photoHeight: CGFloat
 
     private let cardCornerRadius: CGFloat = 20
     private let cardPadding: CGFloat = 20
@@ -47,7 +39,6 @@ struct ParticipantCardNew: View {
                 image
                     .resizable()
                     .scaledToFit()
-//                    .frame(height: 300)
                     .clipped()
                     .cornerRadius(imageCornerRadius)
                     .padding(.horizontal, cardPadding)
@@ -78,29 +69,25 @@ struct FlexibleParticipantCardNew: View {
     var connectText: String?
     var keyReasons: [String]
     var onTap: () -> Void
+    var detailContent: AnyView?
 
     private let cornerRadius: CGFloat = 18.8
     @State private var isFlipped = false
     private let strokeWidth: CGFloat = 25
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(AppColors.cardBackground)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
+
                 if isFlipped {
                     // Back view (detail view)
                     backView(geometry: geometry)
-//                        .frame(width: geometry.size.width, height: geometry.size.height)
-
                 } else {
                     // Front view (original card)
                     frontView(geometry: geometry)
-//                        .frame(width: geometry.size.width, height: geometry.size.height)
-
-
                 }
             }
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
@@ -118,165 +105,168 @@ struct FlexibleParticipantCardNew: View {
                 onTap()
             }
         }
-        .aspectRatio(0.7, contentMode: .fit)
+        .aspectRatio(0.7, contentMode: .fit)  // Changed from 0.7 to 0.6 to make card taller
+       
     }
 
     private func frontView(geometry: GeometryProxy) -> some View {
-        ZStack(alignment: .bottomLeading){
-            VStack(alignment: .leading, spacing: 0) {
-                // Header sectionq
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(name)
-                        .font(AppFont.cardHead1)
-                        .foregroundStyle(.white)
-                    
-                    Text(title)
-                        .font(AppFont.cardDetail)
-                        .foregroundStyle(AppColors.cardTextDetails)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, strokeWidth)
-                .padding(.top, 20)
-                .padding(.bottom, 16)
-                
-                image
-                    .scaledToFill()
-                    .frame(
-                        width: geometry.size.width - strokeWidth * 2,
-                        height: geometry.size.height - strokeWidth * 2
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                    .padding(.horizontal, strokeWidth)
-                
-                Spacer()
-                
-                // Footer
-                Text("Tap to see detail")
-                    .font(AppFont.cardTap)
-                    .foregroundStyle(AppColors.cardTap.opacity(0.4))
-                    .padding(.bottom, 20)
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header section
+            VStack(alignment: .leading, spacing: 6) {
+                Text(name)
+                    .font(AppFont.cardHead1)
+                    .foregroundStyle(.white)
+
+                Text(title)
+                    .font(AppFont.cardDetail)
+                    .foregroundStyle(AppColors.cardTextDetails)
             }
-            .frame(maxWidth: geometry.size.width)
-            //        .frame(height: geometry.size.height)
-            //        .background(
-            //            RoundedRectangle(cornerRadius: cornerRadius)
-            //                .fill(AppColors.cardBackground)
-            //        )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
+
+            // Image section - calculate available space
+            let headerHeight: CGFloat = 80  // Approximate header height
+            let footerHeight: CGFloat = 50  // Approximate footer height
+            let availableImageHeight =
+                geometry.size.height - headerHeight - footerHeight
+
+            image
+                .aspectRatio(contentMode: .fill)
+                .frame(
+                    width: geometry.size.width - 40,
+                    height: availableImageHeight
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 20)
+
+            Spacer(minLength: 10)
+
+            // Footer
+            Text("Tap to see detail")
+                .font(AppFont.cardTap)
+                .foregroundStyle(AppColors.cardTap.opacity(0.4))
+                .padding(.bottom, 16)
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
         }
-//        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-//        .padding(strokeWidth)
+        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
     }
 
     private func backView(geometry: GeometryProxy) -> some View {
-        ZStack(alignment: .bottomLeading){
+        ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 // Header section
                 VStack(alignment: .leading, spacing: 8) {
                     Text(name)
                         .font(AppFont.cardHead1)
                         .foregroundStyle(.white)
-                    
                     Text(title)
                         .font(AppFont.cardDetail)
                         .foregroundStyle(AppColors.cardTextDetails)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                
-                // Goal section
-                if let goal = goal {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Goal")
-                            .font(AppFont.cardHead2)
-                            .foregroundStyle(.white)
-                        
-                        Text(goal)
+
+                // Detail content
+                detailContent
+            }
+            .padding(20)
+            .frame(maxWidth: geometry.size.width)
+            .frame(minHeight: geometry.size.height - 40)  // Ensure it fills the available space
+        }
+        .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))  // Flip content back to readable
+    }
+}
+
+// Example detail view that matches your target UI
+struct DetailContentView: View {
+    let goal: String
+    let connectText: String?
+    let keyReasons: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            // Goal section
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Goal")
+                    .font(AppFont.cardHead2)
+                    .foregroundStyle(.white)
+
+                Text(goal)
+                    .font(AppFont.cardText)
+                    .foregroundStyle(AppColors.cardTextDetails)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.white, lineWidth: 1)
+                    )
+            }
+
+            // Connect section
+            if let connectText = connectText {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Connect")
+                        .font(AppFont.cardHead2)
+                        .foregroundStyle(.white)
+
+                    HStack {
+                        Image(systemName: "link")
                             .font(AppFont.cardText)
-                            .foregroundStyle(AppColors.cardTextDetails)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(.white, lineWidth: 1)
-                            )
+                            .foregroundStyle(.blue)
+                        Text(connectText)
+                            .font(AppFont.cardText)
+                            .foregroundStyle(.blue)
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                            .foregroundStyle(.blue)
+                            .font(AppFont.cardText)
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.blue, lineWidth: 1)
+                    )
                 }
-                
-                // Connect section
-                if let connectText = connectText {
+            }
+
+            // Key Reasons section
+            if !keyReasons.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Key Reason")
+                        .font(AppFont.cardHead2)
+                        .foregroundStyle(.white)
+
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Connect")
-                            .font(AppFont.cardHead2)
-                            .foregroundStyle(.white)
-                        
-                        HStack {
-                            Image(systemName: "link")
-                                .font(AppFont.cardText)
-                                .foregroundStyle(.white)
-                            Text(connectText)
-                                .font(AppFont.cardText)
-                                .foregroundStyle(.white)
-                            //                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .foregroundStyle(.white)
-                                .font(AppFont.cardText)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(.white, lineWidth: 1)
-                        )
-                    }
-                }
-                
-                // Key Reasons section
-                if !keyReasons.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Key Reason")
-                            .font(AppFont.cardHead2)
-                            .foregroundStyle(.white)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(keyReasons, id: \.self) { reason in
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("•")
-                                        .font(AppFont.cardText)
-                                        .foregroundStyle(.white)
-                                    
-                                    Text(reason)
-                                        .font(AppFont.cardText)
-                                        .foregroundStyle(.white)
-                                        .fixedSize(
-                                            horizontal: false,
-                                            vertical: true
-                                        )
-                                    
-                                    Spacer()
-                                }
+                        ForEach(keyReasons, id: \.self) { reason in
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("•")
+                                    .font(AppFont.cardText)
+                                    .foregroundStyle(.white)
+
+                                Text(reason)
+                                    .font(AppFont.cardText)
+                                    .foregroundStyle(.white)
+                                    .fixedSize(
+                                        horizontal: false, vertical: true)
+
+                                Spacer()
                             }
                         }
                     }
                 }
-                
-                Spacer()
             }
-            .padding(20)
-            .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
-            .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))  // Flip content back to readable
         }
-        .padding(.bottom, 140)
     }
 }
 
 #Preview("Front View") {
-
     FlexibleParticipantCardNew(
         image: AnyView(
             Image("abg")
                 .resizable()
-                .foregroundColor(.gray)
         ),
         name: "Leonie Marie Gogh",
         title: "Technopreneur",
@@ -286,7 +276,17 @@ struct FlexibleParticipantCardNew: View {
             "Kenan is also a CEO seeking investors, you both share similar goals",
             "His focus on scaling marketing and sales in technology sector aligns with your goal",
         ],
-        onTap: {}
+        onTap: {},
+        detailContent: AnyView(
+            DetailContentView(
+                goal: "Technopreneur",
+                connectText: "LinkedIn Profile",
+                keyReasons: [
+                    "Kenan is also a CEO seeking investors, you both share similar goals",
+                    "His focus on scaling marketing and sales in technology sector aligns with your goal",
+                ]
+            )
+        )
     )
     .frame(height: 475)
 }
@@ -301,4 +301,3 @@ struct FlexibleParticipantCardNew: View {
     .frame(width: 280, height: 420)
     .background(Color.gray.opacity(0.1))
 }
-

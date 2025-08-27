@@ -13,7 +13,6 @@ struct AttendeeRecommendationView: View {
 
     var body: some View {
         ZStack {
-
             if viewModel.isLoadingRecommendations {
                 // Loading state
                 loadingView
@@ -38,11 +37,11 @@ struct AttendeeRecommendationView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.5)
-                .tint(.white)
+                .tint(.black)
 
             Text("Finding your connections...")
-                .font(.system(size: 16, weight: .regular))
-                .foregroundStyle(.white.opacity(0.9))
+                .font(AppFont.interMidMedium)
+                .foregroundStyle(.black.opacity(0.9))
         }
     }
 
@@ -131,8 +130,7 @@ struct AttendeeRecommendationView: View {
                     $0.toParticipantCardData()
                 }
             )
-            .frame(minHeight: 400, maxHeight: 450)  // Use min/max instead of fixed height
-            .layoutPriority(1)  // Give priority to card stack for space
+          // Give priority to card stack for space
 
             // Spacer to push button to bottom
             Spacer(minLength: 10)

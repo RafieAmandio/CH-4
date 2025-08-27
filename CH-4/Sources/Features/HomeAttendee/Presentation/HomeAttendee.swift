@@ -77,63 +77,10 @@ struct HomeAttendee: View {
                 .presentationDetents([.fraction(0.65)])
             }
         }
-        .sheet(isPresented: $viewModel.isManualCodePresented) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(.white)
-                    
-                VStack(alignment:.leading, spacing:20 ) {
-                    Text("Input Your Event Code")
-                        .font(AppFont.inter30Bold)
-
-                    Text(
-                        "Please enter your event code to access and join the session."
-                    )
-                    .font(AppFont.interMidMedium)
-                    .foregroundStyle(AppColors.gray)
-                    TextField(
-                        "Enter event code",
-                        text: Binding(
-                            get: { viewModel.codeText ?? "" },
-                            set: {
-                                viewModel.codeText =
-                                    $0.isEmpty ? nil : $0
-                            }
-                        )
-                    )
-                    .foregroundStyle(.black)
-                    .textFieldStyle(CustomTextFieldStyle())
-                    .autocapitalization(.allCharacters)
-                    .disableAutocorrection(true)
-                 
-
-                    CustomButton(
-                        title: "Join", style: .newPrimary
-                    ) {
-                        // Use the manually entered code
-                        if let code = viewModel.codeText,
-                            !code.trimmingCharacters(
-                                in: .whitespacesAndNewlines
-                            ).isEmpty
-                        {
-                            Task {
-                                await viewModel
-                                    .validateEventFromManualCode(
-                                        code.trimmingCharacters(
-                                            in: .whitespacesAndNewlines)
-                                    )
-                            }
-                        }
-                    }
-                    .disabled(
-                        viewModel.codeText?.trimmingCharacters(
-                            in: .whitespacesAndNewlines
-                        ).isEmpty != false)
-                }
-                .padding(20)
-            }
-            .presentationDetents([.height(330)])
-        }
+        .manualEventCodeSheet(
+            isPresented: $viewModel.isManualCodePresented,
+            viewModel: viewModel
+        )
         .sheet(isPresented: $viewModel.isLogoutPresented) {
             VStack {
                 CustomButton(
