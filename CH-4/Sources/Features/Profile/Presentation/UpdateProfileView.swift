@@ -130,7 +130,7 @@ struct UpdateProfileView: View {
 
             // Loading Indicator for Profile Update
         }
-        .padding()
+        .padding(.horizontal, 20)
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
                 viewModel.showError = false
