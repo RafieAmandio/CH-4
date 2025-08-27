@@ -39,7 +39,7 @@ struct CustomButton: View {
     
     // Optional parameters with default values
     private let height: CGFloat = 44
-    private let cornerRadius: CGFloat = 20
+    private let cornerRadius: CGFloat = 10
     
     init(
         title: String,

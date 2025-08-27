@@ -9,70 +9,68 @@ struct StyledTextFieldView: View {
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
-        ApplyBackground {
-            VStack(alignment: .leading, spacing: 32) {
-                // Question Title
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(question.question)
-                        .font(AppFont.headingLargeBold)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.leading)
-
-                    // Subtitle/Description
-                    Text(
-                        "Adding your experience makes it easier to connect you with people who fit your goals"
-                    )
-                    .font(AppFont.bodySmallMedium)
-                  
+        VStack(alignment: .leading, spacing: 32) {
+            // Question Title
+            VStack(alignment: .leading, spacing: 16) {
+                Text(question.question)
+                    .font(AppFont.headingLargeBold)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
+
+                // Subtitle/Description
+                Text(
+                    "Adding your experience makes it easier to connect you with people who fit your goals"
+                )
+                .font(AppFont.bodySmallMedium)
+
+                .multilineTextAlignment(.leading)
+            }
+
+            // Large Text Field
+            VStack(alignment: .leading, spacing: 12) {
+                TextField(
+                    "", text: $text,
+                    prompt: Text(getPlaceholderText()).foregroundColor(
+                        .gray), axis: .vertical
+                )
+                .font(AppFont.bodySmallMedium)
+                .foregroundColor(.black)
+                .padding(20)
+                .background(
+                    ZStack {
+
+                        // Border
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(
+                                isTextFieldFocused
+                                    ? AppColors.primary : Color.gray,
+                                lineWidth: isTextFieldFocused ? 2 : 1
+                            )
+                    }
+                )
+
+                .lineLimit(6...10)
+                .focused($isTextFieldFocused)
+                .onChange(of: text) { newValue in
+                    answerManager.setFreeText(
+                        questionId: question.id, text: newValue)
                 }
 
-                // Large Text Field
-                VStack(alignment: .leading, spacing: 12) {
-                    TextField(
-                        "", text: $text,
-                        prompt: Text(getPlaceholderText()).foregroundColor(
-                            .gray), axis: .vertical
-                    )
-                    .font(AppFont.bodySmallMedium)
-                    .foregroundColor(.white)
-                    .padding(20)
-                    .background(
-                        ZStack {
-
-                            // Border
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(
-                                    isTextFieldFocused
-                                        ? AppColors.primary : Color.gray,
-                                    lineWidth: isTextFieldFocused ? 2 : 1
-                                )
-                        }
-                    )
-
-                    .lineLimit(6...10)
-                    .focused($isTextFieldFocused)
-                    .onChange(of: text) { newValue in
-                        answerManager.setFreeText(
-                            questionId: question.id, text: newValue)
-                    }
-
-                    // Character count if there's a limit
-                    if let maxLen = question.constraints.textMaxLen {
-                        HStack {
-                            Spacer()
-                            Text("\(text.count)/\(maxLen)")
-                                .font(.caption)
-                                .foregroundColor(
-                                    text.count > maxLen ? .red : .gray)
-                        }
+                // Character count if there's a limit
+                if let maxLen = question.constraints.textMaxLen {
+                    HStack {
+                        Spacer()
+                        Text("\(text.count)/\(maxLen)")
+                            .font(.caption)
+                            .foregroundColor(
+                                text.count > maxLen ? .red : .gray)
                     }
                 }
 
                 Spacer()
             }
-           
+
         }
         .onAppear {
             // Load existing text if available
@@ -172,7 +170,7 @@ struct CompactStyledTextFieldView: View {
                 Text(question.question)
                     .font(AppFont.headingLargeSemiBold)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
 
                 // Compact Text Field
@@ -182,7 +180,7 @@ struct CompactStyledTextFieldView: View {
                         .foregroundColor(.gray)
                 )
                 .font(AppFont.bodySmallRegular)
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .padding(16)
                 .background(
                     ZStack {

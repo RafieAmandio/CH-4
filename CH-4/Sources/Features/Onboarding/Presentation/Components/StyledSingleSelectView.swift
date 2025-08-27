@@ -13,64 +13,64 @@ struct StyledSingleSelectView: View {
     ]
 
     var body: some View {
-        ApplyBackground {
-            VStack(alignment: .leading, spacing: 32) {
-                // Question Title
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(question.question)
-                        .font(AppFont.interLargeBold)
+        VStack(alignment: .leading, spacing: 32) {
+            // Question Title
+            VStack(alignment: .leading, spacing: 15) {
+                Text(question.question)
+                    .font(AppFont.interLargeBold)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)  // Allows unlimited lines
+                    .fixedSize(horizontal: false, vertical: true)
 
-                        .multilineTextAlignment(.leading)
-
-                    // Subtitle
-                    Text("Pick one!")
-                        .font(AppFont.interSmallMedium)
-                        .multilineTextAlignment(.leading)
-                }
-
-                // Options Grid
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(question.answerOptions) { option in
-                        SingleSelectOptionButton(
-                            option: option,
-                            isSelected: selectedOptionId == option.id
-                        ) {
-                            selectedOptionId = option.id
-                            answerManager.setSingleChoice(
-                                questionId: question.id, optionId: option.id)
-                        }
-                    }
-                }
-
-                // "Other" option if enabled
-                if question.constraints.isUsingOther {
-                    VStack(alignment: .leading, spacing: 12) {
-                        SingleSelectOptionButton(
-                            text: "Other",
-                            isSelected: selectedOptionId == "other"
-                        ) {
-                            selectedOptionId = "other"
-                        }
-
-                        if selectedOptionId == "other" {
-                            TextField("Please specify...", text: $otherText)
-                                .textFieldStyle(
-                                    CustomSingleSelectTextFieldStyle()
-                                )
-                                .onChange(of: otherText) { newValue in
-                                    if !newValue.isEmpty {
-                                        answerManager.setFreeText(
-                                            questionId: question.id,
-                                            text: newValue, optionId: "other")
-                                    }
-                                }
-                        }
-                    }
-                }
-
-                Spacer()
+                // Subtitle
+                Text("Pick one!")
+                    .font(AppFont.interMidMedium)
+                    .multilineTextAlignment(.leading)
             }
+
+            // Options Grid
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(question.answerOptions) { option in
+                    SingleSelectOptionButton(
+                        option: option,
+                        isSelected: selectedOptionId == option.id
+                    ) {
+                        selectedOptionId = option.id
+                        answerManager.setSingleChoice(
+                            questionId: question.id, optionId: option.id)
+                    }
+                }
+            }
+
+            // "Other" option if enabled
+            if question.constraints.isUsingOther {
+                VStack(alignment: .leading, spacing: 12) {
+                    SingleSelectOptionButton(
+                        text: "Other",
+                        isSelected: selectedOptionId == "other"
+                    ) {
+                        selectedOptionId = "other"
+                    }
+
+                    if selectedOptionId == "other" {
+                        TextField("Please specify...", text: $otherText)
+                            .textFieldStyle(
+                                CustomSingleSelectTextFieldStyle()
+                            )
+                            .onChange(of: otherText) { newValue in
+                                if !newValue.isEmpty {
+                                    answerManager.setFreeText(
+                                        questionId: question.id,
+                                        text: newValue, optionId: "other")
+                                }
+                            }
+                    }
+                }
+            }
+
+            Spacer()
         }
+
         .onAppear {
             // Initialize selected option from existing answers
             let existingAnswers = answerManager.getAnswers(for: question.id)
@@ -182,7 +182,7 @@ struct StyledSingleSelectView_Previews: PreviewProvider {
     static var previews: some View {
         let mockQuestion = QuestionDTO(
             id: "single_question",
-            question: "What is your primary career goal right now?",
+            question: "What is your primary careeasfsfssafsar goal right now?",
             type: .singleChoice,
             placeholder: nil,
             displayOrder: 1,
@@ -219,11 +219,11 @@ struct StyledSingleSelectView_Previews: PreviewProvider {
                     displayOrder: 6),
             ]
         )
-
         StyledSingleSelectView(
             question: mockQuestion,
             answerManager: QuestionAnswerManager()
         )
+        .padding(20)
         .preferredColorScheme(.light)
     }
 }

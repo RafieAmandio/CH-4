@@ -34,6 +34,50 @@ struct DynamicQuestionView: View {
     }
 }
 
+#Preview {
+    let mockQuestion = QuestionDTO(
+        id: "single_question",
+        question: "What is your primary career goals right now?",
+        type: .singleChoice,
+        placeholder: nil,
+        displayOrder: 1,
+        isRequired: true,
+        isShareable: true,
+        constraints: QuestionConstraints(
+            minSelect: nil,
+            maxSelect: nil,
+            requireRanking: nil,
+            isUsingOther: true,
+            textMaxLen: nil,
+            numberMin: nil,
+            numberMax: nil,
+            numberStep: nil
+        ),
+        answerOptions: [
+            AnswerOptionDTO(
+                id: "promotion", label: "Get promoted at my current job",
+                value: "promotion", displayOrder: 1),
+            AnswerOptionDTO(
+                id: "newjob", label: "Find a new job", value: "newjob",
+                displayOrder: 2),
+            AnswerOptionDTO(
+                id: "skills", label: "Learn new skills", value: "skills",
+                displayOrder: 3),
+            AnswerOptionDTO(
+                id: "freelance", label: "Start freelancing",
+                value: "freelance", displayOrder: 4),
+            AnswerOptionDTO(
+                id: "business", label: "Start my own business",
+                value: "business", displayOrder: 5),
+            AnswerOptionDTO(
+                id: "network", label: "Expand my network", value: "network",
+                displayOrder: 6),
+        ]
+    )
+    DynamicQuestionView(question: mockQuestion, answerManager: QuestionAnswerManager())
+        .padding()
+}
+
 
 // MARK: - Free Text View
 struct FreeTextView: View {

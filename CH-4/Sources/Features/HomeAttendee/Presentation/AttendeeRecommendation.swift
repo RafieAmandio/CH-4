@@ -116,13 +116,12 @@ struct AttendeeRecommendationView: View {
                 Text(
                     "We've found participants who could be valuable connections for you."
                 )
-                .font(AppFont.bodySmallMedium)
-                .foregroundStyle(.white.opacity(0.9))
+                .font(AppFont.interSmallMedium)
+                .foregroundStyle(AppColors.gray)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)  // Allow multiple lines
                 .fixedSize(horizontal: false, vertical: true)  // Allow vertical expansion
                 .padding(.horizontal, 20)  // Add side padding to prevent edge cutoff
-
             }
             .frame(maxWidth: .infinity)  // Take full width
 

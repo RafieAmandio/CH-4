@@ -18,6 +18,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isShowError: Bool = false
     @Published var isLogoutPresented: Bool = false
+    @Published var isManualCodePresented: Bool = false
     @Published var codeText: String?
 
     // MARK: - Recommendations Properties

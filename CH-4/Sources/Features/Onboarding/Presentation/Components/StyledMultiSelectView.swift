@@ -19,6 +19,8 @@ struct StyledMultiSelectView: View {
                 Text(question.question)
                     .font(AppFont.interLargeBold)
                     .multilineTextAlignment(.leading)
+                    .lineLimit(nil)  // Allows unlimited lines
+                    .fixedSize(horizontal: false, vertical: true)
 
                 // Subtitle
                 Text("Pick one or more!")
@@ -143,14 +145,14 @@ struct CustomTextFieldStyle: TextFieldStyle {
             .padding(.vertical, 12)
             .background(
                 ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.gray.opacity(0.2))
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(.white)
 
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 }
             )
-            .foregroundColor(.white)
+            .foregroundColor(.black)
     }
 }
 

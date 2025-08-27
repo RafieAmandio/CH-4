@@ -47,10 +47,10 @@ struct EventJoinSheet: View {
             VStack(spacing: 16) {
                 // Title
                 Text("You're about to join")
-                    .font(AppFont.headingLargeSemiBold)
+                    .font(AppFont.interLargeSemiBold)
 
                 Text(eventDetail.name)
-                    .font(AppFont.bodySmallMedium)
+                    .font(AppFont.interSmallMedium)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .padding(.horizontal, 20)
@@ -60,7 +60,7 @@ struct EventJoinSheet: View {
                     Image(systemName: "person.2.fill")
                         .foregroundColor(.blue)
                     Text("\(eventDetail.currentParticipant) participants")
-                        .font(AppFont.bodySmallRegular)
+                        .font(AppFont.interSmallRegular)
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal, 16)
@@ -74,7 +74,7 @@ struct EventJoinSheet: View {
             // Action buttons
             VStack(spacing: 12) {
                 // Join button
-                CustomButton(title: "Join Event", style: .primary) {
+                CustomButton(title: "Join Event", style: .newPrimary) {
                     onTapJoin?()
                 }
                 // Cancel button

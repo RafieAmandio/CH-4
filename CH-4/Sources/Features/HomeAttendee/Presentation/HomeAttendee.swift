@@ -16,120 +16,146 @@ struct HomeAttendee: View {
 
     var body: some View {
         NavigationView {
-            ApplyBackground {
-                VStack(spacing: 0) {
-                    // Custom Toolbar at the top
-                    customToolbarAttendee
+            VStack(spacing: 0) {
+                // Custom Toolbar at the top
+                customToolbarAttendee
 
-                    // Main Content
-                    VStack(spacing: 20) {
-                        // Show different content based on event status
-                        if appState.isJoinedEvent {
-                            // User has an active event
-                            AttendeeRecommendationView()
-                                .environmentObject(viewModel)
-                        } else {
-                            // No active event
-                            Text(
-                                "No event right now. Start networking by scanning your QR."
-                            )
-                            .multilineTextAlignment(.center)
-                            .font(AppFont.bodySmallBold)
-                            .frame(maxWidth: 296)
-                            .foregroundStyle(AppColors.gray)
+                // Main Content
+                VStack(spacing: 20) {
+                    // Show different content based on event status
+                    if appState.isJoinedEvent {
+                        // User has an active event
+                        AttendeeRecommendationView()
+                            .environmentObject(viewModel)
+                    } else {
+                        // No active event
+                        Text(
+                            "No event right now. Start networking by scanning your QR."
+                        )
+                        .multilineTextAlignment(.center)
+                        .font(AppFont.interSmallBold)
+                        .frame(maxWidth: 296)
+                        .foregroundStyle(AppColors.gray)
 
+                        VStack(alignment: .center) {
                             CustomButton(
-                                title: "Scan", style: .primary, width: 116
+                                title: "Scan", style: .newPrimary, width: 166
                             ) {
                                 viewModel.isShowingScanner = true
                             }
 
                             Text("or")
-                                .font(AppFont.bodySmallBold)
+                                .font(AppFont.interSmallBold)
                                 .foregroundStyle(AppColors.gray)
 
-                            // Fixed TextField
-                            TextField(
-                                "Enter event code",
-                                text: Binding(
-                                    get: { viewModel.codeText ?? "" },
-                                    set: {
-                                        viewModel.codeText =
-                                            $0.isEmpty ? nil : $0
-                                    }
-                                )
-                            )
-                            .textFieldStyle(CustomTextFieldStyle())
-                            .autocapitalization(.allCharacters)
-                            .disableAutocorrection(true)
-
-                            // Fixed Join button
                             CustomButton(
-                                title: "Join", style: .primary, width: 116
+                                title: "Input Code", style: .newPrimary,
+                                width: 166
                             ) {
-                                // Use the manually entered code
-                                if let code = viewModel.codeText,
-                                    !code.trimmingCharacters(
-                                        in: .whitespacesAndNewlines
-                                    ).isEmpty
-                                {
-                                    Task {
-                                        await viewModel
-                                            .validateEventFromManualCode(
-                                                code.trimmingCharacters(
-                                                    in: .whitespacesAndNewlines)
-                                            )
-                                    }
-                                }
+                                viewModel.isManualCodePresented = true
                             }
-                            .disabled(
-                                viewModel.codeText?.trimmingCharacters(
-                                    in: .whitespacesAndNewlines
-                                ).isEmpty != false)
                         }
                     }
-                    .padding(22)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            }
-            .navigationBarHidden(true)  // Hide the default navigation bar
-            .sheet(isPresented: $viewModel.isShowingScanner) {
-                CodeScannerView(
-                    codeTypes: [.qr],
-                    completion: viewModel.handleScan
-                )
-            }
-            .sheet(isPresented: $viewModel.isShowingEventDetail) {
-                if let eventDetail = viewModel.eventDetail {
-                    EventJoinSheet(eventDetail: eventDetail) {
-                        appState.screen = .onboarding
-                        appState.setSelectedEvent(eventDetail)
-                    }
-                    .presentationDetents([.fraction(0.65)])
-                }
-            }
-            .sheet(isPresented: $viewModel.isLogoutPresented) {
-                VStack {
-                    CustomButton(
-                        title: "Switch role", style: .secondary, width: 116
-                    ) {
-                        appState.switchToCreator()
-                    }
-                    CustomButton(
-                        title: "Sign Out", style: .primary,
-                        action: {
-                            appState.logout()
-                        }
-                    )
-                }
-                .padding()
-                .presentationDetents([.height(120)])
-            }
-            .onAppear {
-                guard appState.isInitialized else { return }
-                appState.updateJoinedEventStatus()
+                .padding(22)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .navigationBarHidden(true)  // Hide the default navigation bar
+        .sheet(isPresented: $viewModel.isShowingScanner) {
+            CodeScannerView(
+                codeTypes: [.qr],
+                completion: viewModel.handleScan
+            )
+        }
+        .sheet(isPresented: $viewModel.isShowingEventDetail) {
+            if let eventDetail = viewModel.eventDetail {
+                EventJoinSheet(eventDetail: eventDetail) {
+                    appState.screen = .onboarding
+                    appState.setSelectedEvent(eventDetail)
+                }
+                .presentationDetents([.fraction(0.65)])
+            }
+        }
+        .sheet(isPresented: $viewModel.isManualCodePresented) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.white)
+                    
+                VStack(alignment:.leading, spacing:20 ) {
+                    Text("Input Your Event Code")
+                        .font(AppFont.inter20Bold)
+
+                    Text(
+                        "Please enter your event code to access and join the session."
+                    )
+                    .font(AppFont.interMidMedium)
+                    .foregroundStyle(AppColors.gray)
+                    TextField(
+                        "Enter event code",
+                        text: Binding(
+                            get: { viewModel.codeText ?? "" },
+                            set: {
+                                viewModel.codeText =
+                                    $0.isEmpty ? nil : $0
+                            }
+                        )
+                    )
+                    .foregroundStyle(.black)
+                    .textFieldStyle(CustomTextFieldStyle())
+                    .autocapitalization(.allCharacters)
+                    .disableAutocorrection(true)
+                 
+
+                    CustomButton(
+                        title: "Join", style: .newPrimary
+                    ) {
+                        // Use the manually entered code
+                        if let code = viewModel.codeText,
+                            !code.trimmingCharacters(
+                                in: .whitespacesAndNewlines
+                            ).isEmpty
+                        {
+                            Task {
+                                await viewModel
+                                    .validateEventFromManualCode(
+                                        code.trimmingCharacters(
+                                            in: .whitespacesAndNewlines)
+                                    )
+                            }
+                        }
+                    }
+                    .disabled(
+                        viewModel.codeText?.trimmingCharacters(
+                            in: .whitespacesAndNewlines
+                        ).isEmpty != false)
+                }
+                .padding(20)
+            }
+            .presentationDetents([.height(330)])
+        }
+        .sheet(isPresented: $viewModel.isLogoutPresented) {
+            VStack {
+                CustomButton(
+                    title: "Switch role", style: .secondary, width: 116
+                ) {
+                    appState.switchToCreator()
+                }
+                CustomButton(
+                    title: "Sign Out", style: .primary,
+                    action: {
+                        appState.logout()
+                    }
+                )
+            }
+            .padding()
+            .presentationDetents([.height(120)])
+        }
+        .onAppear {
+            guard appState.isInitialized else { return }
+            appState.updateJoinedEventStatus()
+        }
+
     }
 
     // MARK: - Custom Toolbar
@@ -138,11 +164,10 @@ struct HomeAttendee: View {
             // Left side - Event info
             VStack(alignment: .leading, spacing: 4) {
                 Text("Current Event")
-                    .font(AppFont.headingLargeSemiBold)
-                    .foregroundColor(.white)
+                    .font(AppFont.inter30Bold)
 
                 Text(eventStatusText)
-                    .font(AppFont.bodySmallSemibold)
+                    .font(AppFont.interMidMedium)
                     .foregroundColor(eventStatusColor)
             }
 
@@ -182,7 +207,6 @@ struct HomeAttendee: View {
                                 .overlay(
                                     Image(systemName: "person.circle.fill")
                                         .font(.system(size: 30))
-                                        .foregroundColor(.white)
                                 )
                         @unknown default:
                             EmptyView()
@@ -196,7 +220,7 @@ struct HomeAttendee: View {
                         .overlay(
                             Image(systemName: "person.circle.fill")
                                 .font(.system(size: 30))
-                                .foregroundColor(.white)
+                                .foregroundColor(.black)
                         )
                 }
             }
@@ -216,7 +240,7 @@ struct HomeAttendee: View {
     }
 
     private var eventStatusColor: Color {
-        appState.isJoinedEvent ? .white : AppColors.gray
+        .black
     }
 }
 
@@ -258,7 +282,7 @@ struct HomeAttendeeAlternative: View {
                                         .foregroundStyle(AppColors.gray)
 
                                         CustomButton(
-                                            title: "Scan", style: .primary,
+                                            title: "Scan", style: .newPrimary,
                                             width: 116
                                         ) {
                                             viewModel.isShowingScanner = true
@@ -304,11 +328,10 @@ struct HomeAttendeeAlternative: View {
                 // Left side - Event info
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Current Event")
-                        .font(AppFont.headingLargeSemiBold)
-                        .foregroundColor(.white)
+                        .font(AppFont.inter30Bold)
 
                     Text(eventStatusText)
-                        .font(AppFont.bodySmallSemibold)
+                        .font(AppFont.interMidMedium)
                         .foregroundColor(eventStatusColor)
                 }
 

@@ -21,7 +21,7 @@ struct HeaderSectionView: View {
                 .multilineTextAlignment(.leading)
         }
         .frame(height: 100)
-        .padding(.horizontal, 15)
+        .padding(.horizontal, 2)
         .padding(.vertical, 35)
     }
 }
