@@ -36,7 +36,7 @@ public enum AppFont {
     
     public static let interSmallBold = Font.custom("Inter28pt-Bold", size: 12)
     public static let interMidBold = Font.custom("Inter28pt-Bold", size: 16)
-    public static let interLargeBold = Font.custom("Inter28pt-Bold", size: 30)
+    
   
     // card fonts
     public static let cardHead1 = Font.custom("Inter28pt-Bold", size: 24)
@@ -49,8 +49,10 @@ public enum AppFont {
     public static let inter14Regular = Font.custom("Inter28pt-Regular", size: 14)
     
     
-    // WHAT WE CURRENTLY ARE USING!
-    // Title
+    // WHAT WE ARE CURRENTLY USING!
+    // Main Title
+    public static let interLargeBold = Font.custom("Inter28pt-Bold", size: 36)
+    // Title 1
     public static let interLargeSemiBold = Font.custom("Inter28pt-SemiBold", size: 30)
     // Textbox text
     public static let interMidMedium = Font.custom("Inter28pt-Medium", size: 16)
