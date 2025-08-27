@@ -55,6 +55,7 @@ struct AppValueView: View {
                 CustomButton(title: "Continue", style: .newPrimary) {
                     appState.screen = .homeAttendee
                     appState.currentRole = .attendee
+                    HapticManager.shared.trigger(.medium)
                 }
             }
         }

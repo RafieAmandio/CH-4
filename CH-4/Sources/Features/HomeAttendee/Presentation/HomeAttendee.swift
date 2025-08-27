@@ -29,6 +29,11 @@ struct HomeAttendee: View {
                             .environmentObject(viewModel)
                     } else {
                         // No active event
+                        
+                        if(viewModel.isLoading) {
+                            Text("Loading..")
+                            ProgressView()
+                        }
                         Text(
                             "No event right now. Start networking by scanning your QR."
                         )
@@ -61,7 +66,9 @@ struct HomeAttendee: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationBarHidden(true)  // Hide the default navigation bar
+        .navigationBarHidden(true)
+        // Loading overlay
+
         .sheet(isPresented: $viewModel.isShowingScanner) {
             CodeScannerView(
                 codeTypes: [.qr],
@@ -74,6 +81,7 @@ struct HomeAttendee: View {
                     appState.screen = .onboarding
                     appState.setSelectedEvent(eventDetail)
                 }
+                .hapticOnAppear(.success)
                 .presentationDetents([.fraction(0.65)])
             }
         }
@@ -102,7 +110,6 @@ struct HomeAttendee: View {
             guard appState.isInitialized else { return }
             appState.updateJoinedEventStatus()
         }
-
     }
 
     // MARK: - Custom Toolbar
@@ -123,10 +130,8 @@ struct HomeAttendee: View {
             // Right side - Profile button
             Button {
                 print("HELLO")
-                // Profile action
                 viewModel.isLogoutPresented.toggle()
             } label: {
-                // Now we can use AsyncImage safely here!
                 if let urlString = appState.user?.photoUrl,
                     let url = URL(string: urlString)
                 {
@@ -160,7 +165,6 @@ struct HomeAttendee: View {
                         }
                     }
                 } else {
-                    // Fallback when no user photo URL
                     Circle()
                         .fill(Color.gray.opacity(0.3))
                         .frame(width: 50, height: 50)
@@ -188,126 +192,6 @@ struct HomeAttendee: View {
 
     private var eventStatusColor: Color {
         .black
-    }
-}
-
-// MARK: - Alternative with Better Styling
-struct HomeAttendeeAlternative: View {
-    @EnvironmentObject var appState: AppStateManager
-    @StateObject var viewModel = HomeAttendeeDIContainer.shared
-        .createHomeAttendeeViewModel()
-
-    var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                ApplyBackground {
-                    VStack(spacing: 0) {
-                        // Status bar spacing
-                        Rectangle()
-                            .fill(Color.clear)
-                            .frame(height: geometry.safeAreaInsets.top)
-
-                        // Custom header
-                        customHeader
-
-                        // Main content with scroll if needed
-                        ScrollView {
-                            VStack(spacing: 20) {
-                                if appState.isJoinedEvent {
-                                    AttendeeRecommendationView()
-                                        .environmentObject(viewModel)
-                                } else {
-                                    VStack(spacing: 20) {
-                                        Spacer().frame(height: 40)
-
-                                        Text(
-                                            "No event right now. Start networking by scanning your QR."
-                                        )
-                                        .multilineTextAlignment(.center)
-                                        .font(AppFont.bodySmallBold)
-                                        .frame(maxWidth: 296)
-                                        .foregroundStyle(AppColors.gray)
-
-                                        CustomButton(
-                                            title: "Scan", style: .newPrimary,
-                                            width: 116
-                                        ) {
-                                            viewModel.isShowingScanner = true
-                                        }
-
-                                        Spacer().frame(height: 40)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 22)
-                        }
-                    }
-                }
-                .ignoresSafeArea(.container, edges: .top)
-            }
-            .navigationBarHidden(true)
-            .sheet(isPresented: $viewModel.isShowingScanner) {
-                CodeScannerView(
-                    codeTypes: [.qr],
-                    completion: viewModel.handleScan
-                )
-            }
-            .sheet(isPresented: $viewModel.isShowingEventDetail) {
-                if let eventDetail = viewModel.eventDetail {
-                    EventJoinSheet(eventDetail: eventDetail) {
-                        appState.screen = .onboarding
-                        appState.setSelectedEvent(eventDetail)
-                    }
-                    .presentationDetents([.fraction(0.65)])
-                }
-            }
-            .onAppear {
-                guard appState.isInitialized else { return }
-                appState.updateJoinedEventStatus()
-            }
-        }
-    }
-
-    // MARK: - Custom Header
-    private var customHeader: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .center) {
-                // Left side - Event info
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Current Event")
-                        .font(AppFont.interLargeSemiBold)
-
-                    Text(eventStatusText)
-                        .font(AppFont.interMidMedium)
-                        .foregroundColor(eventStatusColor)
-                }
-
-                Spacer()
-
-                // Right side - Profile with smooth loading
-                ProfileImageButton(imageURL: appState.user?.photoUrl)
-            }
-            .padding(.horizontal, 22)
-            .padding(.vertical, 16)
-
-            // Optional separator line
-            Rectangle()
-                .fill(Color.white.opacity(0.1))
-                .frame(height: 1)
-                .padding(.horizontal, 22)
-        }
-    }
-
-    private var eventStatusText: String {
-        if appState.isJoinedEvent, let selectedEvent = appState.selectedEvent {
-            return selectedEvent.name
-        } else {
-            return "No ongoing event"
-        }
-    }
-
-    private var eventStatusColor: Color {
-        appState.isJoinedEvent ? .white : AppColors.gray
     }
 }
 
