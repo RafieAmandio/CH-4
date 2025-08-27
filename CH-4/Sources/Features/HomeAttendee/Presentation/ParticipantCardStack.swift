@@ -32,9 +32,7 @@ struct ParticipantCardStack: View {
                         onTap: {
                             
                         },
-                        detailContent: cardData.detailContent,
-                        backgroundColor: backgroundColorForCard(at: index),
-                        textColor: textColorForCard(at: index)
+                        detailContent: cardData.detailContent
                     )
                   
                     .scaleEffect(scaleForCard(at: index))
@@ -44,6 +42,7 @@ struct ParticipantCardStack: View {
                     .allowsHitTesting(index == currentIndex)
                 }
             }
+            .padding(.leading)
             .gesture(
                 DragGesture()
                     .onChanged { value in
@@ -55,30 +54,6 @@ struct ParticipantCardStack: View {
             )
         }
  
-    }
-
-    private func backgroundColorForCard(at index: Int) -> Color {
-        let position = (index - currentIndex + cards.count) % cards.count
-        
-        if position == 0 {
-            // Top card gets the special background color
-            return Color(hex: "#D7CCFB")
-        } else {
-            // All other cards keep their default background
-            return Color(hex:"#1C1C1E") // or whatever your default background is
-        }
-    }
-    
-    private func textColorForCard(at index: Int) -> Color {
-        let position = (index - currentIndex + cards.count) % cards.count
-        
-        if position == 0 {
-            // Top card gets the special text color
-            return Color(hex: "515151")
-        } else {
-            // All other cards keep their default text color
-            return Color.white // or whatever your default text color is
-        }
     }
 
     private func zIndexForCard(at index: Int) -> Double {
@@ -157,7 +132,6 @@ struct ParticipantCardStack: View {
         }
     }
 }
-
 
 // Data model for the cards
 struct ParticipantCardData {
@@ -256,6 +230,5 @@ struct ParticipantCardData {
             onTap: {}
         )
     ])
-    .padding(40)
  
 }

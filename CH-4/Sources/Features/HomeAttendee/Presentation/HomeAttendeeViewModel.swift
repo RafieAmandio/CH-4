@@ -24,7 +24,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
     // MARK: - Recommendations Properties
     @Published var recommendations: [RecommendationModel] = []
     @Published var isLoadingRecommendations: Bool = false
-    @Published var recommendationError: String?
+    @Published var recommendationError: String? = nil
 
     private let cacheManager = RecommendationCacheManager.shared
     @Published var lastFetchTime: Date?

@@ -197,7 +197,7 @@ extension RecommendationModel {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Connect")
                         .font(AppFont.cardHead2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppColors.cardTextDetails)
                     HStack {
                         Image("linkedin")
                         Text("Linkedin Profile")
@@ -217,6 +217,7 @@ extension RecommendationModel {
                     )
                 }
             }
+            .foregroundStyle(AppColors.cardTextDetails)
 
             VStack(alignment: .leading, spacing: 12) {
                 Text("Key Reason")

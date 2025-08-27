@@ -109,14 +109,22 @@ struct AttendeeRecommendationView: View {
 
     // MARK: - Content View (FIXED)
     private var contentView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 27) {
             // Header text section with proper constraints
             VStack(spacing: 8) {
-                Text(
-                    "We've found participants who could be valuable connections for you."
+                HStack(alignment: .center, spacing: 10) {
+                    Image(systemName: "info.circle")
+
+                    Text("We’ve found participants who could be valuable connections for you.")
+                }
+                .padding(.horizontal, 0)
+                .padding(.vertical, 15)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .background(
+                    LinearGradient.customGradient3
                 )
-                .font(AppFont.interSmallMedium)
-                .foregroundStyle(AppColors.gray)
+                .cornerRadius(10)                .font(AppFont.interSmallMedium)
+                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)  // Allow multiple lines
                 .fixedSize(horizontal: false, vertical: true)  // Allow vertical expansion
@@ -124,12 +132,14 @@ struct AttendeeRecommendationView: View {
             }
             .frame(maxWidth: .infinity)  // Take full width
 
+     
             // Card stack with flexible height
             ParticipantCardStack(
                 cards: viewModel.recommendations.map {
                     $0.toParticipantCardData()
                 }
             )
+            
           // Give priority to card stack for space
 
             // Spacer to push button to bottom
@@ -142,7 +152,7 @@ struct AttendeeRecommendationView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)  // Take all available space
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
     }
 }
@@ -153,7 +163,7 @@ extension AttendeeRecommendationView {
         GeometryReader { geometry in
             VStack(spacing: 16) {
                 // Header section - fixed height
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     Text(
                         "We've found participants who could be valuable connections for you."
                     )
@@ -192,5 +202,7 @@ extension AttendeeRecommendationView {
 }
 
 #Preview {
+    let vm = HomeAttendeeDIContainer.shared.createHomeAttendeeViewModel()
     AttendeeRecommendationView()
+        .environmentObject(vm)
 }
