@@ -164,14 +164,14 @@ struct CustomSingleSelectTextFieldStyle: TextFieldStyle {
             .padding(.vertical, 12)
             .background(
                 ZStack {
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .fill(Color.gray.opacity(0.2))
 
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 }
             )
-            .foregroundColor(.white)
+            .foregroundColor(.primary)
     }
 }
 
