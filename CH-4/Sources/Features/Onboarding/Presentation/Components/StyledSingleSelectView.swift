@@ -27,43 +27,44 @@ struct StyledSingleSelectView: View {
                     .font(AppFont.interMidRegular)
                     .multilineTextAlignment(.leading)
             }
-
-            // Options Grid
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(question.answerOptions) { option in
-                    SingleSelectOptionButton(
-                        option: option,
-                        isSelected: selectedOptionId == option.id
-                    ) {
-                        selectedOptionId = option.id
-                        answerManager.setSingleChoice(
-                            questionId: question.id, optionId: option.id)
+            VStack(spacing: 16) {
+                // Options Grid
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(question.answerOptions) { option in
+                        SingleSelectOptionButton(
+                            option: option,
+                            isSelected: selectedOptionId == option.id
+                        ) {
+                            selectedOptionId = option.id
+                            answerManager.setSingleChoice(
+                                questionId: question.id, optionId: option.id)
+                        }
                     }
                 }
-            }
-
-            // "Other" option if enabled
-            if question.constraints.isUsingOther {
-                VStack(alignment: .leading, spacing: 12) {
-                    SingleSelectOptionButton(
-                        text: "Other",
-                        isSelected: selectedOptionId == "other"
-                    ) {
-                        selectedOptionId = "other"
-                    }
-
-                    if selectedOptionId == "other" {
-                        TextField("Please specify...", text: $otherText)
-                            .textFieldStyle(
-                                CustomSingleSelectTextFieldStyle()
-                            )
-                            .onChange(of: otherText) { newValue in
-                                if !newValue.isEmpty {
-                                    answerManager.setFreeText(
-                                        questionId: question.id,
-                                        text: newValue, optionId: "other")
+                
+                // "Other" option if enabled
+                if question.constraints.isUsingOther {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SingleSelectOptionButton(
+                            text: "Other",
+                            isSelected: selectedOptionId == "other"
+                        ) {
+                            selectedOptionId = "other"
+                        }
+                        
+                        if selectedOptionId == "other" {
+                            TextField("Please specify...", text: $otherText)
+                                .textFieldStyle(
+                                    CustomSingleSelectTextFieldStyle()
+                                )
+                                .onChange(of: otherText) { newValue in
+                                    if !newValue.isEmpty {
+                                        answerManager.setFreeText(
+                                            questionId: question.id,
+                                            text: newValue, optionId: "other")
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
             }
@@ -86,7 +87,7 @@ struct StyledSingleSelectView: View {
     }
 }
 
-// MARK: - Single Select Option Button
+// **MARK: - Single Select Option Button**
 struct SingleSelectOptionButton: View {
     let text: String
     let isSelected: Bool
@@ -128,7 +129,7 @@ struct SingleSelectOptionButton: View {
 
                 Text(text)
                     .font(AppFont.interMidMedium)
-
+                    .foregroundColor(isSelected ? AppColors.primary : .primary)
                     .multilineTextAlignment(.leading)
 
                 Spacer()
@@ -139,11 +140,11 @@ struct SingleSelectOptionButton: View {
             .background(
                 ZStack {
                     // Background fill
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .fill(AppColors.TextFieldBackground)
 
                     // Border
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .stroke(
                             isSelected
                                 ? AppColors.primary : Color.gray.opacity(0.4),
@@ -153,11 +154,8 @@ struct SingleSelectOptionButton: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 0.98 : 1.0)
-        .animation(.easeInOut(duration: 0.1), value: isSelected)
     }
 }
-
 // MARK: - Custom Text Field Style for Single Select
 struct CustomSingleSelectTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
