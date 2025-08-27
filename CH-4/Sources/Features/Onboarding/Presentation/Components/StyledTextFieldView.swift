@@ -17,7 +17,6 @@ struct StyledTextFieldView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
-
                 // Subtitle/Description
                 Text(
                     "Adding your experience makes it easier to connect you with people who fit your goals"
