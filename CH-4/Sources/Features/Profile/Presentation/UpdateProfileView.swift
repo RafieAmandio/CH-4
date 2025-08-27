@@ -44,7 +44,6 @@ struct UpdateProfileView: View {
     }
 
     var body: some View {
-
         VStack(spacing: 40) {
             VStack(spacing: 0) {
                 HeaderSectionView()

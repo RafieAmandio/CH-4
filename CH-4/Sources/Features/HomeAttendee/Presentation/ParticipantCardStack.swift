@@ -23,9 +23,7 @@ struct ParticipantCardStack: View {
                                     .resizable()  // Apply resizable here, to the Image
                                     .aspectRatio(contentMode: .fill)
                             } placeholder: {
-                                Image(cardData.fallbackImageName)
-                                    .resizable()  // Apply resizable here, to the Image
-                                    .aspectRatio(contentMode: .fill)
+                                ProgressView()
                             }
                         ),
                         name: cardData.name,
@@ -34,7 +32,9 @@ struct ParticipantCardStack: View {
                         onTap: {
                             
                         },
-                        detailContent: cardData.detailContent
+                        detailContent: cardData.detailContent,
+                        backgroundColor: backgroundColorForCard(at: index),
+                        textColor: textColorForCard(at: index)
                     )
                   
                     .scaleEffect(scaleForCard(at: index))
@@ -55,6 +55,30 @@ struct ParticipantCardStack: View {
             )
         }
  
+    }
+
+    private func backgroundColorForCard(at index: Int) -> Color {
+        let position = (index - currentIndex + cards.count) % cards.count
+        
+        if position == 0 {
+            // Top card gets the special background color
+            return Color(hex: "#D7CCFB")
+        } else {
+            // All other cards keep their default background
+            return Color(hex:"#1C1C1E") // or whatever your default background is
+        }
+    }
+    
+    private func textColorForCard(at index: Int) -> Color {
+        let position = (index - currentIndex + cards.count) % cards.count
+        
+        if position == 0 {
+            // Top card gets the special text color
+            return Color(hex: "515151")
+        } else {
+            // All other cards keep their default text color
+            return Color.white // or whatever your default text color is
+        }
     }
 
     private func zIndexForCard(at index: Int) -> Double {
@@ -94,7 +118,7 @@ struct ParticipantCardStack: View {
         } else if position <= 2 {
             // Stacked cards behind with offset
             let baseOffset = CGFloat(position) * cardOffset
-            return CGSize(width: baseOffset, height: baseOffset * 0.3)
+            return CGSize(width: baseOffset, height: baseOffset * -1)
         } else {
             // Cards way behind - keep them in the stack but further back
             let baseOffset = CGFloat(3) * cardOffset
@@ -111,9 +135,9 @@ struct ParticipantCardStack: View {
         if position == 0 {
             return 1.0  // Current card
         } else if position <= 2 {
-            return 0.7 - Double(position - 1) * 0.2  // Visible stacked cards
+            return 0.8  // Visible stacked cards
         } else {
-            return 0.1  // Cards further back but still present
+            return 0.6  // Cards further back but still present
         }
     }
 
@@ -133,6 +157,7 @@ struct ParticipantCardStack: View {
         }
     }
 }
+
 
 // Data model for the cards
 struct ParticipantCardData {
@@ -231,5 +256,6 @@ struct ParticipantCardData {
             onTap: {}
         )
     ])
+    .padding(40)
  
 }

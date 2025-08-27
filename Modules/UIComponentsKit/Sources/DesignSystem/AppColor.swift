@@ -16,10 +16,11 @@ public enum AppColors {
     public static let offBlack = Color(hex: "#191A1F")
     
     public static let gray = Color(hex: "#8C8C8F")
-
+    public static let offGray = Color(hex: "#AAB8CF")
+s
     public static let cardBackground = Color(hex: "#1C1C1E")
     public static let cardCircle = Color(hex: "#D9D9D91A")
-    public static let cardTextDetails = Color(hex: "#E1E1E1")
+    public static let cardTextDetails = Color(hex: "#515151")
     public static let cardTap = Color(hex: "#C7C6C6 ")
     
 }

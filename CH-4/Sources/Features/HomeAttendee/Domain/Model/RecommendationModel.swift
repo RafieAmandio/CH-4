@@ -178,7 +178,7 @@ extension RecommendationModel {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Goal")
                     .font(AppFont.cardHead2)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.cardTextDetails)
 
                 Text(targetAttendee.goalsCategory.name)
                     .font(AppFont.cardText)
@@ -202,10 +202,11 @@ extension RecommendationModel {
                         Image("linkedin")
                         Text("Linkedin Profile")
                             .font(AppFont.cardText)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.cardTextDetails)
 
                         Image(systemName: "arrow.up.right")
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.cardTextDetails)
+
                             .font(AppFont.cardText)
                     }
                     .padding(.horizontal, 16)
@@ -220,11 +221,12 @@ extension RecommendationModel {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Key Reason")
                     .font(AppFont.cardHead2)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.cardTextDetails)
+
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(reasoning)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppColors.cardTextDetails)
                 }
 
             }

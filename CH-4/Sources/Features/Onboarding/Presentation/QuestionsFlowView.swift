@@ -138,7 +138,6 @@ struct AllQuestionsView: View {
                 }
                 .padding()
             }
-
             // Bottom continue button
             CustomButton(
                 title: isSubmitting ? "Submitting..." : "Submit All Answers",

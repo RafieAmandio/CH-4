@@ -29,8 +29,8 @@ struct HomeAttendee: View {
                             .environmentObject(viewModel)
                     } else {
                         // No active event
-                        
-                        if(viewModel.isLoading) {
+
+                        if viewModel.isLoading {
                             Text("Loading..")
                             ProgressView()
                         }
@@ -43,9 +43,7 @@ struct HomeAttendee: View {
                         .foregroundStyle(AppColors.gray)
 
                         VStack(alignment: .center) {
-                            CustomButton(
-                                title: "Scan", style: .newPrimary, width: 166
-                            ) {
+                            CustomButton(title: "Scan", style: .newPrimary,width: 116, height:54,  content: "qrcode.viewfinder") {
                                 viewModel.isShowingScanner = true
                             }
 
@@ -119,20 +117,20 @@ struct HomeAttendee: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Current Event")
                     .font(AppFont.interLargeBold)
+                    .foregroundStyle(LinearGradient.customGradient3)
 
                 Text(eventStatusText)
                     .font(AppFont.interMidMedium)
-                    .foregroundColor(eventStatusColor)
+                    .foregroundStyle(eventStatusBackground)
             }
 
             Spacer()
 
             // Right side - Profile button
             Button {
-                print("HELLO")
                 viewModel.isLogoutPresented.toggle()
             } label: {
-                if let urlString = appState.user?.photoUrl,
+                if let urlString = appState.temp_url,
                     let url = URL(string: urlString)
                 {
                     AsyncImage(url: url) { phase in
@@ -190,8 +188,13 @@ struct HomeAttendee: View {
         }
     }
 
-    private var eventStatusColor: Color {
-        .black
+    private var eventStatusBackground: Color {
+        if appState.isJoinedEvent {
+            AppColors.primary
+        } else {
+            AppColors.offGray
+        }
+
     }
 }
 

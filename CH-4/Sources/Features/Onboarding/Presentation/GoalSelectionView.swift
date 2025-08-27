@@ -56,7 +56,7 @@ struct GoalSelectionView: View {
         if let selectedGoal = selectedGoal {
             VStack {
                 Text("Selected:")
-                    .font(AppFont.bodySmallMedium)
+                    .font(AppFont.interSmallMedium)
 
                 Text(selectedGoal.name)
                     .font(AppFont.bodySmallMedium)

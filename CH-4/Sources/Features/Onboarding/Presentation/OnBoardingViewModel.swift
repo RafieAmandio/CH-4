@@ -66,7 +66,10 @@ public final class OnboardingViewModel: ObservableObject {
             else {
                 fatalError("Access token not found")
             }
-
+            
+        
+            await AppStateManager.shared.setUrl(payload.photoLink)
+            
             let _ = KeychainManager.shared.save(token: "access_token", for: accessToken)
             APIClient.shared.setAuthToken(accessToken)
 

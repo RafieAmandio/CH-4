@@ -30,10 +30,12 @@ struct SignInView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
+
+
                 FloatingCardView()
                     .environmentObject(viewModel)
             }
-            .padding(20)
+            .padding(.horizontal, 20)
             .loading(viewModel.isLoading)
 
         }
