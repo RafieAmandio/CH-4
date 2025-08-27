@@ -15,7 +15,7 @@ struct StyledMultiSelectView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             // Question Title
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 15) {
                 Text(question.question)
                     .font(AppFont.interLargeSemiBold)
                     .multilineTextAlignment(.leading)
@@ -23,7 +23,7 @@ struct StyledMultiSelectView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 // Subtitle
-                Text("Pick one or more!")
+                Text("Choose all that apply.")
                     .font(AppFont.interMidRegular)
                     .multilineTextAlignment(.leading)
 
