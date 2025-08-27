@@ -40,6 +40,12 @@ public enum AppFont {
     public static let interLargeBold = Font.custom("Inter28pt-Bold", size: 36)
     
     
+    public static let cardHead1 = Font.custom("Inter28pt-Bold", size: 24)
+    public static let cardHead2 = Font.custom("Inter28pt-Bold", size: 20)
+    public static let cardDetail = Font.custom("Inter28pt-Medium", size: 20)
+    public static let cardText = Font.custom("Inter28pt-Medium", size: 13)
+    public static let cardTap = Font.custom("Urbanist-SemiBold", size: 16)
+    
     public static let inter30Bold = Font.custom("Inter28pt-Bold", size: 30)
     public static let inter14Regular = Font.custom("Inter28pt-Regular", size: 14)
 }
