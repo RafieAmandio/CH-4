@@ -156,6 +156,7 @@ struct CustomTextFieldStyle: TextFieldStyle {
     }
 }
 
+
 // MARK: - Preview
 struct StyledMultiSelectView_Previews: PreviewProvider {
     static var previews: some View {
@@ -200,10 +201,11 @@ struct StyledMultiSelectView_Previews: PreviewProvider {
         )
 
         StyledMultiSelectView(
-            question: mockQuestion,
-            answerManager: QuestionAnswerManager()
-        )
-        .preferredColorScheme(.light)
+                    question: mockQuestion,
+                    answerManager: QuestionAnswerManager()
+                )
+                .padding(.horizontal, 20)
+                .preferredColorScheme(.light)
     }
 }
 
@@ -311,6 +313,7 @@ struct CompleteStyledOnboardingView_Previews: PreviewProvider {
     }
 }
 
+
 // MARK: - Test View for Development
 struct StyledMultiSelectTestView: View {
     @StateObject private var answerManager = QuestionAnswerManager()
@@ -364,6 +367,7 @@ struct StyledMultiSelectTestView: View {
                 print("Selected answers: \(answerManager.getAllAnswers())")
             }
         )
+        
     }
 }
 
