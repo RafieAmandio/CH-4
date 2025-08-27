@@ -5,7 +5,7 @@ struct ParticipantCardStack: View {
     @State private var currentIndex = 0
     @State private var dragOffset = CGSize.zero
 
-    private let cardOffset: CGFloat = 30
+    private let cardOffset: CGFloat = 20
     private let cardScale: CGFloat = 0.95
     private let swipeThreshold: CGFloat = 100
 
@@ -30,9 +30,13 @@ struct ParticipantCardStack: View {
                         ),
                         name: cardData.name,
                         title: cardData.title,
-                        detailContent: cardData.detailContent,
-                        onTap: cardData.onTap
+                        keyReasons: ["test"],
+                        onTap: {
+                            
+                        },
+                        detailContent: cardData.detailContent
                     )
+                  
                     .scaleEffect(scaleForCard(at: index))
                     .offset(offsetForCard(at: index))
                     .zIndex(zIndexForCard(at: index))
@@ -50,7 +54,7 @@ struct ParticipantCardStack: View {
                     }
             )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+ 
     }
 
     private func zIndexForCard(at index: Int) -> Double {
@@ -151,4 +155,81 @@ struct ParticipantCardData {
                 .aspectRatio(contentMode: .fill)
         }
     }
+}
+
+
+#Preview {
+    ParticipantCardStack(cards: [
+        ParticipantCardData(
+            imageURL: "abg",
+            fallbackImageName: "person.fill",
+            name: "Leonie Marie Gogh",
+            title: "Technopreneur",
+            detailContent: AnyView(
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Goal")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        
+                        Text("Technopreneur")
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.white, lineWidth: 1)
+                            )
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Key Reason")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        
+                        Text("Seeking investors and networking opportunities")
+                            .foregroundStyle(.white)
+                    }
+                }
+            ),
+            onTap: {}
+        ),
+        ParticipantCardData(
+            imageURL: "abg",
+            fallbackImageName: "person.circle.fill",
+            name: "John Smith",
+            title: "Venture Capitalist",
+            detailContent: AnyView(
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Goal")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        
+                        Text("Investment")
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.white, lineWidth: 1)
+                            )
+                    }
+                }
+            ),
+            onTap: {}
+        ),
+        ParticipantCardData(
+            imageURL: "abg",
+            fallbackImageName: "person.2.fill",
+            name: "Sarah Johnson",
+            title: "Product Manager",
+            detailContent: AnyView(
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("Networking focused professional")
+                        .foregroundStyle(.white)
+                }
+            ),
+            onTap: {}
+        )
+    ])
+ 
 }
