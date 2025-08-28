@@ -79,7 +79,7 @@ struct FlexibleParticipantCardNew: View {
         GeometryReader { geometry in
             ZStack {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(AppColors.cardBackground)
+                    .fill(LinearGradient.customGradient3)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 if isFlipped {
@@ -90,11 +90,17 @@ struct FlexibleParticipantCardNew: View {
                     frontView(geometry: geometry)
                 }
             }
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(.white, lineWidth: 6)
+            )
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
             .rotation3DEffect(
                 .degrees(isFlipped ? 180 : 0),
                 axis: (x: 0, y: 1, z: 0)
             )
+
+            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
             .onTapGesture {
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                 impactFeedback.impactOccurred()
@@ -106,7 +112,7 @@ struct FlexibleParticipantCardNew: View {
             }
         }
         .aspectRatio(0.7, contentMode: .fit)  // Changed from 0.7 to 0.6 to make card taller
-       
+
     }
 
     private func frontView(geometry: GeometryProxy) -> some View {

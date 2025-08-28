@@ -242,7 +242,7 @@ struct SearchDropdown: View {
         } else if !professionOptions.isEmpty {
             // Filter professions
             if q.isEmpty {
-                filteredProfessions = Array(professionOptions.prefix(20))
+                filteredProfessions = Array(professionOptions)
             } else {
                 filteredProfessions = professionOptions.filter {
                     $0.name.localizedCaseInsensitiveContains(q)

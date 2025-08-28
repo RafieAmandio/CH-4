@@ -113,18 +113,15 @@ struct AttendeeRecommendationView: View {
             // Header text section with proper constraints
             VStack(spacing: 8) {
                 HStack(alignment: .center, spacing: 10) {
-                    Image(systemName: "info.circle")
-
-                    Text("We’ve found participants who could be valuable connections for you.")
+                    Text(
+                        "We’ve found participants who could be valuable connections for you."
+                    )
                 }
                 .padding(.horizontal, 0)
                 .padding(.vertical, 15)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .background(
-                    LinearGradient.customGradient3
-                )
-                .cornerRadius(10)                .font(AppFont.interSmallMedium)
-                .foregroundStyle(.white)
+                .cornerRadius(10).font(AppFont.interSmallMedium)
+                .foregroundStyle(AppColors.offGray)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)  // Allow multiple lines
                 .fixedSize(horizontal: false, vertical: true)  // Allow vertical expansion
@@ -132,15 +129,14 @@ struct AttendeeRecommendationView: View {
             }
             .frame(maxWidth: .infinity)  // Take full width
 
-     
             // Card stack with flexible height
             ParticipantCardStack(
                 cards: viewModel.recommendations.map {
                     $0.toParticipantCardData()
                 }
             )
-            
-          // Give priority to card stack for space
+
+            // Give priority to card stack for space
 
             // Spacer to push button to bottom
             Spacer(minLength: 10)

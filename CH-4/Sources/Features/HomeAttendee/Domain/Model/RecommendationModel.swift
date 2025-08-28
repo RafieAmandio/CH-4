@@ -213,7 +213,7 @@ extension RecommendationModel {
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .stroke(.white, lineWidth: 1)
+                            .stroke(.white, lineWidth: 2)
                     )
                 }
             }
