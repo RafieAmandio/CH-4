@@ -74,7 +74,7 @@ struct UpdateProfileView: View {
                         ProgressView()
                             .scaleEffect(0.8)
                         Text("Loading professions...")
-                            .font(.caption)
+                            .font(AppFont.interMidMedium)
                             .foregroundColor(.secondary)
                     }
                     .frame(height: 51)

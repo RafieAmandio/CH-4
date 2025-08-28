@@ -21,7 +21,7 @@ struct CustomTextField: View {
             TextField("", text: $text)
                 .focused($isTextFieldFocused)
                 .padding(10)
-                .font(AppFont.inter14Regular)
+                .font(AppFont.interMidMedium)
                 .frame(width: .infinity, height: 50, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 11)

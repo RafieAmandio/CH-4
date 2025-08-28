@@ -323,14 +323,25 @@ struct StyledTextFieldView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             // Large text field
-            StyledTextFieldTestView()
-                .padding(.horizontal, 20)
-                .previewDisplayName("Large Text Field")
+            StyledTextFieldView(
+                question: MockQuestionProvider.experienceQuestion,
+                answerManager: QuestionAnswerManager()
+            )
+            .padding(.horizontal, 20)
+            .previewDisplayName("Large Text Field")
 
             // Compact text field
             CompactTextFieldTestView()
                 .padding(.horizontal, 20)
                 .previewDisplayName("Compact Text Field")
+                
+            // Alternative: You could also use the complete onboarding view
+            CompleteTextFieldOnboardingView(
+                question: MockQuestionProvider.experienceQuestion,
+                answerManager: QuestionAnswerManager(),
+                onContinue: { print("Preview continue tapped") }
+            )
+            .previewDisplayName("Complete Onboarding View")
         }
     }
 }
