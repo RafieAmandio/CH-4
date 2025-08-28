@@ -18,7 +18,7 @@ public enum AppColors {
     public static let gray = Color(hex: "#8C8C8F")
     public static let offGray = Color(hex: "#AAB8CF")
 
-    public static let cardBackground = Color(hex: "#1C1C1E")
+
     public static let cardCircle = Color(hex: "#D9D9D91A")
     public static let cardTextDetails = Color(.white)
     public static let cardTap = Color(hex: "#C7C6C6 ")
