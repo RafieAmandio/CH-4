@@ -20,7 +20,7 @@ struct SignInView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
-
+                
                 ScrollingCarouselImage(
                     name: "carousel",
                     height: 160,

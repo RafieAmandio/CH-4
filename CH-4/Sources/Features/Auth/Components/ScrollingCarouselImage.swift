@@ -4,7 +4,7 @@ import SwiftUI
 /// Works great for a wide image like your "carousel".
 struct ScrollingCarouselImage: View {
     let name: String
-    var height: CGFloat = 260
+    var height: CGFloat = 130
     var angle: Double = -12          // <— adjust tilt here (in degrees)
     var pointsPerSecond: CGFloat = 40 // <— scrolling speed
 
@@ -17,7 +17,7 @@ struct ScrollingCarouselImage: View {
                 let travel = CGFloat(t) * pointsPerSecond
                 let x = -travel.remainder(dividingBy: w)
 
-                VStack(spacing:0) {
+                VStack(spacing: 15) {
                     VStack(spacing: 0) {
                         Image(name)
                             .frame(width: w, height: 100)
