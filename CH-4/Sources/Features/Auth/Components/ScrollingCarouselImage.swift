@@ -19,7 +19,7 @@ struct ScrollingCarouselImage: View {
 
                 VStack(spacing: 15) {
                     VStack(spacing: 0) {
-                        Image(name)
+                        Image("carousel2")
                             .frame(width: w, height: 100)
                         
                     }
@@ -27,7 +27,7 @@ struct ScrollingCarouselImage: View {
                     .offset(x: x)                     // ← slides left
                     .rotationEffect(.degrees(angle))
                     VStack {
-                        Image(name)
+                        Image("carousel")
                             .frame(width: w, height: 100)
                     }
                     .frame(width: w, height: height, alignment: .leading)
