@@ -3,7 +3,6 @@ import UIComponentsKit
 
 struct UpdateProfileView: View {
     @EnvironmentObject private var onBoardingViewModel: OnboardingViewModel
-
     @EnvironmentObject private var appState: AppStateManager
     @StateObject private var viewModel: UpdateProfileViewModel =
         ProfileDIContainer.shared.createProfileViewModel()
@@ -41,6 +40,11 @@ struct UpdateProfileView: View {
         } else {
             onProfileUpdated?()
         }
+    }
+    
+    // Function to dismiss keyboard
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     var body: some View {
@@ -130,6 +134,10 @@ struct UpdateProfileView: View {
             // Loading Indicator for Profile Update
         }
         .padding(.horizontal, 20)
+        .contentShape(Rectangle()) // Makes the entire view tappable
+        .onTapGesture {
+            dismissKeyboard()
+        }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
                 viewModel.showError = false
@@ -143,7 +151,6 @@ struct UpdateProfileView: View {
             Task {
                 await viewModel.loadProfessions()
             }
-
         }
     }
 }
