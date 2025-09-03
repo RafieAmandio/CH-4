@@ -799,11 +799,248 @@ container.register(CreateEventViewModel.self) {
 - **Quick Access**: Users can join events without downloading the full app
 - **Event Discovery**: QR code scanning for instant event access
 - **Reduced Friction**: Lower barrier to entry for event participation
+- **On-Demand Installation**: App Clip can be installed on-demand when users need full functionality
 
 **Implementation**:
 - Shared modules (NetworkingKit, UIComponentsKit) between main app and App Clip
 - Minimal App Clip functionality focused on event joining
 - Seamless transition to full app when needed
+
+## App Clip Architecture
+
+### 🎯 App Clip Overview
+
+The CH-4 App Clip provides a lightweight, instant-access experience for users to discover and join networking events without downloading the full application. It serves as a gateway to the main app's functionality while maintaining a minimal footprint.
+
+### 📱 App Clip Structure
+
+```
+CH4-AppClip/
+├── Sources/
+│   ├── AppClipApp.swift              # App Clip entry point
+│   ├── AppClipView.swift             # Main App Clip view
+│   ├── Core/
+│   │   └── AppStateManager.swift     # Simplified state management
+│   ├── Features/
+│   │   ├── AppValue/
+│   │   │   └── Presentation/
+│   │   │       └── AppValueView.swift # Value proposition display
+│   │   └── Profile/
+│   │       └── Presentation/
+│   │           └── UpdateProfileView.swift # Profile setup
+│   └── Components/
+│       ├── ApplyBackground.swift     # Shared UI components
+│       └── CustomButton.swift        # Shared button component
+└── Resources/
+    └── Assets.xcassets/              # App Clip assets
+```
+
+### 🔄 App Clip Data Flow
+
+```mermaid
+graph TD
+    A[App Clip Launch] -->|QR Code/URL| B[AppValueView]
+    B -->|User Interest| C[UpdateProfileView]
+    C -->|Profile Setup| D[Event Join Process]
+    D -->|Full App Needed| E[Install Full App]
+    E -->|Seamless Transition| F[Main App Experience]
+    
+    G[QR Code Scanner] -->|Event Code| H[Event Validation]
+    H -->|Valid Event| I[Join Event Flow]
+    H -->|Invalid Event| J[Error Handling]
+```
+
+### 🎨 App Clip User Experience
+
+#### 1. **Value Proposition Display**
+```swift
+// CH4-AppClip/Sources/Features/AppValue/Presentation/AppValueView.swift
+struct AppValueView: View {
+    private var items: [ListItem] = [
+        ListItem(
+            title: "Meet people with your interest",
+            description: "Match with the right people— those who share your goals, interests, and collaboration potential.",
+            image: "talking"),
+        ListItem(
+            title: "Turn events into opportunities", 
+            description: "From partners to mentors, find the right connection while you're here.",
+            image: "handshake"),
+        ListItem(
+            title: "Make every moment count",
+            description: "Match with the right people— those who share your goals, interests, and collaboration potential.",
+            image: "clock"),
+    ]
+    
+    var body: some View {
+        ApplyBackground {
+            VStack(spacing: 50) {
+                Text("Unlock Networking potential with Findect.")
+                    .font(AppFont.headingLargeBold)
+                    .foregroundColor(.white)
+                
+                VStack(spacing: 40) {
+                    ForEach(items) { item in
+                        ListItemView(item: item)
+                    }
+                }
+                
+                CustomButton(title: "Continue", style: .primary) {
+                    // Navigate to profile setup
+                }
+            }
+        }
+    }
+}
+```
+
+#### 2. **Simplified State Management**
+```swift
+// CH4-AppClip/Sources/Core/AppStateManager.swift
+@MainActor
+class AppStateManager: ObservableObject {
+    static let shared = AppStateManager()
+    
+    enum Screen {
+        case appValue
+        case updateProfile
+    }
+    
+    @Published var screen: Screen = .appValue
+    
+    private init() {}
+}
+```
+
+#### 3. **Profile Setup Flow**
+```swift
+// CH4-AppClip/Sources/Features/Profile/Presentation/UpdateProfileView.swift
+struct UpdateProfileView: View {
+    @EnvironmentObject var appState: AppStateManager
+    
+    var body: some View {
+        ApplyBackground {
+            VStack {
+                // Profile setup form
+                // Basic information collection
+                // Event joining process
+                
+                CustomButton(title: "Join Event", style: .primary) {
+                    // Trigger full app installation if needed
+                    // or continue with limited functionality
+                }
+            }
+        }
+    }
+}
+```
+
+### 🔗 App Clip Integration Points
+
+#### 1. **Shared Module Architecture**
+```swift
+// Project.swift - App Clip Dependencies
+.target(
+    name: "CH4-AppClip",
+    product: .appClip,
+    dependencies: [
+        .target(name: "NetworkingKit"),    // Shared networking
+        .target(name: "UIComponentsKit")   // Shared UI components
+    ]
+)
+```
+
+#### 2. **Entitlements Configuration**
+```xml
+<!-- CH4-AppClip/CH4-AppClip.entitlements -->
+<key>com.apple.developer.parent-application-identifiers</key>
+<array>
+    <string>$(AppIdentifierPrefix)dev.tuist.CH-4</string>
+</array>
+<key>com.apple.developer.on-demand-install-capable</key>
+<true/>
+```
+
+#### 3. **QR Code Integration**
+The main app handles QR code scanning for event discovery:
+
+```swift
+// CH-4/Sources/Features/HomeAttendee/Presentation/HomeAttendee.swift
+.sheet(isPresented: $viewModel.isShowingScanner) {
+    CodeScannerView(
+        codeTypes: [.qr],
+        completion: viewModel.handleScan
+    )
+}
+```
+
+### 🚀 App Clip Use Cases
+
+#### 1. **Event Discovery**
+- Users scan QR codes at networking events
+- App Clip launches instantly to show event details
+- Users can join events without downloading the full app
+
+#### 2. **Quick Profile Setup**
+- Minimal profile information collection
+- Basic networking preferences
+- Event-specific goal setting
+
+#### 3. **Seamless Upgrade Path**
+- App Clip detects when full app features are needed
+- Prompts user to install full app
+- Maintains user context during transition
+
+### 📊 App Clip Benefits
+
+#### **For Users**:
+- **Instant Access**: No download required for basic functionality
+- **Reduced Storage**: Minimal app footprint
+- **Quick Setup**: Streamlined onboarding process
+- **Context Preservation**: Seamless transition to full app
+
+#### **For Event Organizers**:
+- **Higher Participation**: Lower barrier to entry
+- **Better Engagement**: Users can join events immediately
+- **Reduced Friction**: No app store download required
+- **Analytics**: Track App Clip usage and conversion
+
+#### **For Developers**:
+- **Shared Codebase**: Reuse existing modules and components
+- **Consistent UI**: Same design system across app and clip
+- **Simplified Maintenance**: Single codebase for shared functionality
+- **Performance**: Optimized for quick loading and minimal resource usage
+
+### 🔧 App Clip Technical Considerations
+
+#### **Size Limitations**:
+- App Clip must be under 10MB
+- Shared modules help reduce duplication
+- Optimized assets and resources
+
+#### **Functionality Constraints**:
+- Limited to essential features only
+- No complex data persistence
+- Simplified user flows
+
+#### **Performance Optimization**:
+- Fast launch times
+- Minimal memory usage
+- Efficient network requests
+- Cached essential data
+
+### 🎯 App Clip Future Enhancements
+
+#### **Planned Features**:
+- **Offline Support**: Basic functionality without network
+- **Push Notifications**: Event reminders and updates
+- **Enhanced Analytics**: Detailed usage tracking
+- **Social Sharing**: Easy event sharing capabilities
+
+#### **Integration Opportunities**:
+- **Apple Wallet**: Event tickets and passes
+- **Siri Shortcuts**: Voice-activated event joining
+- **Widget Support**: Event information on home screen
+- **Apple Watch**: Quick event access from wrist
 
 ---
 
