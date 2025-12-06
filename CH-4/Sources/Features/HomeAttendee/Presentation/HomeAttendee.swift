@@ -58,6 +58,10 @@ struct HomeAttendee: View {
                                 viewModel.isManualCodePresented = true
                             }
                         }
+                        
+                        CustomButton(title: "Switch role", style: .secondary, width: 116) {
+                            appState.switchToCreator()
+                        }
                     }
                 }
                 .padding(22)
