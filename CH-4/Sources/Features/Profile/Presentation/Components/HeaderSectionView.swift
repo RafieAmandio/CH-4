@@ -10,16 +10,27 @@ import UIComponentsKit
 
 struct HeaderSectionView: View {
     var body: some View {
-        VStack(spacing: 10) {
-            Text("Tell us about yourself!")
-                .font(AppFont.headingLargeSemiBold)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment:.leading, spacing: 5) {
+            if #available(iOS 17.0, *) {
+                (Text("Tell us about ")
+                    .font(AppFont.interLargeSemiBold)
+                    + Text("yourself!")
+                    .foregroundStyle(LinearGradient.customGradient3)
+                    .font(AppFont.interLargeSemiBold))
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            } else {
+                Text("Tell us about yourself")
+                    .font(AppFont.interLargeSemiBold)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+
             Text("Your information becomes visible to others when you’re suggested to them.")
-                .font(AppFont.bodySmallRegular)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(AppFont.inter14Regular)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
                 .multilineTextAlignment(.leading)
         }
-        .padding(.horizontal, 20)
+        .frame(height: 100)
+        .padding(.vertical, 35)
     }
 }
 

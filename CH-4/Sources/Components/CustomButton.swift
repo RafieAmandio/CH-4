@@ -5,21 +5,26 @@ import UIComponentsKit
 enum CustomButtonStyle {
     case primary
     case secondary
-    
+    case newPrimary
+
     var backgroundColor: Color {
         switch self {
         case .primary:
             return AppColors.primary
         case .secondary:
             return Color.black
+        case .newPrimary:
+            return Color.clear  // Will use LinearGradient instead
         }
     }
-    
+
     var textColor: Color {
         switch self {
         case .primary:
             return Color.white
         case .secondary:
+            return Color.white
+        case .newPrimary:
             return Color.white
         }
     }
@@ -29,38 +34,82 @@ enum CustomButtonStyle {
 struct CustomButton: View {
     let title: String
     let style: CustomButtonStyle
+    let content: String?
     let width: CGFloat?
-    let action: ()  -> Void
-    
+    let height: CGFloat?
+    let action: () -> Void
+
     // Optional parameters with default values
-    private let height: CGFloat = 44
-    private let cornerRadius: CGFloat = 20
-    
+    private let cornerRadius: CGFloat = 10
+
     init(
         title: String,
         style: CustomButtonStyle,
-        width: CGFloat? = nil, // nil means .infinity
+        width: CGFloat? = nil,
+        height: CGFloat? = 44,
+        // nil means .infinity
+        content: String? = nil,
         action: @escaping () -> Void
+
     ) {
         self.title = title
         self.style = style
         self.width = width
+        self.height = height
         self.action = action
+        self.content = content
     }
-    
+
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(AppFont.bodySmallSemibold)
-                .foregroundColor(style.textColor)
-                .multilineTextAlignment(.center)
-                .frame(
-                    width: width,
-                    height: height
-                )
-                .frame(maxWidth: width == nil ? .infinity : width)
-                .background(style.backgroundColor)
-                .cornerRadius(cornerRadius)
+            HStack(alignment: .center, spacing: 10) {
+                if let content = content {
+                    Image(systemName: content)
+                        .foregroundStyle(style.textColor)
+                }
+                Text(title)
+                    .font(AppFont.bodySmallSemibold)
+                    .foregroundColor(style.textColor)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 0)
+            .padding(.vertical, 15)
+            .frame(
+                width: width,
+                height: height
+            )
+            .frame(
+                maxWidth: width == nil ? .infinity : width, alignment: .center
+            )
+            .background(
+                Group {
+                    if style == .newPrimary {
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(
+                                    color: Color(
+                                        red: 0.26, green: 0.48, blue: 0.84),
+                                    location: 0.44),
+                                Gradient.Stop(
+                                    color: Color(
+                                        red: 0.26, green: 0.66, blue: 0.84),
+                                    location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: -0.03, y: 0),
+                            endPoint: UnitPoint(x: 1, y: 1.04)
+                        )
+                    } else {
+                        style.backgroundColor
+                    }
+                }
+            )
+            .cornerRadius(style == .newPrimary ? 10 : cornerRadius)
+            .shadow(
+                color: style == .newPrimary ? .black.opacity(0.1) : .clear,
+                radius: style == .newPrimary ? 12.5 : 0,
+                x: style == .newPrimary ? 5 : 0,
+                y: style == .newPrimary ? 5 : 0
+            )
         }
     }
 }
@@ -73,11 +122,11 @@ struct CustomButtonAdvanced: View {
     let height: CGFloat
     let cornerRadius: CGFloat
     let action: () -> Void
-    
+
     init(
         title: String,
         style: CustomButtonStyle,
-        width: CGFloat? = nil, // nil means .infinity
+        width: CGFloat? = nil,  // nil means .infinity
         height: CGFloat = 44,
         cornerRadius: CGFloat = 20,
         action: @escaping () -> Void
@@ -89,20 +138,53 @@ struct CustomButtonAdvanced: View {
         self.cornerRadius = cornerRadius
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(AppFont.bodySmallRegular)
-                .foregroundColor(style.textColor)
-                .multilineTextAlignment(.center)
-                .frame(
-                    width: width,
-                    height: height
-                )
-                .frame(maxWidth: width == nil ? .infinity : width)
-                .background(style.backgroundColor)
-                .cornerRadius(cornerRadius)
+            HStack(alignment: .center, spacing: 10) {
+                Text(title)
+                    .font(AppFont.bodySmallRegular)
+                    .foregroundColor(style.textColor)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 0)
+            .padding(.vertical, 15)
+            .frame(
+                width: width,
+                height: height
+            )
+            .frame(
+                maxWidth: width == nil ? .infinity : width, alignment: .center
+            )
+            .background(
+                Group {
+                    if style == .newPrimary {
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(
+                                    color: Color(
+                                        red: 0.26, green: 0.48, blue: 0.84),
+                                    location: 0.44),
+                                Gradient.Stop(
+                                    color: Color(
+                                        red: 0.26, green: 0.66, blue: 0.84),
+                                    location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: -0.03, y: 0),
+                            endPoint: UnitPoint(x: 1, y: 1.04)
+                        )
+                    } else {
+                        style.backgroundColor
+                    }
+                }
+            )
+            .cornerRadius(style == .newPrimary ? 10 : cornerRadius)
+            .shadow(
+                color: style == .newPrimary ? .black.opacity(0.1) : .clear,
+                radius: style == .newPrimary ? 12.5 : 0,
+                x: style == .newPrimary ? 5 : 0,
+                y: style == .newPrimary ? 5 : 0
+            )
         }
     }
 }
@@ -110,12 +192,12 @@ struct CustomButtonAdvanced: View {
 // MARK: - Usage Examples
 struct CustomButtonExamples: View {
     @State private var message = "No button pressed"
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text(message)
                 .padding()
-            
+
             // Primary button with fixed width
             CustomButton(
                 title: "Scan",
@@ -124,7 +206,7 @@ struct CustomButtonExamples: View {
             ) {
                 message = "Primary button pressed"
             }
-            
+
             // Secondary button with fixed width
             CustomButton(
                 title: "Cancel",
@@ -133,7 +215,16 @@ struct CustomButtonExamples: View {
             ) {
                 message = "Secondary button pressed"
             }
-            
+
+            // New Primary button with fixed width
+            CustomButton(
+                title: "New Primary",
+                style: .newPrimary,
+                width: 116
+            ) {
+                message = "New Primary button pressed"
+            }
+
             // Primary button with full width (maxWidth: .infinity)
             CustomButton(
                 title: "Sign In",
@@ -142,7 +233,7 @@ struct CustomButtonExamples: View {
                 message = "Full width primary button pressed"
             }
             .padding(.horizontal)
-            
+
             // Secondary button with full width
             CustomButton(
                 title: "Create Account",
@@ -151,7 +242,16 @@ struct CustomButtonExamples: View {
                 message = "Full width secondary button pressed"
             }
             .padding(.horizontal)
-            
+
+            // New Primary button with full width
+            CustomButton(
+                title: "New Primary Full Width",
+                style: .newPrimary
+            ) {
+                message = "Full width new primary button pressed"
+            }
+            .padding(.horizontal)
+
             // Using the advanced version with custom height
             CustomButtonAdvanced(
                 title: "Custom Height",

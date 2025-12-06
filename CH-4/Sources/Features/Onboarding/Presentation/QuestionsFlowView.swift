@@ -30,27 +30,24 @@ struct QuestionsFlowView: View {
             // Question content with different layouts based on question type
             if let question = currentQuestion {
 
-                ApplyBackground {
-                    VStack(spacing: 0) {
-                        DynamicQuestionView(
-                            question: question, answerManager: answerManager)
+                VStack(spacing: 0) {
+                    DynamicQuestionView(
+                        question: question, answerManager: answerManager)
 
-                        Spacer()
-
-                        CustomButton(
-                            title: isSubmitting
-                                ? "Submitting..."
-                                : (isLastQuestion ? "Submit" : "Continue"),
-                            style: .primary
-                        ) {
-                            handleContinueAction()
-                        }
-                        .disabled(!canProceed || isSubmitting)
-                        .opacity((!canProceed || isSubmitting) ? 0.6 : 1.0)
+                    Spacer()
+                    CustomButton(
+                        title: isSubmitting
+                            ? "Submitting..."
+                            : (isLastQuestion ? "Submit" : "Continue"),
+                        style: .newPrimary
+                    ) {
+                        handleContinueAction()
                     }
-                    .padding(22)
-
+                    .disabled(!canProceed || isSubmitting)
+                    .opacity((!canProceed || isSubmitting) ? 0.6 : 1.0)
                 }
+                .padding(20)
+
             }
         }
         .navigationBarHidden(true)
@@ -141,7 +138,6 @@ struct AllQuestionsView: View {
                 }
                 .padding()
             }
-
             // Bottom continue button
             CustomButton(
                 title: isSubmitting ? "Submitting..." : "Submit All Answers",

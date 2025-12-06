@@ -17,12 +17,15 @@ public final class HomeAttendeeViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
     @Published var isShowError: Bool = false
+    @Published var isLogoutPresented: Bool = false
+    @Published var isManualCodePresented: Bool = false
+    @Published var codeText: String?
 
     // MARK: - Recommendations Properties
     @Published var recommendations: [RecommendationModel] = []
     @Published var isLoadingRecommendations: Bool = false
-    @Published var recommendationError: String?
-    
+    @Published var recommendationError: String? = nil
+
     private let cacheManager = RecommendationCacheManager.shared
     @Published var lastFetchTime: Date?
     @Published var isUsingCachedData: Bool = false
@@ -40,8 +43,6 @@ public final class HomeAttendeeViewModel: ObservableObject {
     public var recommendationCount: Int {
         return recommendations.count
     }
-
- 
 
     // MARK: - Initialization
     public init(
@@ -64,14 +65,29 @@ public final class HomeAttendeeViewModel: ObservableObject {
             AppStateManager.shared.updateJoinedEventStatus()
 
             // Fetch recommendations if user joined an event and we don't have data yet
-            if AppStateManager.shared.isJoinedEvent && recommendations.isEmpty
-                && recommendationError == nil
-            {
-                await fetchRecommendations()
-            }
+            await fetchRecommendations(forceRefresh: true)
         }
     }
+    
+    public func validateEventFromManualCode(_ code: String) async {
+        // Clear the text field after attempting validation
+        defer { codeText = nil }
+        
+        isLoading = true
+        clearError()
 
+        do {
+            let data = try await validateEventUseCase.execute(code: code)
+            eventDetail = data
+            self.isShowingEventDetail = true
+            isLoading = false
+
+        } catch {
+            showError(message: error.localizedDescription)
+            isLoading = false
+            print("Manual code validation failed: \(error.localizedDescription)")
+        }
+    }
 
     public func fetchRecommendations(forceRefresh: Bool = false) async {
         // Prevent multiple simultaneous requests
@@ -79,7 +95,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
 
         recommendationError = nil
 
-        guard let selectedEvent = await AppStateManager.shared.selectedEvent else {
+        guard let selectedEvent = AppStateManager.shared.selectedEvent else {
             recommendationError = "No event selected"
             return
         }
@@ -153,7 +169,7 @@ public final class HomeAttendeeViewModel: ObservableObject {
         recommendationError = nil
         isLoadingRecommendations = false
     }
-    
+
     public var cacheInfo: String {
         if isUsingCachedData {
             if let age = cacheManager.getCacheAge() {
@@ -229,5 +245,3 @@ public final class HomeAttendeeViewModel: ObservableObject {
         recommendations.removeAll { $0.id == id }
     }
 }
-
-

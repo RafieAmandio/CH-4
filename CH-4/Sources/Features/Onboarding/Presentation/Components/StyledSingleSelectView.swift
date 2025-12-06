@@ -7,27 +7,27 @@ struct StyledSingleSelectView: View {
     @ObservedObject var answerManager: QuestionAnswerManager
     @State private var selectedOptionId: String?
     @State private var otherText: String = ""
-    
+
     private let columns = [
-        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
-    
+
     var body: some View {
-        ApplyBackground {
-            VStack(alignment: .leading, spacing: 32) {
-                // Question Title
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(question.question)
-                        .font(AppFont.headingLargeBold)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.leading)
-                
-                    // Subtitle
-                    Text("Pick one!")
-                        .font(AppFont.bodySmallMedium)
-                        .multilineTextAlignment(.leading)
-                }
-                
+        VStack(alignment: .leading, spacing: 32) {
+            // Question Title
+            VStack(alignment: .leading, spacing: 10) {
+                Text(question.question)
+                    .font(AppFont.interLargeSemiBold)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)  // Allows unlimited lines
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Subtitle
+                Text("Pick one that feels right - Your answer will help us match you with the best connections.")
+                    .font(AppFont.interMidRegular)
+                    .multilineTextAlignment(.leading)
+            }
+            VStack(spacing: 16) {
                 // Options Grid
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(question.answerOptions) { option in
@@ -36,7 +36,8 @@ struct StyledSingleSelectView: View {
                             isSelected: selectedOptionId == option.id
                         ) {
                             selectedOptionId = option.id
-                            answerManager.setSingleChoice(questionId: question.id, optionId: option.id)
+                            answerManager.setSingleChoice(
+                                questionId: question.id, optionId: option.id)
                         }
                     }
                 }
@@ -53,25 +54,32 @@ struct StyledSingleSelectView: View {
                         
                         if selectedOptionId == "other" {
                             TextField("Please specify...", text: $otherText)
-                                .textFieldStyle(CustomSingleSelectTextFieldStyle())
+                                .textFieldStyle(
+                                    CustomSingleSelectTextFieldStyle()
+                                )
                                 .onChange(of: otherText) { newValue in
                                     if !newValue.isEmpty {
-                                        answerManager.setFreeText(questionId: question.id, text: newValue, optionId: "other")
+                                        answerManager.setFreeText(
+                                            questionId: question.id,
+                                            text: newValue, optionId: "other")
                                     }
                                 }
                         }
                     }
                 }
-                
-                Spacer()
             }
+
+            Spacer()
         }
+
         .onAppear {
             // Initialize selected option from existing answers
             let existingAnswers = answerManager.getAnswers(for: question.id)
             if let firstAnswer = existingAnswers.first {
                 selectedOptionId = firstAnswer.answerOptionId
-                if firstAnswer.answerOptionId == "other", let text = firstAnswer.textValue {
+                if firstAnswer.answerOptionId == "other",
+                    let text = firstAnswer.textValue
+                {
                     otherText = text
                 }
             }
@@ -79,24 +87,26 @@ struct StyledSingleSelectView: View {
     }
 }
 
-// MARK: - Single Select Option Button
+// **MARK: - Single Select Option Button**
 struct SingleSelectOptionButton: View {
     let text: String
     let isSelected: Bool
     let action: () -> Void
-    
-    init(option: AnswerOptionDTO, isSelected: Bool, action: @escaping () -> Void) {
+
+    init(
+        option: AnswerOptionDTO, isSelected: Bool, action: @escaping () -> Void
+    ) {
         self.text = option.label
         self.isSelected = isSelected
         self.action = action
     }
-    
+
     init(text: String, isSelected: Bool, action: @escaping () -> Void) {
         self.text = text
         self.isSelected = isSelected
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -104,23 +114,24 @@ struct SingleSelectOptionButton: View {
                 ZStack {
                     Circle()
                         .stroke(
-                            isSelected ? AppColors.primary : Color.gray.opacity(0.4),
+                            isSelected
+                                ? AppColors.primary : Color.gray.opacity(0.4),
                             lineWidth: isSelected ? 2 : 1
                         )
                         .frame(width: 20, height: 20)
-                    
+
                     if isSelected {
                         Circle()
                             .fill(AppColors.primary)
                             .frame(width: 12, height: 12)
                     }
                 }
-                
+
                 Text(text)
-                    .font(AppFont.bodySmallMedium)
-                    .foregroundColor(.white)
+                    .font(AppFont.interMidMedium)
+                    .foregroundColor(isSelected ? AppColors.primary : .primary)
                     .multilineTextAlignment(.leading)
-                
+
                 Spacer()
             }
             .frame(maxWidth: .infinity)
@@ -129,24 +140,22 @@ struct SingleSelectOptionButton: View {
             .background(
                 ZStack {
                     // Background fill
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .fill(AppColors.TextFieldBackground)
-                    
+
                     // Border
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .stroke(
-                            isSelected ? AppColors.primary : Color.gray.opacity(0.4),
+                            isSelected
+                                ? AppColors.primary : Color.gray.opacity(0.4),
                             lineWidth: isSelected ? 2 : 1
                         )
                 }
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 0.98 : 1.0)
-        .animation(.easeInOut(duration: 0.1), value: isSelected)
     }
 }
-
 // MARK: - Custom Text Field Style for Single Select
 struct CustomSingleSelectTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
@@ -155,14 +164,14 @@ struct CustomSingleSelectTextFieldStyle: TextFieldStyle {
             .padding(.vertical, 12)
             .background(
                 ZStack {
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 11)
                         .fill(Color.gray.opacity(0.2))
-                    
-                    RoundedRectangle(cornerRadius: 20)
+
+                    RoundedRectangle(cornerRadius: 11)
                         .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 }
             )
-            .foregroundColor(.white)
+            .foregroundColor(.primary)
     }
 }
 
@@ -188,20 +197,32 @@ struct StyledSingleSelectView_Previews: PreviewProvider {
                 numberStep: nil
             ),
             answerOptions: [
-                AnswerOptionDTO(id: "promotion", label: "Get promoted at my current job", value: "promotion", displayOrder: 1),
-                AnswerOptionDTO(id: "newjob", label: "Find a new job", value: "newjob", displayOrder: 2),
-                AnswerOptionDTO(id: "skills", label: "Learn new skills", value: "skills", displayOrder: 3),
-                AnswerOptionDTO(id: "freelance", label: "Start freelancing", value: "freelance", displayOrder: 4),
-                AnswerOptionDTO(id: "business", label: "Start my own business", value: "business", displayOrder: 5),
-                AnswerOptionDTO(id: "network", label: "Expand my network", value: "network", displayOrder: 6)
+                AnswerOptionDTO(
+                    id: "promotion", label: "Get promoted at my current job",
+                    value: "promotion", displayOrder: 1),
+                AnswerOptionDTO(
+                    id: "newjob", label: "Find a new job", value: "newjob",
+                    displayOrder: 2),
+                AnswerOptionDTO(
+                    id: "skills", label: "Learn new skills", value: "skills",
+                    displayOrder: 3),
+                AnswerOptionDTO(
+                    id: "freelance", label: "Start freelancing",
+                    value: "freelance", displayOrder: 4),
+                AnswerOptionDTO(
+                    id: "business", label: "Start my own business",
+                    value: "business", displayOrder: 5),
+                AnswerOptionDTO(
+                    id: "network", label: "Expand my network", value: "network",
+                    displayOrder: 6),
             ]
         )
-        
         StyledSingleSelectView(
             question: mockQuestion,
             answerManager: QuestionAnswerManager()
         )
-        .preferredColorScheme(.dark)
+        .padding(20)
+        .preferredColorScheme(.light)
     }
 }
 
@@ -210,11 +231,12 @@ struct CompleteSingleSelectOnboardingView: View {
     let question: QuestionDTO
     @ObservedObject var answerManager: QuestionAnswerManager
     let onContinue: () -> Void
-    
+
     var canContinue: Bool {
-        return !question.isRequired || answerManager.isQuestionAnswered(question)
+        return !question.isRequired
+            || answerManager.isQuestionAnswered(question)
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -222,9 +244,9 @@ struct CompleteSingleSelectOnboardingView: View {
                 Text("OnBoarding")
                     .font(.headline)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
-                
+
                 Text("Step 1")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -232,10 +254,11 @@ struct CompleteSingleSelectOnboardingView: View {
             .padding(.horizontal, 24)
             .padding(.top, 16)
             .padding(.bottom, 32)
-            
+
             // Main Content
-            StyledSingleSelectView(question: question, answerManager: answerManager)
-            
+            StyledSingleSelectView(
+                question: question, answerManager: answerManager)
+
             // Continue Button
             VStack(spacing: 16) {
                 CustomButton(
@@ -252,14 +275,14 @@ struct CompleteSingleSelectOnboardingView: View {
             .background(AppColors.offBlack)
         }
         .background(AppColors.offBlack)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }
 
 // MARK: - Test View for Single Select Development
 struct StyledSingleSelectTestView: View {
     @StateObject private var answerManager = QuestionAnswerManager()
-    
+
     var body: some View {
         let mockQuestion = QuestionDTO(
             id: "test_single_question",
@@ -280,15 +303,27 @@ struct StyledSingleSelectTestView: View {
                 numberStep: nil
             ),
             answerOptions: [
-                AnswerOptionDTO(id: "promotion", label: "Get promoted at my current job", value: "promotion", displayOrder: 1),
-                AnswerOptionDTO(id: "newjob", label: "Find a new job", value: "newjob", displayOrder: 2),
-                AnswerOptionDTO(id: "skills", label: "Learn new skills", value: "skills", displayOrder: 3),
-                AnswerOptionDTO(id: "freelance", label: "Start freelancing", value: "freelance", displayOrder: 4),
-                AnswerOptionDTO(id: "business", label: "Start my own business", value: "business", displayOrder: 5),
-                AnswerOptionDTO(id: "network", label: "Expand my network", value: "network", displayOrder: 6)
+                AnswerOptionDTO(
+                    id: "promotion", label: "Get promoted at my current job",
+                    value: "promotion", displayOrder: 1),
+                AnswerOptionDTO(
+                    id: "newjob", label: "Find a new job", value: "newjob",
+                    displayOrder: 2),
+                AnswerOptionDTO(
+                    id: "skills", label: "Learn new skills", value: "skills",
+                    displayOrder: 3),
+                AnswerOptionDTO(
+                    id: "freelance", label: "Start freelancing",
+                    value: "freelance", displayOrder: 4),
+                AnswerOptionDTO(
+                    id: "business", label: "Start my own business",
+                    value: "business", displayOrder: 5),
+                AnswerOptionDTO(
+                    id: "network", label: "Expand my network", value: "network",
+                    displayOrder: 6),
             ]
         )
-        
+
         CompleteSingleSelectOnboardingView(
             question: mockQuestion,
             answerManager: answerManager,
@@ -328,12 +363,24 @@ extension MockQuestionProvider {
             numberStep: nil
         ),
         answerOptions: [
-            AnswerOptionDTO(id: "promotion", label: "Get promoted at my current job", value: "promotion", displayOrder: 1),
-            AnswerOptionDTO(id: "newjob", label: "Find a new job", value: "newjob", displayOrder: 2),
-            AnswerOptionDTO(id: "skills", label: "Learn new skills", value: "skills", displayOrder: 3),
-            AnswerOptionDTO(id: "freelance", label: "Start freelancing", value: "freelance", displayOrder: 4),
-            AnswerOptionDTO(id: "business", label: "Start my own business", value: "business", displayOrder: 5),
-            AnswerOptionDTO(id: "network", label: "Expand my network", value: "network", displayOrder: 6)
+            AnswerOptionDTO(
+                id: "promotion", label: "Get promoted at my current job",
+                value: "promotion", displayOrder: 1),
+            AnswerOptionDTO(
+                id: "newjob", label: "Find a new job", value: "newjob",
+                displayOrder: 2),
+            AnswerOptionDTO(
+                id: "skills", label: "Learn new skills", value: "skills",
+                displayOrder: 3),
+            AnswerOptionDTO(
+                id: "freelance", label: "Start freelancing", value: "freelance",
+                displayOrder: 4),
+            AnswerOptionDTO(
+                id: "business", label: "Start my own business",
+                value: "business", displayOrder: 5),
+            AnswerOptionDTO(
+                id: "network", label: "Expand my network", value: "network",
+                displayOrder: 6),
         ]
     )
 }

@@ -17,7 +17,7 @@ public struct UserData: Codable {
     let authProvider: String
     let email: String
     let username: String?
-    let photoUrl: String?
+    var photoUrl: String?
     let linkedinUsername: String?
     let name: String
     let isFirst: Bool

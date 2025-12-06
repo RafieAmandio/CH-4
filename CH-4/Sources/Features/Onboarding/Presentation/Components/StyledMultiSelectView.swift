@@ -6,77 +6,82 @@ struct StyledMultiSelectView: View {
     let question: QuestionDTO
     @ObservedObject var answerManager: QuestionAnswerManager
     @State private var otherText: String = ""
-    
+
     private let columns = [
-        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
 
     ]
-    
+
     var body: some View {
-        ApplyBackground {
-            VStack(alignment: .leading, spacing: 32) {
-                // Question Title
-                VStack(alignment:.leading, spacing:10) {
-                    Text(question.question)
-                        .font(AppFont.headingLargeBold)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.leading)
-                
-                    // Subtitle
-                    Text("Pick one or more!")
-                        .font(AppFont.bodySmallMedium)
-                        .multilineTextAlignment(.leading)
-                       
-                }
-                // Options Grid
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(question.answerOptions) { option in
-                        MultiSelectOptionButton(
-                            option: option,
-                            isSelected: answerManager.isMultiSelectOptionSelected(
-                                questionId: question.id,
-                                optionId: option.id
-                            )
-                        ) {
-                            answerManager.toggleMultiSelect(questionId: question.id, optionId: option.id)
-                        }
+        VStack(alignment: .leading, spacing: 32) {
+            // Question Title
+            VStack(alignment: .leading, spacing: 15) {
+                Text(question.question)
+                    .font(AppFont.interLargeSemiBold)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)  // Allows unlimited lines
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Subtitle
+                Text("Choose all that apply.")
+                    .font(AppFont.interMidRegular)
+                    .multilineTextAlignment(.leading)
+
+            }
+            // Options Grid
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(question.answerOptions) { option in
+                    MultiSelectOptionButton(
+                        option: option,
+                        isSelected: answerManager.isMultiSelectOptionSelected(
+                            questionId: question.id,
+                            optionId: option.id
+                        )
+                    ) {
+                        answerManager.toggleMultiSelect(
+                            questionId: question.id, optionId: option.id)
                     }
                 }
-                
-                // "Other" option if enabled
-                if question.constraints.isUsingOther {
-                    VStack(alignment: .leading, spacing: 12) {
-                        MultiSelectOptionButton(
-                            text: "Other",
-                            isSelected: answerManager.isMultiSelectOptionSelected(
-                                questionId: question.id,
-                                optionId: "other"
-                            )
-                        ) {
-                            if !otherText.isEmpty {
-                                answerManager.toggleMultiSelect(questionId: question.id, optionId: "other")
-                            }
-                        }
-                        
-                        if answerManager.isMultiSelectOptionSelected(questionId: question.id, optionId: "other") {
-                            TextField("Please specify...", text: $otherText)
-                                .textFieldStyle(CustomTextFieldStyle())
-                                .onChange(of: otherText) { newValue in
-                                    if !newValue.isEmpty {
-                                        answerManager.setFreeText(questionId: question.id, text: newValue, optionId: "other")
-                                    } else {
-                                        answerManager.toggleMultiSelect(questionId: question.id, optionId: "other")
-                                    }
-                                }
-                        }
-                    }
-                }
-                
-                Spacer()
-          
             }
 
-         
+            // "Other" option if enabled
+            if question.constraints.isUsingOther {
+                VStack(alignment: .leading, spacing: 12) {
+                    MultiSelectOptionButton(
+                        text: "Other",
+                        isSelected: answerManager.isMultiSelectOptionSelected(
+                            questionId: question.id,
+                            optionId: "other"
+                        )
+                    ) {
+                        if !otherText.isEmpty {
+                            answerManager.toggleMultiSelect(
+                                questionId: question.id, optionId: "other")
+                        }
+                    }
+
+                    if answerManager.isMultiSelectOptionSelected(
+                        questionId: question.id, optionId: "other")
+                    {
+                        TextField("Please specify...", text: $otherText)
+                            .textFieldStyle(CustomTextFieldStyle())
+                            .onChange(of: otherText) { newValue in
+                                if !newValue.isEmpty {
+                                    answerManager.setFreeText(
+                                        questionId: question.id, text: newValue,
+                                        optionId: "other")
+                                } else {
+                                    answerManager.toggleMultiSelect(
+                                        questionId: question.id,
+                                        optionId: "other")
+                                }
+                            }
+                    }
+                }
+            }
+
+            Spacer()
+
         }
     }
 }
@@ -86,37 +91,41 @@ struct MultiSelectOptionButton: View {
     let text: String
     let isSelected: Bool
     let action: () -> Void
-    
-    init(option: AnswerOptionDTO, isSelected: Bool, action: @escaping () -> Void) {
+
+    init(
+        option: AnswerOptionDTO, isSelected: Bool, action: @escaping () -> Void
+    ) {
         self.text = option.label
         self.isSelected = isSelected
         self.action = action
     }
-    
+
     init(text: String, isSelected: Bool, action: @escaping () -> Void) {
         self.text = text
         self.isSelected = isSelected
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action) {
             Text(text)
-                .font(AppFont.bodySmallMedium)
-                .foregroundColor(.white)
+                .font(AppFont.interMidMedium)
+                .foregroundColor(isSelected ? AppColors.primary : .black)
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
                 .background(
                     ZStack {
                         // Background fill
-                        RoundedRectangle(cornerRadius: 20)
+                        RoundedRectangle(cornerRadius: 11)
                             .fill(AppColors.TextFieldBackground)
-                        
+
                         // Border
-                        RoundedRectangle(cornerRadius: 20)
+                        RoundedRectangle(cornerRadius: 11)
                             .stroke(
-                                isSelected ? AppColors.primary : Color.gray.opacity(0.4),
+                                isSelected
+                                    ? AppColors.primary
+                                    : Color.gray.opacity(0.4),
                                 lineWidth: isSelected ? 2 : 1
                             )
                     }
@@ -136,16 +145,17 @@ struct CustomTextFieldStyle: TextFieldStyle {
             .padding(.vertical, 12)
             .background(
                 ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.gray.opacity(0.2))
-                    
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(.white)
+
+                    RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 }
             )
-            .foregroundColor(.white)
+            .foregroundColor(.black)
     }
 }
+
 
 // MARK: - Preview
 struct StyledMultiSelectView_Previews: PreviewProvider {
@@ -169,20 +179,33 @@ struct StyledMultiSelectView_Previews: PreviewProvider {
                 numberStep: nil
             ),
             answerOptions: [
-                AnswerOptionDTO(id: "freelance", label: "Freelance / Contract", value: "freelance", displayOrder: 1),
-                AnswerOptionDTO(id: "fulltime", label: "Full-time", value: "fulltime", displayOrder: 2),
-                AnswerOptionDTO(id: "internship", label: "Internship", value: "internship", displayOrder: 3),
-                AnswerOptionDTO(id: "mentorship", label: "Mentorship", value: "mentorship", displayOrder: 4),
-                AnswerOptionDTO(id: "media", label: "Media & Entertainment", value: "media", displayOrder: 5),
-                AnswerOptionDTO(id: "parttime", label: "Part-time", value: "parttime", displayOrder: 6)
+                AnswerOptionDTO(
+                    id: "freelance", label: "Freelance / Contract",
+                    value: "freelance", displayOrder: 1),
+                AnswerOptionDTO(
+                    id: "fulltime", label: "Full-time", value: "fulltime",
+                    displayOrder: 2),
+                AnswerOptionDTO(
+                    id: "internship", label: "Internship", value: "internship",
+                    displayOrder: 3),
+                AnswerOptionDTO(
+                    id: "mentorship", label: "Mentorship", value: "mentorship",
+                    displayOrder: 4),
+                AnswerOptionDTO(
+                    id: "media", label: "Media & Entertainment", value: "media",
+                    displayOrder: 5),
+                AnswerOptionDTO(
+                    id: "parttime", label: "Part-time", value: "parttime",
+                    displayOrder: 6),
             ]
         )
-        
+
         StyledMultiSelectView(
-            question: mockQuestion,
-            answerManager: QuestionAnswerManager()
-        )
-        .preferredColorScheme(.dark)
+                    question: mockQuestion,
+                    answerManager: QuestionAnswerManager()
+                )
+                .padding(.horizontal, 20)
+                .preferredColorScheme(.light)
     }
 }
 
@@ -191,7 +214,7 @@ struct CompleteStyledOnboardingView: View {
     let question: QuestionDTO
     @ObservedObject var answerManager: QuestionAnswerManager
     let onContinue: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -199,9 +222,9 @@ struct CompleteStyledOnboardingView: View {
                 Text("OnBoarding")
                     .font(.headline)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
-                
+
                 Text("Rec 1")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -209,11 +232,13 @@ struct CompleteStyledOnboardingView: View {
             .padding(.horizontal, 24)
             .padding(.top, 16)
             .padding(.bottom, 32)
-            
+
             // Main Content
-            StyledMultiSelectView(question: question, answerManager: answerManager)
-                .background(Color.black)
-            
+            StyledMultiSelectView(
+                question: question, answerManager: answerManager
+            )
+            .background(Color.black)
+
             // Continue Button
             VStack(spacing: 16) {
                 Button(action: onContinue) {
@@ -233,7 +258,7 @@ struct CompleteStyledOnboardingView: View {
             .background(Color.black)
         }
         .background(Color.black)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }
 
@@ -259,15 +284,27 @@ struct CompleteStyledOnboardingView_Previews: PreviewProvider {
                 numberStep: nil
             ),
             answerOptions: [
-                AnswerOptionDTO(id: "freelance", label: "Freelance / Contract", value: "freelance", displayOrder: 1),
-                AnswerOptionDTO(id: "fulltime", label: "Full-time", value: "fulltime", displayOrder: 2),
-                AnswerOptionDTO(id: "internship", label: "Internship", value: "internship", displayOrder: 3),
-                AnswerOptionDTO(id: "mentorship", label: "Mentorship", value: "mentorship", displayOrder: 4),
-                AnswerOptionDTO(id: "media", label: "Media & Entertainment", value: "media", displayOrder: 5),
-                AnswerOptionDTO(id: "parttime", label: "Part-time", value: "parttime", displayOrder: 6)
+                AnswerOptionDTO(
+                    id: "freelance", label: "Freelance / Contract",
+                    value: "freelance", displayOrder: 1),
+                AnswerOptionDTO(
+                    id: "fulltime", label: "Full-time", value: "fulltime",
+                    displayOrder: 2),
+                AnswerOptionDTO(
+                    id: "internship", label: "Internship", value: "internship",
+                    displayOrder: 3),
+                AnswerOptionDTO(
+                    id: "mentorship", label: "Mentorship", value: "mentorship",
+                    displayOrder: 4),
+                AnswerOptionDTO(
+                    id: "media", label: "Media & Entertainment", value: "media",
+                    displayOrder: 5),
+                AnswerOptionDTO(
+                    id: "parttime", label: "Part-time", value: "parttime",
+                    displayOrder: 6),
             ]
         )
-        
+
         CompleteStyledOnboardingView(
             question: mockQuestion,
             answerManager: QuestionAnswerManager(),
@@ -276,10 +313,11 @@ struct CompleteStyledOnboardingView_Previews: PreviewProvider {
     }
 }
 
+
 // MARK: - Test View for Development
 struct StyledMultiSelectTestView: View {
     @StateObject private var answerManager = QuestionAnswerManager()
-    
+
     var body: some View {
         let mockQuestion = QuestionDTO(
             id: "test_question",
@@ -300,15 +338,27 @@ struct StyledMultiSelectTestView: View {
                 numberStep: nil
             ),
             answerOptions: [
-                AnswerOptionDTO(id: "freelance", label: "Freelance / Contract", value: "freelance", displayOrder: 1),
-                AnswerOptionDTO(id: "fulltime", label: "Full-time", value: "fulltime", displayOrder: 2),
-                AnswerOptionDTO(id: "internship", label: "Internship", value: "internship", displayOrder: 3),
-                AnswerOptionDTO(id: "mentorship", label: "Mentorship", value: "mentorship", displayOrder: 4),
-                AnswerOptionDTO(id: "media", label: "Media & Entertainment", value: "media", displayOrder: 5),
-                AnswerOptionDTO(id: "parttime", label: "Part-time", value: "parttime", displayOrder: 6)
+                AnswerOptionDTO(
+                    id: "freelance", label: "Freelance / Contract",
+                    value: "freelance", displayOrder: 1),
+                AnswerOptionDTO(
+                    id: "fulltime", label: "Full-time", value: "fulltime",
+                    displayOrder: 2),
+                AnswerOptionDTO(
+                    id: "internship", label: "Internship", value: "internship",
+                    displayOrder: 3),
+                AnswerOptionDTO(
+                    id: "mentorship", label: "Mentorship", value: "mentorship",
+                    displayOrder: 4),
+                AnswerOptionDTO(
+                    id: "media", label: "Media & Entertainment", value: "media",
+                    displayOrder: 5),
+                AnswerOptionDTO(
+                    id: "parttime", label: "Part-time", value: "parttime",
+                    displayOrder: 6),
             ]
         )
-        
+
         CompleteStyledOnboardingView(
             question: mockQuestion,
             answerManager: answerManager,
@@ -317,6 +367,7 @@ struct StyledMultiSelectTestView: View {
                 print("Selected answers: \(answerManager.getAllAnswers())")
             }
         )
+        
     }
 }
 

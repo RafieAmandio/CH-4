@@ -195,3 +195,13 @@ struct FlexibleParticipantCard: View {
         )
     }
 }
+
+#Preview {
+    FlexibleParticipantCard(
+        image: AnyView(Image(systemName: "person.fill").resizable()),
+        name: "John Doe",
+        title: "Engineer",
+        detailContent: AnyView(Text("Detailed Profile")),
+        onTap: {}
+    )
+}

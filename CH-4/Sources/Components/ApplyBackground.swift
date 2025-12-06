@@ -18,7 +18,7 @@ struct ApplyBackground<Content:View>: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(AppColors.offBlack)
+                .fill(LinearGradient.customGradient3)
                 .ignoresSafeArea()
 
             content

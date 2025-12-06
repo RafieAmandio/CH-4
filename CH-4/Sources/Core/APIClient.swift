@@ -24,7 +24,7 @@ public class APIClient: APIClientProtocol {
     private let baseURL: String
     private var keychainManager: KeychainManager
 
-    private enum TokenKeys {
+    public enum TokenKeys {
         static let accessToken = "access_token"
     }
 

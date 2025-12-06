@@ -13,20 +13,19 @@ struct AttendeeRecommendationView: View {
 
     var body: some View {
         ZStack {
-            contentView
-            //            if viewModel.isLoadingRecommendations {
-            //                // Loading state
-            //                loadingView
-            //            } else if let error = viewModel.recommendationError {
-            //                // Error state
-            //                errorView(error: error)
-            //            } else if viewModel.recommendations.isEmpty {
-            //                // Empty state
-            //                emptyStateView
-            //            } else {
-            //                // Content with recommendations
-            //                contentView
-            //            }
+            if viewModel.isLoadingRecommendations {
+                // Loading state
+                loadingView
+            } else if let error = viewModel.recommendationError {
+                // Error state
+                errorView(error: error)
+            } else if viewModel.recommendations.isEmpty {
+                // Empty state
+                emptyStateView
+            } else {
+                // Content with recommendations
+                contentView
+            }
         }
         .onAppear {
             viewModel.onViewAppear()
@@ -38,11 +37,11 @@ struct AttendeeRecommendationView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.5)
-                .tint(.white)
+                .tint(.black)
 
             Text("Finding your connections...")
-                .font(.system(size: 16, weight: .regular))
-                .foregroundStyle(.white.opacity(0.9))
+                .font(AppFont.interMidMedium)
+                .foregroundStyle(.black.opacity(0.9))
         }
     }
 
@@ -102,7 +101,7 @@ struct AttendeeRecommendationView: View {
 
             CustomButton(title: "Refresh", style: .primary, width: 116) {
                 Task {
-                    await viewModel.fetchRecommendations()
+                    await viewModel.fetchRecommendations(forceRefresh: true)
                 }
             }
         }
@@ -110,19 +109,23 @@ struct AttendeeRecommendationView: View {
 
     // MARK: - Content View (FIXED)
     private var contentView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 27) {
             // Header text section with proper constraints
             VStack(spacing: 8) {
-                Text(
-                    "We've found participants who could be valuable connections for you."
-                )
-                .font(AppFont.bodySmallMedium)
-                .foregroundStyle(.white.opacity(0.9))
+                HStack(alignment: .center, spacing: 10) {
+                    Text(
+                        "We’ve found participants who could be valuable connections for you."
+                    )
+                }
+                .padding(.horizontal, 0)
+                .padding(.vertical, 15)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .cornerRadius(10).font(AppFont.interSmallMedium)
+                .foregroundStyle(AppColors.offGray)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)  // Allow multiple lines
                 .fixedSize(horizontal: false, vertical: true)  // Allow vertical expansion
                 .padding(.horizontal, 20)  // Add side padding to prevent edge cutoff
-
             }
             .frame(maxWidth: .infinity)  // Take full width
 
@@ -132,8 +135,8 @@ struct AttendeeRecommendationView: View {
                     $0.toParticipantCardData()
                 }
             )
-            .frame(minHeight: 400, maxHeight: 450)  // Use min/max instead of fixed height
-            .layoutPriority(1)  // Give priority to card stack for space
+
+            // Give priority to card stack for space
 
             // Spacer to push button to bottom
             Spacer(minLength: 10)
@@ -145,7 +148,7 @@ struct AttendeeRecommendationView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)  // Take all available space
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
     }
 }
@@ -156,7 +159,7 @@ extension AttendeeRecommendationView {
         GeometryReader { geometry in
             VStack(spacing: 16) {
                 // Header section - fixed height
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     Text(
                         "We've found participants who could be valuable connections for you."
                     )
@@ -195,5 +198,7 @@ extension AttendeeRecommendationView {
 }
 
 #Preview {
+    let vm = HomeAttendeeDIContainer.shared.createHomeAttendeeViewModel()
     AttendeeRecommendationView()
+        .environmentObject(vm)
 }

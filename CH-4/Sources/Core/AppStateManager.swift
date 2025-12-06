@@ -15,10 +15,14 @@ public class AppStateManager: ObservableObject {
     @Published var isAuthenticated = false
     @Published var currentRole: UserRole = .attendee
     @Published var user: UserData?
+    @Published var temp_url: String?
     @Published private var _selectedEvent: EventValidateModel?
     @Published private var _isJoinedEvent: Bool = false
+ 
     
     // Public computed properties that trigger didSet only when needed
+    
+
     public var selectedEvent: EventValidateModel? {
         get { _selectedEvent }
         set {
@@ -63,7 +67,7 @@ public class AppStateManager: ObservableObject {
     }
 
     private func resolveScreen() {
-        guard isAuthenticated || AppConfig.isDebug else {
+        guard isAuthenticated  else {
             screen = .auth
             return
         }
@@ -83,6 +87,10 @@ public class AppStateManager: ObservableObject {
         if isJoinedEvent {
             fetchRecommendations()
         }
+    }
+    
+    public func setUrl(_ url: String) {
+        self.temp_url = url // This will trigger the setter
     }
     
     private enum Keys {
@@ -204,7 +212,7 @@ public class AppStateManager: ObservableObject {
         currentRole = .attendee
         selectedEvent = nil // This will trigger the setter and clear persistence
         isJoinedEvent = false // This will trigger the setter
-        
+        KeychainManager.shared.delete(key: "access_token")
         resolveScreen()
     }
     

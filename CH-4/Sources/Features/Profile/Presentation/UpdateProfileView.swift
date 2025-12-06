@@ -3,10 +3,9 @@ import UIComponentsKit
 
 struct UpdateProfileView: View {
     @EnvironmentObject private var onBoardingViewModel: OnboardingViewModel
-
     @EnvironmentObject private var appState: AppStateManager
     @StateObject private var viewModel: UpdateProfileViewModel =
-    ProfileDIContainer.shared.createProfileViewModel()
+        ProfileDIContainer.shared.createProfileViewModel()
 
     let isFromOnboarding: Bool
     let onProfileUpdated: (() -> Void)?
@@ -18,65 +17,68 @@ struct UpdateProfileView: View {
         self.onProfileUpdated = onProfileUpdated
     }
 
-    private func handlePostUpdateNavigation() async throws {
+    private func handlePostUpdateNavigation(result: UpdateProfilePayload?)
+        async throws
+    {
         if isFromOnboarding {
             let selectedEvent = appState.selectedEvent
-            let registerAttendePayload = RegisterAttendeePayload(
-                eventCode: selectedEvent?.code ?? "",
-                name: appState.user?.name ?? "",
-                email: appState.user?.email ?? "",
-                professionId: (appState.user?.professionId)!,
-                linkedinUsername: appState.user?.linkedinUsername ?? "",
-                photoLink: appState.user?.photoUrl ?? "")
-            
+
+            let payload: RegisterAttendeePayload = RegisterAttendeePayload(
+                eventCode: selectedEvent?.code ?? "", name: result?.name ?? "",
+                professionId: result?.professionId.uuidString ?? "",
+                photoLink: result?.photoLink ?? "")
+
             await onBoardingViewModel.handleJoinEvent(
-                with: registerAttendePayload
+                with: payload
             ) { success in
                 if success ?? false {
                     print("successfully joined event")
                 }
             }
-         
+
             onBoardingViewModel.currentState = .goalSelection
         } else {
             onProfileUpdated?()
         }
     }
+    
+    // Function to dismiss keyboard
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 
     var body: some View {
-        ApplyBackground {
-            VStack(spacing: 30) {
+        VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 HeaderSectionView()
-                VStack(spacing: 12) {
-                    CircularImagePickerWithBinding(
-                        selectedImage: $viewModel.profileImage,
-                        size: 125,
-                        onImageSelected: viewModel.handleImageSelection
-                    )
-                    if viewModel.isUploading {
-                        VStack(spacing: 4) {
-                            ProgressView(value: viewModel.uploadProgress)
-                                .progressViewStyle(LinearProgressViewStyle())
-                                .frame(width: 100)
+                CircularImagePickerWithBinding(
+                    selectedImage: $viewModel.profileImage,
+                    size: 140,
+                    onImageSelected: viewModel.handleImageSelection
+                )
+                if viewModel.isUploading {
+                    VStack(spacing: 4) {
+                        ProgressView(value: viewModel.uploadProgress)
+                            .progressViewStyle(LinearProgressViewStyle())
+                            .frame(width: 100)
 
-                            Text("Uploading...")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        Text("Uploading...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
-                AppTextField(
-                    text: $viewModel.name,
-                    placeholder: "Name",
-                    height: 51,
-                    leadingIcon: Image(systemName: "person.circle.fill")
-                )
+            }
+            
+            VStack(spacing:15) {
+                CustomTextField(label: "Name", text: $viewModel.name)
+                    .padding(.bottom)
+                
                 if viewModel.isLoadingProfessions {
                     HStack {
                         ProgressView()
                             .scaleEffect(0.8)
                         Text("Loading professions...")
-                            .font(.caption)
+                            .font(AppFont.interMidMedium)
                             .foregroundColor(.secondary)
                     }
                     .frame(height: 51)
@@ -89,62 +91,65 @@ struct UpdateProfileView: View {
                             viewModel.selectedProfessionId = professionId
                         }
                     )
+                    .frame(height: 51)
+                    .padding(.bottom)
+
                 }
 
-                AppTextField(
-                    text: $viewModel.linkedIn,
-                    placeholder: "LinkedIn (optional)",
-                    height: 51,
-                    leadingIcon: Image(systemName: "link.circle.fill")
-                )
+                CustomTextField(label: "Linkedin (Optional)", text: $viewModel.linkedIn)
+            }
 
-                Spacer()
+            Spacer()
 
-                // Submit Button
-                CustomButton(
-                    title: viewModel.isUpdatingProfile
-                        ? "Updating..." : "Continue",
-                    style: .primary
-                ) {
-                    Task {
-                        do {
-                            // First update the profile
-                            await viewModel.updateProfile()
-                            // Handle navigation based on context
-                            if !viewModel.showError {
-                                try await handlePostUpdateNavigation()
-                            }
-                        } catch {
-                            // You might want to show an error alert here
-                            viewModel.errorMessage = error.localizedDescription
-                            viewModel.showError = true
+            // Submit Button
+            CustomButton(
+                title: viewModel.isUpdatingProfile
+                    ? "Updating..." : "Continue",
+                style: .newPrimary
+            ) {
+                Task {
+                    do {
+                        // First update the profile
+                        let result = await viewModel.updateProfile()
+                        // Handle navigation based on context
+                        if !viewModel.showError {
+                            try await handlePostUpdateNavigation(
+                                result: result)
                         }
+                    } catch {
+                        // You might want to show an error alert here
+                        viewModel.errorMessage = error.localizedDescription
+                        viewModel.showError = true
                     }
                 }
-                .disabled(
-                    !viewModel.isFormValid || viewModel.isUpdatingProfile
-                        || viewModel.isUploading
-                )
-                .opacity(
-                    (!viewModel.isFormValid || viewModel.isUpdatingProfile
-                        || viewModel.isUploading) ? 0.6 : 1.0)
+            }
+            .disabled(
+                !viewModel.isFormValid || viewModel.isUpdatingProfile
+                    || viewModel.isUploading
+            )
+            .opacity(
+                (!viewModel.isFormValid || viewModel.isUpdatingProfile
+                    || viewModel.isUploading) ? 0.6 : 1.0)
 
-                // Loading Indicator for Profile Update
+            // Loading Indicator for Profile Update
+        }
+        .padding(.horizontal, 20)
+        .contentShape(Rectangle()) // Makes the entire view tappable
+        .onTapGesture {
+            dismissKeyboard()
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK") {
+                viewModel.showError = false
             }
-            .padding()
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK") {
-                    viewModel.showError = false
-                }
-            } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                }
+        } message: {
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
             }
-            .onAppear {
-                Task {
-                    await viewModel.loadProfessions()
-                }
+        }
+        .onAppear {
+            Task {
+                await viewModel.loadProfessions()
             }
         }
     }

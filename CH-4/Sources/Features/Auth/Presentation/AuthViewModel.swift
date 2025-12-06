@@ -58,7 +58,7 @@ public final class AuthViewModel: ObservableObject {
 
             let user = try await verifyAndGenerateTokenUseCase.execute()
 
-            authenticatedState = .authenticated(user)
+            authenticatedState = .authenticated
 
             isLoading = false
             
@@ -74,6 +74,6 @@ public final class AuthViewModel: ObservableObject {
 
 enum AuthenticationState {
     case loading
-    case authenticated(UserData)
+    case authenticated
     case unauthenticated
 }
